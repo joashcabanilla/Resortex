@@ -6,8 +6,8 @@ import Navbar from '../components/navbar.js';
 export default function Home() {
   return (
     <>
-      <Navbar />
       <reactBoostrap.Container fluid className={cssHome.container}>
+        <Navbar />
       </reactBoostrap.Container>
     </>
   )
