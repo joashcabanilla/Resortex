@@ -1,70 +1,52 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import * as reactBoostrap from 'react-bootstrap';
+import { Navbar, Nav } from 'react-bootstrap';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import cssNavbar from '../styles/Components/Navbar.module.css';
 
 export default function navbar() {
-    const [show, setShow] = useState(false);
-
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
     return (
         <>
-            <reactBoostrap.Navbar sticky="top" expand="sm" collapseOnSelect>
-                <reactBoostrap.Navbar.Brand>
+            <Navbar sticky="top" expand="sm" collapseOnSelect>
+                <Navbar.Brand>
                     <Link href="/">
                         <a>
-                            <Image src="/logo/resortex_02.png" alt="Resortex Logo" width={70} height={70} />
+                            <Image src="/logo/resortex_02.png" alt="Resortex Logo" width={65} height={65} />
                         </a>
                     </Link>
-                </reactBoostrap.Navbar.Brand>
-                <p>Resort Reservation</p>
-                <reactBoostrap.Navbar.Toggle aria-controls="responsive-navbar-nav" />
-                <reactBoostrap.Navbar.Collapse className="justify-content-end" id="responsive-navbar-nav">
-                    <reactBoostrap.Nav>
-                        <reactBoostrap.Nav.Link>
+                </Navbar.Brand>
+                <p className={cssNavbar.title}>Resort Reservation</p>
+                <Navbar.Toggle aria-controls="responsive-navbar-nav" className={cssNavbar.toggler}>
+                    <span className={`${cssNavbar[`toggler-icon`]} ${cssNavbar[`top-bar`]}`}></span>
+                    <span className={`${cssNavbar[`toggler-icon`]} ${cssNavbar[`middle-bar`]}`}></span>
+                    <span className={`${cssNavbar[`toggler-icon`]} ${cssNavbar[`bottom-bar`]}`}></span>
+                </Navbar.Toggle>
+                <Navbar.Collapse className="justify-content-end" id="responsive-navbar-nav">
+                    <Nav>
+                        <Nav.Link>
                             <Link href="/">
                                 <p>HOME</p>
                             </Link>
-                        </reactBoostrap.Nav.Link>
-                        <reactBoostrap.Nav.Link>
+                        </Nav.Link>
+                        <Nav.Link>
                             <Link href="/about">
                                 <p>ABOUT US</p>
                             </Link>
-                        </reactBoostrap.Nav.Link>
-                        <reactBoostrap.Nav.Link>
+                        </Nav.Link>
+                        <Nav.Link>
                             <Link href="/contact">
                                 <p>CONTACT US</p>
                             </Link>
-                        </reactBoostrap.Nav.Link>
-                        <reactBoostrap.Nav.Link>
-                            <reactBoostrap.Button variant="primary" onClick={handleShow}>
-                                REGISTER
-                            </reactBoostrap.Button>
-
-                            <reactBoostrap.Modal show={show} onHide={handleClose}>
-                                <reactBoostrap.Modal.Header closeButton>
-                                    <reactBoostrap.Modal.Title>Modal heading</reactBoostrap.Modal.Title>
-                                </reactBoostrap.Modal.Header>
-                                <reactBoostrap.Modal.Body>Woohoo, you're reading this text in a modal!</reactBoostrap.Modal.Body>
-                                <reactBoostrap.Modal.Footer>
-                                    <reactBoostrap.Button variant="secondary" onClick={handleClose}>
-                                        Close
-                                    </reactBoostrap.Button>
-                                    <reactBoostrap.Button variant="primary" onClick={handleClose}>
-                                        Save Changes
-                                    </reactBoostrap.Button>
-                                </reactBoostrap.Modal.Footer>
-                            </reactBoostrap.Modal>
-                        </reactBoostrap.Nav.Link>
-                        <reactBoostrap.Nav.Link>
+                        </Nav.Link>
+                        <Nav.Link>
+                            REGISTER
+                        </Nav.Link>
+                        <Nav.Link>
                             LOGIN
-                        </reactBoostrap.Nav.Link>
-                    </reactBoostrap.Nav>
-                </reactBoostrap.Navbar.Collapse>
-            </reactBoostrap.Navbar>
+                        </Nav.Link>
+                    </Nav>
+                </Navbar.Collapse>
+            </Navbar>
         </>
     );
 }

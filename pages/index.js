@@ -1,14 +1,14 @@
-import cssHome from '../styles/Home.module.css'
+import cssHome from '../styles/Pages/Home.module.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import * as reactBoostrap from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import Navbar from '../components/navbar.js';
 
 export default function Home() {
   return (
     <>
-      <reactBoostrap.Container fluid className={cssHome.container}>
+      <Container fluid className={cssHome.container}>
         <Navbar />
-      </reactBoostrap.Container>
+      </Container>
     </>
   )
 }
