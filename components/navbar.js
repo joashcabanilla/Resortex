@@ -1,4 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navbar, Nav } from 'react-bootstrap';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -16,10 +15,10 @@ export default function navbar() {
                     </Link>
                 </Navbar.Brand>
                 <p className={cssNavbar.title}>Resort Reservation</p>
-                <Navbar.Toggle aria-controls="responsive-navbar-nav" className={cssNavbar.toggler}>
-                    <span className={`${cssNavbar[`toggler-icon`]} ${cssNavbar[`top-bar`]}`}></span>
-                    <span className={`${cssNavbar[`toggler-icon`]} ${cssNavbar[`middle-bar`]}`}></span>
-                    <span className={`${cssNavbar[`toggler-icon`]} ${cssNavbar[`bottom-bar`]}`}></span>
+                <Navbar.Toggle aria-controls="responsive-navbar-nav" className="navbar-toggler">
+                    <span className="toggler-icon top-bar"></span>
+                    <span className="toggler-icon middle-bar"></span>
+                    <span className="toggler-icon bottom-bar"></span>
                 </Navbar.Toggle>
                 <Navbar.Collapse className="justify-content-end" id="responsive-navbar-nav">
                     <Nav>

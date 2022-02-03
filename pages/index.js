@@ -1,5 +1,4 @@
 import cssHome from '../styles/Pages/Home.module.css'
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container } from 'react-bootstrap';
 import Navbar from '../components/navbar.js';
 
