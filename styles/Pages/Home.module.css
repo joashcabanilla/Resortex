@@ -1,0 +1,26 @@
+.imageCol {
+  width: 100%;
+  height: 23rem;
+  position: relative;
+}
+.imageBackground {
+  opacity: 0.75;
+}
+
+@media (min-width: 768px) {
+  .imageCol {
+    height: 30rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .imageCol {
+    height: 33rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .imageCol {
+    height: 35rem;
+  }
+}
