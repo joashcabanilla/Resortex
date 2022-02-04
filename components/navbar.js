@@ -2,11 +2,21 @@ import { Navbar, Nav } from 'react-bootstrap';
 import Image from 'next/image';
 import Link from 'next/link';
 import cssNavbar from '../styles/Components/Navbar.module.css';
+import React, { useState, useEffect } from 'react';
 
 export default function navbar() {
+    const [navbar, setNavbar] = useState(false);
+
+    useEffect(() => {
+        window.addEventListener('scroll', onScroll);
+    }, []);
+
+    const onScroll = () => {
+        window.scrollY >= 100 ? setNavbar(true) : setNavbar(false);
+    }
     return (
         <>
-            <Navbar sticky='top' expand='sm' collapseOnSelect>
+            <Navbar fixed='top' expand='sm' collapseOnSelect className={navbar ? `${cssNavbar[`navbar-scroll`]}` : `${cssNavbar[`navbar`]}`}>
                 <Navbar.Brand>
                     <Link href='/'>
                         <a>
@@ -14,7 +24,9 @@ export default function navbar() {
                         </a>
                     </Link>
                 </Navbar.Brand>
-                <p className={cssNavbar.title}>Resort Reservation</p>
+                <Link href='/'>
+                    <a className={cssNavbar.title}>Resort Reservation</a>
+                </Link>
                 <Navbar.Toggle aria-controls='responsive-navbar-nav' className='navbar-toggler'>
                     <span className='toggler-icon top-bar'></span>
                     <span className='toggler-icon middle-bar'></span>
@@ -38,10 +50,7 @@ export default function navbar() {
                             </Link>
                         </Nav.Link>
                         <Nav.Link>
-                            REGISTER
-                        </Nav.Link>
-                        <Nav.Link>
-                            LOGIN
+                            <p>SIGN IN</p>
                         </Nav.Link>
                     </Nav>
                 </Navbar.Collapse>

@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito&family=Open+Sans:wght@500&display=swap");
 .navbar-toggler {
   border: 0;
 }
@@ -10,7 +11,7 @@
 .toggler-icon {
   width: 30px;
   height: 2px;
-  background-color: #000000;
+  background-color: #ffffff;
   display: block;
   transition: all 0.2s;
 }
@@ -39,6 +40,41 @@
 .navbar-toggler.collapsed .bottom-bar {
   transform: rotate(0);
 }
-.navbar-toggler.collapsed .toggler-icon {
-  background-color: #000000;
+.nav-link {
+  background-color: #000000bb;
+  text-align: justify;
+  border-left: 0.3rem solid white;
+  border-bottom: 0.1rem solid white;
+}
+.nav-link p {
+  color: #ffffff;
+  padding-left: 1.5rem;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+.nav-link p:hover {
+  color: #00ff95d3;
+  transform: scale(1.1);
+}
+@media (min-width: 768px) {
+  .nav-link {
+    border: 0;
+    background-color: transparent;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-link {
+    border: 0;
+    background-color: transparent;
+  }
+}
+
+@media (min-width: 1440px) {
+  .nav-link {
+    border: 0;
+    background-color: transparent;
+  }
 }
