@@ -1,4 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito&family=Open+Sans:wght@500&display=swap");
+.nav-scroll {
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+}
 .navbar-toggler {
   border: 0;
 }
@@ -12,6 +15,13 @@
   width: 30px;
   height: 2px;
   background-color: #ffffff;
+  display: block;
+  transition: all 0.2s;
+}
+.toggler-icon-scroll {
+  width: 30px;
+  height: 2px;
+  background-color: #000000;
   display: block;
   transition: all 0.2s;
 }
@@ -40,13 +50,13 @@
 .navbar-toggler.collapsed .bottom-bar {
   transform: rotate(0);
 }
-.nav-link {
+.navLink {
   background-color: #000000bb;
   text-align: justify;
-  border-left: 0.3rem solid white;
+  border-left: 0.4rem solid white;
   border-bottom: 0.1rem solid white;
 }
-.nav-link p {
+.navLinkP {
   color: #ffffff;
   padding-left: 1.5rem;
   font-family: "Open Sans", sans-serif;
@@ -54,26 +64,56 @@
   font-size: 1rem;
   margin-top: 0.5rem;
 }
-.nav-link p:hover {
+.navLinkP:hover {
+  color: #00ff95d3;
+  transform: scale(1.1);
+}
+.navLink-scroll {
+  background-color: #ffffff;
+  text-align: justify;
+  border-left: 0.4rem solid black;
+  border-bottom: 0.1rem solid black;
+}
+.navLinkP-scroll {
+  color: #000000;
+  padding-left: 1.5rem;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+.navLinkP-scroll:hover {
   color: #00ff95d3;
   transform: scale(1.1);
 }
 @media (min-width: 768px) {
-  .nav-link {
+  .nav-scroll {
+    box-shadow: none;
+  }
+  .navLink,
+  .navLink-scroll {
     border: 0;
     background-color: transparent;
   }
 }
 
 @media (min-width: 1024px) {
-  .nav-link {
+  .nav-scroll {
+    box-shadow: none;
+  }
+  .navLink,
+  .navLink-scroll {
     border: 0;
     background-color: transparent;
   }
 }
 
 @media (min-width: 1440px) {
-  .nav-link {
+  .nav-scroll {
+    box-shadow: none;
+  }
+  .navLink,
+  .navLink-scroll {
     border: 0;
     background-color: transparent;
   }

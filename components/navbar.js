@@ -14,43 +14,44 @@ export default function navbar() {
     const onScroll = () => {
         window.scrollY >= 100 ? setNavbar(true) : setNavbar(false);
     }
+
     return (
         <>
-            <Navbar fixed='top' expand='sm' collapseOnSelect className={navbar ? `${cssNavbar[`navbar-scroll`]}` : `${cssNavbar[`navbar`]}`}>
+            <Navbar fixed='top' expand='sm' variant='dark' bg={navbar ? `light` : null} collapseOnSelect className={navbar ? `${cssNavbar[`navbar-scroll`]}` : `${cssNavbar[`navbar`]}`}>
                 <Navbar.Brand>
                     <Link href='/'>
                         <a>
-                            <Image src='/logo/resortex_02.png' alt='Resortex Logo' width={65} height={65} priority />
+                            <Image src='/logo/resortex_02.png' alt='Resortex Logo' width={60} height={60} priority />
                         </a>
                     </Link>
                 </Navbar.Brand>
                 <Link href='/'>
-                    <a className={cssNavbar.title}>Resort Reservation</a>
+                    <a className={navbar ? `${cssNavbar[`title-scroll`]}` : `${cssNavbar[`title`]}`}>Resort Reservation</a>
                 </Link>
                 <Navbar.Toggle aria-controls='responsive-navbar-nav' className='navbar-toggler'>
-                    <span className='toggler-icon top-bar'></span>
-                    <span className='toggler-icon middle-bar'></span>
-                    <span className='toggler-icon bottom-bar'></span>
+                    <span className={navbar ? 'toggler-icon-scroll top-bar' : 'toggler-icon top-bar'}></span>
+                    <span className={navbar ? 'toggler-icon-scroll middle-bar' : 'toggler-icon middle-bar'}></span>
+                    <span className={navbar ? 'toggler-icon-scroll bottom-bar' : 'toggler-icon bottom-bar'}></span>
                 </Navbar.Toggle>
                 <Navbar.Collapse className='justify-content-end' id='responsive-navbar-nav'>
-                    <Nav>
-                        <Nav.Link>
+                    <Nav className={navbar ? 'nav-scroll' : null}>
+                        <Nav.Link className={navbar ? 'navLink-scroll' : 'navLink'}>
                             <Link href='/'>
-                                <p>HOME</p>
+                                <p className={navbar ? 'navLinkP-scroll' : 'navLinkP'}>HOME</p>
                             </Link>
                         </Nav.Link>
-                        <Nav.Link>
+                        <Nav.Link className={navbar ? 'navLink-scroll' : 'navLink'}>
                             <Link href='/about'>
-                                <p>ABOUT US</p>
+                                <p className={navbar ? 'navLinkP-scroll' : 'navLinkP'}>ABOUT US</p>
                             </Link>
                         </Nav.Link>
-                        <Nav.Link>
+                        <Nav.Link className={navbar ? 'navLink-scroll' : 'navLink'}>
                             <Link href='/contact'>
-                                <p>CONTACT US</p>
+                                <p className={navbar ? 'navLinkP-scroll' : 'navLinkP'}>CONTACT US</p>
                             </Link>
                         </Nav.Link>
-                        <Nav.Link>
-                            <p>SIGN IN</p>
+                        <Nav.Link className={navbar ? 'navLink-scroll' : 'navLink'}>
+                            <p className={navbar ? 'navLinkP-scroll' : 'navLinkP'}>SIGN IN</p>
                         </Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
