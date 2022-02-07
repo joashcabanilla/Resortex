@@ -26,6 +26,7 @@
 .title-scroll:hover {
   color: #000000;
 }
+
 @media (min-width: 768px) {
   .title,
   .title-scroll {

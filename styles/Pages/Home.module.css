@@ -1,11 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito&family=Open+Sans:wght@500&display=swap");
 .imageCol {
   width: 100%;
   height: 24rem;
   position: relative;
+  z-index: -1;
 }
 .imageBackground {
   opacity: 0.85;
 }
+.divTagline {
+  margin-top: -16rem;
+  padding-left: 1.5rem;
+}
+.divTagline h1,
+.divTagline p {
+  font-family: "Open Sans", sans-serif;
+  color: #000000;
+}
+.divTagline h1 {
+  font-weight: 600;
+  font-size: 2rem;
+}
+
 @media (min-width: 768px) {
   .imageCol {
     height: 30rem;
