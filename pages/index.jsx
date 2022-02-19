@@ -1,6 +1,6 @@
 import cssHome from '../styles/Pages/Home.module.css'
 import { Container, Row, Col } from 'react-bootstrap';
-import Navbar from '../components/navbar';
+import Navbar from '../components/home/navbar';
 import Image from 'next/image';
 
 export default function Home() {
