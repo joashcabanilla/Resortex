@@ -2,8 +2,11 @@ import cssHome from '../styles/Pages/Home.module.css'
 import { Container, Row, Col } from 'react-bootstrap';
 import Navbar from '../components/home/navbar';
 import Image from 'next/image';
+import { useSelector } from 'react-redux';
 
 export default function Home() {
+  const hotel  = useSelector((state) => state);
+  console.log(hotel);
   return (
     <>
       <Container fluid>
