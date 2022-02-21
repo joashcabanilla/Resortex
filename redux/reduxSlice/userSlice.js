@@ -8,7 +8,13 @@ export const usersSlice = createSlice({
     name: 'users',
     initialState,
     reducers: {
+        updateUser: (state) => {
+            state.users = "user";
+        }
+
     },
 });
+
+export const { updateUser } = usersSlice.actions;
 
 export default usersSlice.reducer; 
