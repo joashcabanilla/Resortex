@@ -3,13 +3,11 @@ import { Container, Row, Col } from 'react-bootstrap';
 import Navbar from '../components/home/navbar';
 import Image from 'next/image';
 import { useSelector,useDispatch } from 'react-redux';
-import { updateUser } from '../redux/reduxSlice/userSlice';
+import { getHotelData } from '../redux/reduxSlice/hotelSlice';
 
 export default function Home() {
   const user  = useSelector((state) => state.users);
-  const dispatch = useDispatch();
-  console.log(user);
-
+  useDispatch(getHotelData);
   return (
     <>
       <Container fluid>

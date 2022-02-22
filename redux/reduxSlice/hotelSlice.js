@@ -1,23 +1,23 @@
 import { createSlice } from '@reduxjs/toolkit'
+import firebase from '../../firebase/firebaseConfig';
 
 const initialState = {
-    hotel: [
-        {
-            name: "hotel1",
-            location: "location1"
-        },
-        {
-            name: "hotel2",
-            location: "location2"
-        }
-    ],
+    hotel: [],
 }
+
+const database = firebase();
 
 export const hotelSlice = createSlice({
     name: 'hotel',
     initialState,
     reducers: {
+        getHotelData: (state) => {
+            
+        },
+
     },
 });
+
+export const { getHotelData } = hotelSlice.actions;
 
 export default hotelSlice.reducer;
