@@ -3,11 +3,11 @@ import hotelSlice from './reduxSlice/hotelSlice'
 import usersSlice from './reduxSlice/userSlice';
 
 const reducer = combineReducers({
-    hotel: hotelSlice,
-    users: usersSlice,
+    storeHotel: hotelSlice,
+    storeUsers: usersSlice,
 });
 
-export const store = configureStore({
+const store = configureStore({
     reducer,
 });
 

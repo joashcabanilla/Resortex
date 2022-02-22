@@ -4,10 +4,16 @@ import Navbar from '../components/home/navbar';
 import Image from 'next/image';
 import { useSelector,useDispatch } from 'react-redux';
 import { getHotelData } from '../redux/reduxSlice/hotelSlice';
+import { useEffect } from 'react';
 
 export default function Home() {
-  const user  = useSelector((state) => state.users);
-  useDispatch(getHotelData);
+  const dispatch = useDispatch();
+  console.log(useSelector(state => state.storeHotel));
+  
+  useEffect(() => {
+    dispatch(getHotelData());
+  },[]);
+
   return (
     <>
       <Container fluid>
