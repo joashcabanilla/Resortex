@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-bootstrap-typeahead/css/Typeahead.css';
 import '../styles/globals.css'
 import '../styles/home.css'
 import Head from 'next/head'

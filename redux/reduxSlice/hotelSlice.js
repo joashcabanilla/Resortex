@@ -2,40 +2,50 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { database } from '../../firebase/firebaseConfig';
 import { ref, child, get } from 'firebase/database';
 
-// const hotelRef = ref(database)
-// let databasePath = "";
+const hotelRef = ref(database);
+let databasePath = "";
 
-//FIREBASE FUNCTIONS 
-export const getHotel = createAsyncThunk(
-    'hotel/getStatus'
-);
+//FIREBASE FUNCTIONS
+//GETTING HOTEL DATA---------------------------------------------------------------
+export const getHotel = createAsyncThunk('hotel/getData', async () => {
+    databasePath = 'HOTEL-RESERVATION-SYSTEM/HOTELS';
+    let data = {};
+    await get(child(hotelRef, databasePath))
+        .then((snapshot) => {
+            snapshot.exists() ? data = { ...snapshot.val() } : null;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    return data;
+});
 
+//INITIAL STATE------------------------------------------------------------------
 const initialState = {
-    hotel: [],
+    hotelList: {},
+    status: null,
 }
 
+//REDUX REDUCERS AND ACTIONS--------------------------------------------------------
 export const hotelSlice = createSlice({
     name: 'hotel',
     initialState,
     reducers: {
     },
     extraReducers: {
+        [getHotel.pending]: (state) => {
+            state.status = 'Loading';
+        },
 
+        [getHotel.fulfilled]: (state, { payload }) => {
+            state.status = 'success';
+            state.hotelList = payload;
+        },
+
+        [getHotel.rejected]: (state) => {
+            state.status = 'failed';
+        },
     }
 });
-
-//FIREBASE FUNCTIONS 
-// const getHotel = () => {
-//     databasePath = 'HOTEL-RESERVATION-SYSTEM/HOTELS';
-//     get(child(hotelRef, databasePath))
-//         .then((snapshot) => {
-//             snapshot.exists() ? console.log(snapshot.val()) : null;
-//         })
-//         .catch((err) => {
-//             console.log(err);
-//         });
-// }
-
-export const { getHotelData } = hotelSlice.actions;
 
 export default hotelSlice.reducer;

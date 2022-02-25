@@ -1,17 +1,18 @@
 import cssHome from '../styles/Pages/Home.module.css'
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import Navbar from '../components/home/navbar';
 import Image from 'next/image';
 import { useSelector,useDispatch } from 'react-redux';
-import { getHotelData } from '../redux/reduxSlice/hotelSlice';
-import { useEffect } from 'react';
+import { useEffect,useState, Fragment } from 'react';
+import { getHotel } from '../redux/reduxSlice/hotelSlice';
+import { Typeahead } from 'react-bootstrap-typeahead';
 
 export default function Home() {
   const dispatch = useDispatch();
-  console.log(useSelector(state => state.storeHotel));
-  
+  const [singleSelections, setSingleSelections] = useState([]);
+  let hotel = ["joash", "joash cabanilla", "joas"];
   useEffect(() => {
-    dispatch(getHotelData());
+    // dispatch(getHotel());
   },[]);
 
   return (
@@ -27,9 +28,27 @@ export default function Home() {
             <h1>it’s a way of life.</h1>
             <p>The art of meeting your highest expectations.</p>
           </div>
-          <div className={cssHome.divSearch}>
-          </div>
         </Row>
+        <div>
+          <div>
+          <Fragment>
+                <Form.Group>
+                  <Typeahead
+                    clearButton
+                    id="basic-typeahead-single"
+                    onChange={setSingleSelections}
+                    options={hotel}
+                    placeholder="Search Resort..."
+                    selected={singleSelections}
+                    size={'lg'}
+                  />
+                </Form.Group>
+          </Fragment>
+          </div>
+          <div>
+            <Button size="lg" variant="success"></Button>
+          </div>
+        </div>
       </Container>
     </>
   )
