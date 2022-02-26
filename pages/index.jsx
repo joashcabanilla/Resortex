@@ -6,11 +6,12 @@ import { useSelector,useDispatch } from 'react-redux';
 import { useEffect,useState, Fragment } from 'react';
 import { getHotel } from '../redux/reduxSlice/hotelSlice';
 import { Typeahead } from 'react-bootstrap-typeahead';
+import {BiSearchAlt2} from 'react-icons/bi';
 
 export default function Home() {
   const dispatch = useDispatch();
   const [singleSelections, setSingleSelections] = useState([]);
-  let hotel = ["joash", "joash cabanilla", "joas"];
+  let searchOption  = [];
   useEffect(() => {
     // dispatch(getHotel());
   },[]);
@@ -29,24 +30,38 @@ export default function Home() {
             <p>The art of meeting your highest expectations.</p>
           </div>
         </Row>
-        <div>
-          <div>
+        <div className={cssHome.containerSearch}>
+          <div className={cssHome.containerInputSearch}>
           <Fragment>
-                <Form.Group>
+                <Form.Group>  
                   <Typeahead
                     clearButton
                     id="basic-typeahead-single"
                     onChange={setSingleSelections}
-                    options={hotel}
+                    options={searchOption}
                     placeholder="Search Resort..."
                     selected={singleSelections}
-                    size={'lg'}
+                    size='lg'
+                    labelKey="name"
+                    filterBy={['name','location']}
+                    renderMenuItemChildren = {
+                      (option) => (
+                        <div>
+                          {option.name}
+                        <div>
+                          <small>Location: {option.location}</small>
+                        </div>
+                      </div>
+                      )
+                    }
                   />
                 </Form.Group>
           </Fragment>
           </div>
-          <div>
-            <Button size="lg" variant="success"></Button>
+          <div className={cssHome.containerButton}>
+            <Button size="lg" variant="success" className={cssHome.bsButton}>
+                <BiSearchAlt2 size = '2rem'/>
+            </Button> 
           </div>
         </div>
       </Container>
