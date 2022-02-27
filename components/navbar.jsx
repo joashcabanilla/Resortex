@@ -1,7 +1,7 @@
 import { Navbar, Nav } from 'react-bootstrap';
 import Image from 'next/image';
 import Link from 'next/link';
-import cssNavbar from '../../styles/Components/Navbar.module.css';
+import cssNavbar from '../styles/Components/Navbar.module.css';
 import React, { useState, useEffect } from 'react';
 
 export default function navbar() {
