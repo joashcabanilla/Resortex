@@ -49,6 +49,7 @@
 .bsButton {
   width: 100%;
 }
+
 @media (min-width: 768px) {
   .imageCol {
     height: 30rem;
@@ -105,6 +106,9 @@
   .bsButton {
     width: 6rem;
   }
+  .containerSearch {
+    margin-left: 4rem;
+  }
 }
 
 @media (min-width: 1440px) {
@@ -127,5 +131,8 @@
   }
   .bsButton {
     width: 8rem;
+  }
+  .containerSearch {
+    margin-left: 10rem;
   }
 }

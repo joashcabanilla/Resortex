@@ -1,0 +1,10 @@
+.containerPopular {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+.textPopular {
+  font-family: "Open Sans", sans-serif;
+  color: #000000;
+  font-weight: 800;
+}

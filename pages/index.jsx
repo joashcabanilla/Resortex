@@ -1,6 +1,6 @@
 import cssHome from '../styles/Pages/Home.module.css'
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
-import Navbar from '../components/navbar';
+import { Container, Row, Col, Form, Button, Carousel } from 'react-bootstrap';
+import Navbar from '../components/home/navbar';
 import Image from 'next/image';
 import { useSelector,useDispatch } from 'react-redux';
 import { useEffect,useState, Fragment } from 'react';
@@ -8,6 +8,7 @@ import { getHotel } from '../redux/reduxSlice/hotelSlice';
 import { Typeahead } from 'react-bootstrap-typeahead';
 import {BiSearchAlt2} from 'react-icons/bi';
 import {useRouter} from 'next/router';
+import Carouselhotel from '../components/home/Carouselhotel';
 
 export default function Home() {
   //INITIALIZATION OF VARIABLES----------------------------------------------------------
@@ -15,7 +16,7 @@ export default function Home() {
   const dispatch = useDispatch();
   const [singleSelections, setSingleSelections] = useState([]);
   const stateHotel = useSelector(state => state.storeHotel.hotelList);
-  let hotels = [];
+  let hotels = ['joash','joash1'];
   
   //REACT HOOKS-------------------------------------------------------------------------
   useEffect(() => {
@@ -31,7 +32,6 @@ export default function Home() {
   const btnSearch = () => {
     singleSelections.length != 0 ? router.push(`hotel/${singleSelections[0]['HOTEL-REFERENCE NUMBER']}`) : null;
   }
- 
 
   return (
     <>
@@ -81,6 +81,7 @@ export default function Home() {
             </Button> 
           </div>
         </div>
+        <Carouselhotel hotel={hotels} />
       </Container>
     </>
   )
