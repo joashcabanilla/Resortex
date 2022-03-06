@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { database } from '../../firebase/firebaseConfig';
 import { ref, child, get } from 'firebase/database';
+import data from '../../data.json';
 
 const hotelRef = ref(database);
 let databasePath = "";
@@ -22,7 +23,7 @@ export const getHotel = createAsyncThunk('hotel/getData', async () => {
 
 //INITIAL STATE------------------------------------------------------------------
 const initialState = {
-    hotelList: {},
+    hotelList: { ...data['HOTEL-RESERVATION-SYSTEM']['HOTELS']},
     status: null,
 }
 

@@ -16,7 +16,7 @@ export default function Home() {
   const dispatch = useDispatch();
   const [singleSelections, setSingleSelections] = useState([]);
   const stateHotel = useSelector(state => state.storeHotel.hotelList);
-  let hotels = ['joash','joash1'];
+  let hotels = [];
   
   //REACT HOOKS-------------------------------------------------------------------------
   useEffect(() => {
