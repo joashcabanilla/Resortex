@@ -87,7 +87,6 @@ export default function Carouselhotel({hotel}) {
             let ranking = value['RATING-USER RATING'];
             let hotelReferenceNo = value['HOTEL-REFERENCE NUMBER'];
             rank++;
-            console.log(value);
         return rank <= 5 ? (
             <div className={index === imageIndex ? "slide activeSlide" : "slide"} key={index}>
                 <img src={`data:image/jpeg;base64,${cover}`} alt={index} />
