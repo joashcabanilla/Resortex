@@ -23,7 +23,7 @@ export const getHotel = createAsyncThunk('hotel/getData', async () => {
 
 //INITIAL STATE------------------------------------------------------------------
 const initialState = {
-    hotelList: { ...data['HOTEL-RESERVATION-SYSTEM']['HOTELS']},
+    hotelList: { ...data['HOTEL-RESERVATION-SYSTEM']['HOTELS'] },
     status: null,
 }
 

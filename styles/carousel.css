@@ -1,2 +1,50 @@
 @import "~slick-carousel/slick/slick.css";
 @import "~slick-carousel/slick/slick-theme.css";
+@import url("https://fonts.googleapis.com/css2?family=Nunito&family=Open+Sans:wght@500&display=swap");
+
+.slide img {
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+}
+.slide {
+  transform: scale(0.2);
+  transition: transform 300ms;
+  opacity: 0.5;
+}
+.activeSlide {
+  height: 12rem;
+  transform: scale(1.5);
+  opacity: 1;
+}
+.arrow {
+  position: absolute;
+  cursor: pointer;
+  z-index: 10;
+}
+.arrow svg {
+  transition: color 300ms;
+}
+.arrow svg:hover {
+  color: #047546;
+}
+.next {
+  right: 3%;
+  top: 30%;
+}
+.prev {
+  left: 3%;
+  top: 30%;
+}
+
+@media (min-width: 1024px) {
+  .activeSlide {
+    height: 15rem;
+  }
+  .next {
+    top: 40%;
+  }
+  .prev {
+    top: 40%;
+  }
+}
