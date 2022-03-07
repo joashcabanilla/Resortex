@@ -21,7 +21,7 @@ export default function navbar() {
                 <Navbar.Brand>
                     <Link href='/'>
                         <a>
-                            <Image src='/logo/resortex_02.png' alt='Resortex Logo' width={60} height={60} priority />
+                            <Image src='/logo/logo.png' alt='Resortex Logo' width={60} height={60} priority />
                         </a>
                     </Link>
                 </Navbar.Brand>

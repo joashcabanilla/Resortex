@@ -1,5 +1,5 @@
 import cssHome from '../styles/Pages/Home.module.css'
-import { Container, Row, Col, Form, Button, Carousel } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import Navbar from '../components/home/navbar';
 import Image from 'next/image';
 import { useSelector,useDispatch } from 'react-redux';
