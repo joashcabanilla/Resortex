@@ -39,7 +39,7 @@
 
 @media (min-width: 1024px) {
   .activeSlide {
-    height: 15rem;
+    height: 20rem;
   }
   .next {
     top: 40%;

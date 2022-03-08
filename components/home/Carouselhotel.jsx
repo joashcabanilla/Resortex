@@ -96,20 +96,37 @@ export default function Carouselhotel({hotel}) {
                         <p>{`${ranking}`}</p>
                         {starRanking(ranking)}  
                     </div>
-                    <Button variant='info' className={css.slidebtn} onClick={() => {router.push(`hotel/${hotelReferenceNo}`)}}>VIEW</Button>
+                    <Button variant='info' className={css.slidebtn} onClick={() => {router.push(`hotel/${hotelReferenceNo}`)}}>BOOK NOW</Button>
                 </div>    
             </div>
             ) : null;
         }); 
     } 
 
+    const topRecommend = () => {
+        let rank = 0;
+        return hotel.map((value,index) => {
+            rank++; 
+            return rank <= 5 ? (
+                <div className={css.cardRecommend} key={index}>
+                    {/* <img src={} alt={index}/> */}
+                </div>
+            ) : null;
+        });
+
+    }
+
     return (
     <div className={css.containerPopular}>
-        <h1 className={css.textPopular}>POPULAR PLACES</h1>
+        <h1 className={css.textPopular}>BEST AND POPULAR PLACES</h1>
         <div className={css.carouselPopular}>
             <Slider {...settingSlider}>
                 {topHotel()}
             </Slider>
+        </div>
+        <h1 className={css.textRecommend}>TOP RECOMMENDATION</h1>
+        <div className={css.Recommendation}>
+            {topRecommend()}
         </div>
     </div>
     );
