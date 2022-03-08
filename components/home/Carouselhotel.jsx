@@ -106,10 +106,24 @@ export default function Carouselhotel({hotel}) {
     const topRecommend = () => {
         let rank = 0;
         return hotel.map((value,index) => {
+            let room1 = value['VIEW-ROOM GALLERY']['ROOM-01'];
+            let room2 = value['VIEW-ROOM GALLERY']['ROOM-02'];
+            let name = value['HOTEL-NAME'];
             rank++; 
             return rank <= 5 ? (
-                <div className={css.cardRecommend} key={index}>
-                    {/* <img src={} alt={index}/> */}
+                <div key={`room1-${index}`} className={css.conCard}>
+                    <div className={css.cardRecommend}>
+                        <img src={`data:image/jpeg;base64,${room1}`} alt={index} />
+                        <div className={css.concardHotelName}>
+                            <p>{`${name}`}</p>
+                        </div>
+                    </div>
+                    <div className={css.cardRecommend}>
+                        <img src={`data:image/jpeg;base64,${room2}`} alt={index}/>
+                        <div className={css.concardHotelName}>
+                            <p>{`${name}`}</p>
+                        </div>
+                    </div>
                 </div>
             ) : null;
         });
