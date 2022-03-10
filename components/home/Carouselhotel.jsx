@@ -132,13 +132,13 @@ export default function Carouselhotel({hotel}) {
 
     return (
     <div className={css.containerPopular}>
-        <h1 className={css.textPopular}>BEST AND POPULAR PLACES</h1>
+        <h1 className={css.textPopular}>Best and Popular Places</h1>
         <div className={css.carouselPopular}>
             <Slider {...settingSlider}>
                 {topHotel()}
             </Slider>
         </div>
-        <h1 className={css.textRecommend}>TOP RECOMMENDATION</h1>
+        <h1 className={css.textRecommend}>Best View for Popular Resort</h1>
         <div className={css.Recommendation}>
             {topRecommend()}
         </div>

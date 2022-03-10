@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { database } from '../../firebase/firebaseConfig';
+// import { database } from '../../firebase/firebaseConfig';
 import { ref, child, get } from 'firebase/database';
 import data from '../../data.json';
 
-const hotelRef = ref(database);
+// const hotelRef = ref(database);
 let databasePath = "";
 
 //FIREBASE FUNCTIONS

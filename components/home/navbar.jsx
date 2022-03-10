@@ -46,11 +46,6 @@ export default function navbar() {
                             </Link>
                         </Nav.Link>
                         <Nav.Link className={navbar ? 'navLink-scroll' : 'navLink'}>
-                            <Link href='/contact'>
-                                <p className={navbar ? 'navLinkP-scroll' : 'navLinkP'}>CONTACT US</p>
-                            </Link>
-                        </Nav.Link>
-                        <Nav.Link className={navbar ? 'navLink-scroll' : 'navLink'}>
                             <p className={navbar ? 'navLinkP-scroll' : 'navLinkP'}>SIGN IN</p>
                         </Nav.Link>
                     </Nav>
