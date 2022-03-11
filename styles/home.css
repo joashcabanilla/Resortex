@@ -64,10 +64,6 @@
   font-size: 1rem;
   margin-top: 0.5rem;
 }
-.navLinkP:hover {
-  color: #00ff95d3;
-  transform: scale(1.1);
-}
 .navLink-scroll {
   background-color: #ffffff;
   text-align: justify;
@@ -82,11 +78,16 @@
   font-size: 1rem;
   margin-top: 0.5rem;
 }
-.navLinkP-scroll:hover {
-  color: #00ff95d3;
-  transform: scale(1.1);
-}
+
 @media (min-width: 768px) {
+  .navLinkP:hover {
+    color: #00ff95d3;
+    transform: scale(1.1);
+  }
+  .navLinkP-scroll:hover {
+    color: #00ff95d3;
+    transform: scale(1.1);
+  }
   .nav-scroll {
     box-shadow: none;
   }

@@ -1,0 +1,139 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito&family=Open+Sans:wght@500&display=swap");
+.conTitle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -12rem;
+}
+.conTitle h1 {
+  color: #000000;
+  text-shadow: -15px 5px 20px #ffffff;
+}
+.conTitle p {
+  margin-top: 0;
+}
+.conWelcome {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 2rem;
+}
+.conWelcome p {
+  font-family: "Open Sans", sans-serif;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+.conWelcome p:nth-child(2) {
+  font-weight: 100;
+  margin-left: 0.5rem;
+}
+.welcomeText,
+.conFind p {
+  font-family: "Open Sans", sans-serif;
+  width: 100%;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+  text-align: justify;
+  font-size: 1rem;
+}
+.conChooseUs {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 4rem;
+}
+.conFind {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.conFind svg {
+  padding: 1.5rem;
+  border-radius: 2rem;
+  width: 5rem;
+  height: 5rem;
+  color: #00ff95d3;
+  background-color: rgba(128, 128, 128, 0.13);
+}
+.conFind p:nth-child(2) {
+  font-weight: bold;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+.conFind p:nth-child(3) {
+  color: #00000080;
+}
+@media (min-width: 768px) {
+  .lastrow {
+    margin-top: 4rem;
+  }
+  .conWelcome p {
+    font-size: 1.5rem;
+  }
+  .welcomeText,
+  .conFind p {
+    padding-left: 4.5rem;
+    padding-right: 4.5rem;
+    font-size: 1.1rem;
+  }
+  .conChooseUs {
+    margin-top: 2rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+  .conFind {
+    width: 23rem;
+    height: 22rem;
+  }
+  .conFind p:nth-child(3) {
+    text-align: left;
+    padding-left: 6rem;
+  }
+  .conFind svg {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .conWelcome p {
+    font-size: 2rem;
+  }
+  .welcomeText {
+    padding-left: 6rem;
+    padding-right: 6rem;
+    font-size: 1.5rem;
+  }
+  .conFind p {
+    font-size: 1.5rem;
+  }
+  .conFind {
+    width: 30rem;
+    height: 30rem;
+  }
+}
+@media (min-width: 1200px) {
+  .conFind {
+    width: 34rem;
+    height: 30rem;
+  }
+}
+
+@media (min-width: 1400px) {
+  .welcomeText {
+    padding-left: 10rem;
+    padding-right: 10rem;
+  }
+  .conFind {
+    width: 36rem;
+    height: 30rem;
+  }
+}
+
+@media (min-width: 1600px) {
+  .conFind {
+    width: 42rem;
+    height: 30rem;
+  }
+}
