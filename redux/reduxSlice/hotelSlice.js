@@ -1,15 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-// import { database } from '../../firebase/firebaseConfig';
+import { database } from '../../firebase/firebaseConfig';
 import { ref, child, get } from 'firebase/database';
 import data from '../../data.json';
 
 // const hotelRef = ref(database);
-let databasePath = "";
 
 //FIREBASE FUNCTIONS
 //GETTING HOTEL DATA---------------------------------------------------------------
 export const getHotel = createAsyncThunk('hotel/getData', async () => {
-    databasePath = 'HOTEL-RESERVATION-SYSTEM/HOTELS';
+    const databasePath = 'HOTEL-RESERVATION-SYSTEM/HOTELS';
     let data = {};
     await get(child(hotelRef, databasePath))
         .then((snapshot) => {

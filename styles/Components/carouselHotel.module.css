@@ -10,6 +10,8 @@
   color: #000000;
   font-weight: 800;
   margin-left: 2rem;
+  font-size: 1.5rem;
+
 }
 .carouselPopular {
   margin-top: 5rem;
@@ -65,6 +67,7 @@
   font-weight: 800;
   margin-top: 5rem;
   margin-left: 2rem;
+  font-size: 1.5rem;
 }
 .cardRecommend img {
   width: 100%;

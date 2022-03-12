@@ -4,37 +4,131 @@ import Link from 'next/link';
 import cssNavbar from '../../styles/Components/Navbar.module.css';
 import { useState, useEffect, useRef } from 'react';
 import css from '../../styles/Components/modalSignIn.module.css';
+import { getUser, getHotelManager, getAdminAccount } from '../../redux/reduxSlice/userSlice';
+import { useSelector,useDispatch } from 'react-redux';
+import {useRouter} from 'next/router';
 
 export default function navbar() {
+    //import variables
+    const dispatch = useDispatch();
+    const router = useRouter();
+
+    //reducer state
+    const stateUser = useSelector(state => state.storeUsers.userList);
+    const stateHotelManagerAcct = useSelector(state => state.storeUsers.hotelManagerAcct);
+    const stateAdminAccount = useSelector(state => state.storeUsers.adminList);
+
     //state declaration
     const [navbar, setNavbar] = useState(false);
     const [expanded, setExpanded] = useState(false);
-    const [modalSignInShow,setModalSignInShow] = useState(false);
-    const [modalCustomerShow,setModalCustomerShow] = useState(false);
-    const [modalHotelShow,setModalHotelShow] = useState(false);
+    const [modalSignInShow, setModalSignInShow] = useState(false);
+    const [modalCustomerShow, setModalCustomerShow] = useState(false);
+    const [modalHotelShow, setModalHotelShow] = useState(false);
+    const [formSignInShowPassword, setFormSignInShowPassword] = useState(false);
+    const [errorSignIn,setErrorSignIn] = useState({
+        username:{
+            isInvalid: false,
+            error:"",
+        },
+        password:{
+            isInvalid: false,
+            error: "",
+        }
+    });
 
     //react Hooks useRef
-    const usernameSignIn = useRef(null);
+    const usernameSignIn = useRef();
+    const passwordSignIn = useRef();
+    const showPasswordSignIn = useRef();
 
     //react Hooks use effect
     useEffect(() => {
         window.addEventListener('scroll', onScroll);
+        dispatch(getUser());
+        dispatch(getHotelManager());
+        dispatch(getAdminAccount());
     }, []);
 
     const onScroll = () => {
         window.scrollY >= 100 ? setNavbar(true) : setNavbar(false);
     }
 
+    //component functions
+    const updateStateSignIn = (error, invalid, input) => {
+        setErrorSignIn(errorSignIn => ({...errorSignIn,
+            [input]:{
+                isInvalid: invalid,
+                error: error,
+            }}))
+    }
+
+    const hidemodalSignIn = () => {
+        setModalSignInShow(false); 
+        updateStateSignIn("",false,"username"); 
+        updateStateSignIn("",false,"password");
+    }
+
+    const changeShowpasswordSignIn = () => {
+        showPasswordSignIn.current.checked ? setFormSignInShowPassword(true) : setFormSignInShowPassword(false);
+    }
+
     //event handlers functions
     //sign in form submit
     const handleSubmitSignIn = (e) => {
         e.preventDefault();
-        const form = e.currentTarget;
-
         let username = usernameSignIn.current.value;
+        let password = passwordSignIn.current.value;
+        let type = "";
+        let id = "";
+        let validatedUsername = false;
+        let validatedPassword = false;
+        let signInAcct = [];
+        
+        Object.values(stateAdminAccount).forEach(value => {
+            let datausername = value['USERNAME'];
+            let datapassword = value['PASSWORD'];
+            let id = value['ID'];
+            signInAcct.push({username: datausername, password: datapassword, type: "admin", id: id});
+        });
 
+        
+        Object.values(stateHotelManagerAcct).forEach(value => {
+            let datausername = value['USERNAME'];
+            let datapassword = value['PASSWORD'];
+            let id = value['ID'];
+            signInAcct.push({username: datausername, password: datapassword, type: "hotelmanager", id: id});
+        });
+
+        Object.values(stateUser).forEach(value => {
+            let datausername = value['ACCOUNT-USERNAME'];
+            let datapassword = value['ACCOUNT-PASSWORD'];
+            let id = value['ACCOUNT-ID NUMBER'];
+            signInAcct.push({username: datausername, password: datapassword, type: "user", id: id});
+        });
+
+        
+        signInAcct.forEach((value) => {
+            if(value.username == username) validatedUsername = true;    
+            if(value.password == password) validatedPassword = true;
+            if(value.username == username && value.password == password){
+                type = value.type;
+                id = value.id;
+            }
+        });
+
+        if(validatedUsername && validatedPassword){
+            console.log(`log in type=${type} id=${id}`); 
+            updateStateSignIn("",false,"username"); 
+            updateStateSignIn("",false,"password");
+        }
+        else{
+            !validatedUsername && username != "" ?  updateStateSignIn("Incorrect Username",true,"username") : updateStateSignIn("",false,"username");
+            !validatedPassword && password != "" ? updateStateSignIn("Incorrect Password",true,"password") : updateStateSignIn("",false,"password");
+            username == "" ? updateStateSignIn("Enter Username",true,"username") : null;
+            password == "" ? updateStateSignIn("Enter Password",true,"password") : null;
+        } 
     }
-
+    
     //components
     const customerModal = () => {
         return (
@@ -68,7 +162,7 @@ export default function navbar() {
     }
     const signInModal = () => {
         return (
-        <Modal show={modalSignInShow} onHide={()=> setModalSignInShow(false)} animation={true}  centered>
+        <Modal show={modalSignInShow} onHide={()=> {hidemodalSignIn()}} animation={true}  centered>
             <Modal.Header closeButton className={css.modalSignInHeader}>
                 <div>
                     <p>Welcome Back to Resortex</p>
@@ -77,16 +171,28 @@ export default function navbar() {
             </Modal.Header>
 
             <Modal.Body className={css.modalSignInBody}>
-                <Form noValidate onSubmit={handleSubmitSignIn}>
+                <Form onSubmit={handleSubmitSignIn}>
                     <Form.Group controlId='signInUsernameValidation'>
                         <Form.Floating>
-                            <Form.Control ref={usernameSignIn} type="text" placeholder="Username" required isInvalid={true} />
-                            <label htmlFor="signInUsernameValidation">Username</label>
+                            <Form.Control ref={usernameSignIn} type="text" placeholder="Username" isInvalid={errorSignIn.username.isInvalid} />
+                            <Form.Control.Feedback type='invalid' tooltip>{errorSignIn.username.error}</Form.Control.Feedback>
+                            <Form.Label>Username</Form.Label>
                         </Form.Floating>
-                        <Form.Control.Feedback tooltip type='invalid'>Please choose a username.</Form.Control.Feedback>
+                    </Form.Group>
+                    
+                    <Form.Group controlId='signInPasswordValidation'>
+                        <Form.Floating>
+                            <Form.Control ref={passwordSignIn} type={formSignInShowPassword ? "text" : "password"} placeholder="Password" isInvalid={errorSignIn.password.isInvalid} />
+                            <Form.Control.Feedback type='invalid' tooltip>{errorSignIn.password.error}</Form.Control.Feedback>
+                            <Form.Label>Password</Form.Label>
+                        </Form.Floating>
+                    </Form.Group>
+                    
+                    <Form.Group controlId='signInShowPassword'>
+                        <Form.Check ref={showPasswordSignIn} label="Show Password" onChange={()=>{changeShowpasswordSignIn()}} />
                     </Form.Group>
 
-                    <Button type="submit">Sign In</Button>
+                    <Button type="submit">Sign In</Button>  
                 </Form> 
             </Modal.Body>
 
