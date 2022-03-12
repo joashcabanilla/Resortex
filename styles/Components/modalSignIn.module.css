@@ -1,6 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito&family=Open+Sans:wght@500&display=swap");
+
 .modalSignInHeader {
   border-bottom: 0;
 }
 .modalSignInFooter {
   border-top: 0;
+}
+.modalSignInHeader p {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 800;
+  margin: 0;
+  padding: 0;
+}
+.modalSignInHeader div {
+  display: flex;
+  flex-direction: column;
+}
+.modalSignInHeader p:nth-child(2) {
+  font-size: 0.7rem;
+  color: #00000080;
 }

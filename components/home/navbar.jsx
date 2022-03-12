@@ -1,8 +1,8 @@
-import { Navbar, Nav, Modal, Button } from 'react-bootstrap';
+import { Navbar, Nav, Modal, Button, FloatingLabel, Form } from 'react-bootstrap';
 import Image from 'next/image';
 import Link from 'next/link';
 import cssNavbar from '../../styles/Components/Navbar.module.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import css from '../../styles/Components/modalSignIn.module.css';
 
 export default function navbar() {
@@ -13,7 +13,10 @@ export default function navbar() {
     const [modalCustomerShow,setModalCustomerShow] = useState(false);
     const [modalHotelShow,setModalHotelShow] = useState(false);
 
-    //react Hooks
+    //react Hooks useRef
+    const usernameSignIn = useRef(null);
+
+    //react Hooks use effect
     useEffect(() => {
         window.addEventListener('scroll', onScroll);
     }, []);
@@ -23,6 +26,14 @@ export default function navbar() {
     }
 
     //event handlers functions
+    //sign in form submit
+    const handleSubmitSignIn = (e) => {
+        e.preventDefault();
+        const form = e.currentTarget;
+
+        let username = usernameSignIn.current.value;
+
+    }
 
     //components
     const customerModal = () => {
@@ -35,7 +46,7 @@ export default function navbar() {
                 <Modal.Body>
                 </Modal.Body>
     
-                <Modal.Footer className={css.modalSignInFooter}>
+                <Modal.Footer className={css.modalCustomerFooter}>
                 </Modal.Footer>
             </Modal>
             );
@@ -43,14 +54,14 @@ export default function navbar() {
     const hotelModal = () => {
         return(
             <Modal show={modalHotelShow} onHide={()=> setModalHotelShow(false)} animation={true}  centered>
-                <Modal.Header closeButton className={css.modalSignInHeader}>
+                <Modal.Header closeButton className={css.modalHotelHeader}>
                     <p>HOTEL</p>
                 </Modal.Header>
     
                 <Modal.Body>
                 </Modal.Body>
     
-                <Modal.Footer className={css.modalSignInFooter}>
+                <Modal.Footer className={css.modalHotelFooter}>
                 </Modal.Footer>
             </Modal>
             );
@@ -59,15 +70,29 @@ export default function navbar() {
         return (
         <Modal show={modalSignInShow} onHide={()=> setModalSignInShow(false)} animation={true}  centered>
             <Modal.Header closeButton className={css.modalSignInHeader}>
-                <p>SIGN IN</p>
+                <div>
+                    <p>Welcome Back to Resortex</p>
+                    <p>Sign in to your account to continue using Resortex</p>
+                </div>
             </Modal.Header>
 
-            <Modal.Body>
+            <Modal.Body className={css.modalSignInBody}>
+                <Form noValidate onSubmit={handleSubmitSignIn}>
+                    <Form.Group controlId='signInUsernameValidation'>
+                        <Form.Floating>
+                            <Form.Control ref={usernameSignIn} type="text" placeholder="Username" required isInvalid={true} />
+                            <label htmlFor="signInUsernameValidation">Username</label>
+                        </Form.Floating>
+                        <Form.Control.Feedback tooltip type='invalid'>Please choose a username.</Form.Control.Feedback>
+                    </Form.Group>
+
+                    <Button type="submit">Sign In</Button>
+                </Form> 
             </Modal.Body>
 
             <Modal.Footer className={css.modalSignInFooter}>
-                <Button onClick={() => {setModalSignInShow(false); setModalCustomerShow(true);}}>CREATE ACCOUNT AS CUSTOMER</Button>
-                <Button onClick={() => {setModalSignInShow(false); setModalHotelShow(true);}}>CREATE ACCOUNT AS HOTEL OWNER</Button>
+                {/* <Button onClick={() => {setModalSignInShow(false); setModalCustomerShow(true);}}>CREATE ACCOUNT AS CUSTOMER</Button>
+                <Button onClick={() => {setModalSignInShow(false); setModalHotelShow(true);}}>CREATE ACCOUNT AS HOTEL OWNER</Button> */}
             </Modal.Footer>
         </Modal>
         );
