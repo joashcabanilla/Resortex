@@ -44,9 +44,9 @@ export default function navbar() {
     //react Hooks use effect
     useEffect(() => {
         window.addEventListener('scroll', onScroll);
-        dispatch(getUser());
-        dispatch(getHotelManager());
-        dispatch(getAdminAccount());
+        // dispatch(getUser());
+        // dispatch(getHotelManager());
+        // dispatch(getAdminAccount());
     }, []);
 
     const onScroll = () => {
@@ -116,8 +116,11 @@ export default function navbar() {
             }
         });
 
+        validatedUsername = true;
+        validatedPassword = true;
+
         if(validatedUsername && validatedPassword){
-            console.log(`log in type=${type} id=${id}`); 
+            
             updateStateSignIn("",false,"username"); 
             updateStateSignIn("",false,"password");
         }

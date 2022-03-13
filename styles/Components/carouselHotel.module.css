@@ -11,7 +11,6 @@
   font-weight: 800;
   margin-left: 2rem;
   font-size: 1.5rem;
-
 }
 .carouselPopular {
   margin-top: 5rem;
@@ -105,6 +104,10 @@
   font-size: 0.8rem;
 }
 @media (min-width: 1024px) {
+  .textPopular,
+  .textRecommend {
+    font-size: 2rem;
+  }
   .conActiveSlide {
     margin-top: -15.5rem;
   }
