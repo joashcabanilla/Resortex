@@ -10,6 +10,29 @@ import {BiSearchAlt2} from 'react-icons/bi';
 import {useRouter} from 'next/router';
 import Carouselhotel from '../components/home/Carouselhotel';
 
+export async function getServerSideProps(context){
+  let cookies = context.req.headers.cookie;
+  if(cookies != undefined){
+    let arrCookies = cookies.split(';');
+    let newCookies = arrCookies.map(value => {
+      return value.trim().split('=');
+    });
+    let objCookie = {
+      type: newCookies[0][1],
+      id: newCookies[1][1],
+    };
+    return {
+      redirect:{
+          destination:`${objCookie.type}/${objCookie.id}`,
+          permanent:false,
+      }
+    }
+  }
+  return{
+    props:{}
+  }
+}
+
 export default function Home() {
   //INITIALIZATION OF VARIABLES----------------------------------------------------------
   const router = useRouter();

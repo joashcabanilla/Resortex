@@ -4,8 +4,39 @@ import cssHome from '../styles/Pages/Home.module.css'
 import Image from 'next/image';
 import css from '../styles/Pages/about.module.css';
 import {BsGift, BsHeart, BsWallet2} from 'react-icons/bs';
+import {useRouter} from 'next/router';
+import { useEffect } from "react";
 
+export async function getServerSideProps(context){
+    let cookies = context.req.headers.cookie;
+    if(cookies != undefined){
+      let arrCookies = cookies.split(';');
+      let newCookies = arrCookies.map(value => {
+        return value.trim().split('=');
+      });
+      let objCookie = {
+        type: newCookies[0][1],
+        id: newCookies[1][1],
+      };
+      return {
+        redirect:{
+            destination:`${objCookie.type}/${objCookie.id}`,
+            permanent:false,
+        }
+      }
+    }
+    return{
+      props:{}
+    }
+  }
+  
 export default function About(){
+    //import variables
+    const router = useRouter();
+
+    useEffect( ()=> {
+    },[]);
+
     return (
         <Container fluid>
             <Navbar />

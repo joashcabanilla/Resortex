@@ -96,7 +96,7 @@ export default function navbar() {
             let datausername = value['USERNAME'];
             let datapassword = value['PASSWORD'];
             let id = value['ID'];
-            signInAcct.push({username: datausername, password: datapassword, type: "hotelmanager", id: id});
+            signInAcct.push({username: datausername, password: datapassword, type: "manager", id: id});
         });
 
         Object.values(stateUser).forEach(value => {
@@ -118,9 +118,19 @@ export default function navbar() {
 
         validatedUsername = true;
         validatedPassword = true;
+        type="manager";
+        id="321312312222ad1";
+
+        const setRouterLogin = (type, id) => {
+            document.cookie = `type=${type}`;
+            document.cookie = `id=${id}`;
+            router.push(`${type}/${id}`);
+        }
 
         if(validatedUsername && validatedPassword){
-            
+            type == "admin" ? setRouterLogin(type, id) : null;
+            type == "manager" ? setRouterLogin(type, id) : null;
+            type == "user" ? setRouterLogin(type, id) : null;
             updateStateSignIn("",false,"username"); 
             updateStateSignIn("",false,"password");
         }
@@ -129,7 +139,8 @@ export default function navbar() {
             !validatedPassword && password != "" ? updateStateSignIn("Incorrect Password",true,"password") : updateStateSignIn("",false,"password");
             username == "" ? updateStateSignIn("Enter Username",true,"username") : null;
             password == "" ? updateStateSignIn("Enter Password",true,"password") : null;
-        } 
+        }
+        
     }
     
     //components
