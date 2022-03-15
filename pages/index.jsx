@@ -9,34 +9,34 @@ import { Typeahead } from 'react-bootstrap-typeahead';
 import {BiSearchAlt2} from 'react-icons/bi';
 import {useRouter} from 'next/router';
 import Carouselhotel from '../components/home/Carouselhotel';
+import cookie from 'cookie';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
-export async function getServerSideProps(context){
-  let cookies = context.req.headers.cookie;
-  if(cookies != undefined){
-    let arrCookies = cookies.split(';');
-    let newCookies = arrCookies.map(value => {
-      return value.trim().split('=');
-    });
-    let objCookie = {
-      type: newCookies[0][1],
-      id: newCookies[1][1],
-    };
+
+export async function getServerSideProps({req, res}){
+  const mycookie = cookie.parse((req && req.headers.cookie) || "");
+  const type = mycookie.type;
+  const id = mycookie.id;
+  if(type != undefined){
     return {
-      redirect:{
-          destination:`${objCookie.type}/${objCookie.id}`,
-          permanent:false,
+      redirect: {
+        destination: `${type}/${id}`,
+        permanent: false,
       }
-    }
+    };
   }
-  return{
-    props:{}
-  }
+  return {
+    props: {}
+  };
 }
 
 export default function Home() {
   //INITIALIZATION OF VARIABLES----------------------------------------------------------
   const router = useRouter();
   const dispatch = useDispatch();
+  const mySwal = withReactContent(Swal);
+
   const [singleSelections, setSingleSelections] = useState([]);
   const stateHotel = useSelector(state => state.storeHotel.hotelList);
   let hotels = [];
@@ -53,7 +53,13 @@ export default function Home() {
 
   //EVENTLISTENER FUNCTIONS-------------------------------------------------------------------------
   const btnSearch = () => {
-    singleSelections.length != 0 ? router.push(`hotel/${singleSelections[0]['HOTEL-REFERENCE NUMBER']}`) : null;
+    mySwal.fire({
+      icon: 'error',
+      title: <p className={cssHome.swalText}>PLEASE SIGN IN TO CONTINUE...</p>,
+      customClass:{
+        confirmButton: `${cssHome.swalButton}`,
+      }
+    });
   }
 
   return (

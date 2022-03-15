@@ -118,13 +118,18 @@ export default function navbar() {
 
         validatedUsername = true;
         validatedPassword = true;
-        type="manager";
-        id="321312312222ad1";
+        type="admin";
+        id="admin";
 
         const setRouterLogin = (type, id) => {
-            document.cookie = `type=${type}`;
-            document.cookie = `id=${id}`;
-            router.push(`${type}/${id}`);
+            fetch("/api/login", {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({type: type, id: id}),
+            });
+            router.replace(`${type}/${id}`);
         }
 
         if(validatedUsername && validatedPassword){
@@ -206,7 +211,7 @@ export default function navbar() {
                         <Form.Check ref={showPasswordSignIn} label="Show Password" onChange={()=>{changeShowpasswordSignIn()}} />
                     </Form.Group>
 
-                    <Button type="submit">Sign In</Button>  
+                    <Button type="submit">Sign In</Button>
                 </Form> 
             </Modal.Body>
 

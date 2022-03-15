@@ -4,10 +4,13 @@ import {FaArrowRight, FaArrowLeft,FaStar} from 'react-icons/fa';
 import { useState } from 'react';
 import {Button} from 'react-bootstrap';
 import {useRouter} from 'next/router';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 export default function Carouselhotel({hotel}) {
     //import variable
     const router = useRouter();
+    const mySwal = withReactContent(Swal);
 
     //state management
     const [imageIndex,setimageIndex] = useState(0);
@@ -31,6 +34,16 @@ export default function Carouselhotel({hotel}) {
                 <FaArrowLeft />
             </div>
         )
+    }
+
+    const clickBookNow = () => {
+        mySwal.fire({
+            icon: 'error',
+            title: <p className={css.swalText}>PLEASE SIGN IN TO CONTINUE...</p>,
+            customClass:{
+              confirmButton: `${css.swalButton}`,
+            }
+          });
     }
 
     //variable initialization
@@ -96,7 +109,7 @@ export default function Carouselhotel({hotel}) {
                         <p>{`${ranking}`}</p>
                         {starRanking(ranking)}  
                     </div>
-                    <Button variant='info' className={css.slidebtn} onClick={() => {router.push(`hotel/${hotelReferenceNo}`)}}>BOOK NOW</Button>
+                    <Button variant='info' className={css.slidebtn} onClick={() => {clickBookNow()}}>BOOK NOW</Button>
                 </div>    
             </div>
             ) : null;

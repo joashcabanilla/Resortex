@@ -1,35 +1,46 @@
-import { useEffect } from "react";
+import {useRouter} from 'next/router';
+import cookie from 'cookie';
 
-export async function getServerSideProps(context){
-    let cookies = context.req.headers.cookie;
-    if(cookies != undefined){
-      let arrCookies = cookies.split(';');
-      let newCookies = arrCookies.map(value => {
-        return value.trim().split('=');
-      });
-      let objCookie = {
-        type: newCookies[0][1],
-        id: newCookies[1][1],
-      };
-
-      if(objCookie.type != "manager"){
-        return {
-          redirect:{
-              destination:`${objCookie.type}/${objCookie.id}`,
-              permanent:false,
-          }
-        }
+export async function getServerSideProps({req, res}){
+  const mycookie = cookie.parse((req && req.headers.cookie) || "");
+  const type = mycookie.type;
+  const id = mycookie.id;
+  if(type != undefined && type != "manager"){
+    return {
+      redirect: {
+        destination: `${type}/${id}`,
+        permanent: false,
       }
-    }
-    return{
-      props:{}
-    }
+    };
   }
-  
-export default function Manager() {
-    useEffect(async () => {
-    },[]);
-    return(
-        <div>manager</div>
-    );
+  if(type == undefined){
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      }
+    };
+  }
+  return{
+    props:{}
+  }
 }
+
+export default function Manager() {
+    //import variables
+    const router = useRouter();
+
+    const LogOut = () => {
+      fetch("/api/logout", {
+        method: "post",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+      router.replace("/");
+    }
+
+    return(
+      <button onClick={LogOut}>Log Out</button>
+    );
+} 

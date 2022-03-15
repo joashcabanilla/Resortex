@@ -103,6 +103,20 @@
   font-weight: 600;
   font-size: 0.8rem;
 }
+.swalText {
+  font-family: "Open Sans", sans-serif;
+  color: #000000;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+.swalButton {
+  font-family: "Open Sans", sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  width: 10rem !important;
+  background: #198754 !important;
+}
+
 @media (min-width: 1024px) {
   .textPopular,
   .textRecommend {

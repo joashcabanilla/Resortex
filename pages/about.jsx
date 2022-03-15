@@ -6,29 +6,24 @@ import css from '../styles/Pages/about.module.css';
 import {BsGift, BsHeart, BsWallet2} from 'react-icons/bs';
 import {useRouter} from 'next/router';
 import { useEffect } from "react";
+import cookie from 'cookie';
 
-export async function getServerSideProps(context){
-    let cookies = context.req.headers.cookie;
-    if(cookies != undefined){
-      let arrCookies = cookies.split(';');
-      let newCookies = arrCookies.map(value => {
-        return value.trim().split('=');
-      });
-      let objCookie = {
-        type: newCookies[0][1],
-        id: newCookies[1][1],
-      };
+export async function getServerSideProps({req, res}){
+    const mycookie = cookie.parse((req && req.headers.cookie) || "");
+    const type = mycookie.type;
+    const id = mycookie.id;
+    if(type != undefined){
       return {
-        redirect:{
-            destination:`${objCookie.type}/${objCookie.id}`,
-            permanent:false,
+        redirect: {
+          destination: `${type}/${id}`,
+          permanent: false,
         }
-      }
+      };
     }
-    return{
-      props:{}
-    }
-  }
+    return {
+      props: {}
+    };
+}
   
 export default function About(){
     //import variables
