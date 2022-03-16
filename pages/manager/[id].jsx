@@ -6,12 +6,22 @@ export async function getServerSideProps({req, res}){
   const type = mycookie.type;
   const id = mycookie.id;
   if(type != undefined && type != "manager"){
-    return {
-      redirect: {
-        destination: `${type}/${id}`,
-        permanent: false,
-      }
-    };
+    if(type == "user"){
+      return {
+        redirect: {
+          destination: `/${type}`,
+          permanent: false,
+        }
+      };
+    }
+    else{
+      return {
+        redirect: {
+          destination: `${type}/${id}`,
+          permanent: false,
+        }
+      };
+    }
   }
   if(type == undefined){
     return {

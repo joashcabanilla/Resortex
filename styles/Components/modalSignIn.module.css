@@ -4,7 +4,31 @@
   border-bottom: 0;
 }
 .modalSignInFooter {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
   border-top: 0;
+  margin-top: -1.5rem;
+}
+.modalSignInFooter p,
+.modalSignInFooter a {
+  padding: 0;
+  font-size: 0.9rem;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 800;
+}
+.modalSignInFooter p:nth-child(2) {
+  color: #198754;
+}
+.modalSignInFooter a {
+  font-weight: 400;
+}
+.modalSignInFooter a:hover {
+  cursor: pointer;
+  font-weight: 800;
 }
 .modalSignInHeader p {
   font-family: "Open Sans", sans-serif;
@@ -19,4 +43,21 @@
 .modalSignInHeader p:nth-child(2) {
   font-size: 0.7rem;
   color: #00000080;
+}
+.signInInput {
+  margin: 1.2rem;
+}
+.signInButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.signInButton button {
+  width: 100%;
+  margin: 1.2rem;
+  margin-top: 0;
+  border-radius: 1rem;
+}
+.modalSignInBody {
+  margin-top: -1.5rem;
 }

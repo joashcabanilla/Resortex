@@ -116,11 +116,6 @@ export default function navbar() {
             }
         });
 
-        validatedUsername = true;
-        validatedPassword = true;
-        type="admin";
-        id="admin";
-
         const setRouterLogin = (type, id) => {
             fetch("/api/login", {
                 method: "post",
@@ -131,7 +126,10 @@ export default function navbar() {
             });
             router.replace(`${type}/${id}`);
         }
-
+        validatedUsername = true;
+        validatedPassword = true;
+        type= "user";
+        id = "asdsadsadsa21321";
         if(validatedUsername && validatedPassword){
             type == "admin" ? setRouterLogin(type, id) : null;
             type == "manager" ? setRouterLogin(type, id) : null;
@@ -191,7 +189,7 @@ export default function navbar() {
 
             <Modal.Body className={css.modalSignInBody}>
                 <Form onSubmit={handleSubmitSignIn}>
-                    <Form.Group controlId='signInUsernameValidation'>
+                    <Form.Group className={css.signInInput}> 
                         <Form.Floating>
                             <Form.Control ref={usernameSignIn} type="text" placeholder="Username" isInvalid={errorSignIn.username.isInvalid} />
                             <Form.Control.Feedback type='invalid' tooltip>{errorSignIn.username.error}</Form.Control.Feedback>
@@ -199,7 +197,7 @@ export default function navbar() {
                         </Form.Floating>
                     </Form.Group>
                     
-                    <Form.Group controlId='signInPasswordValidation'>
+                    <Form.Group className={css.signInInput}>
                         <Form.Floating>
                             <Form.Control ref={passwordSignIn} type={formSignInShowPassword ? "text" : "password"} placeholder="Password" isInvalid={errorSignIn.password.isInvalid} />
                             <Form.Control.Feedback type='invalid' tooltip>{errorSignIn.password.error}</Form.Control.Feedback>
@@ -207,17 +205,21 @@ export default function navbar() {
                         </Form.Floating>
                     </Form.Group>
                     
-                    <Form.Group controlId='signInShowPassword'>
+
+                    <Form.Group className={css.signInInput}>
                         <Form.Check ref={showPasswordSignIn} label="Show Password" onChange={()=>{changeShowpasswordSignIn()}} />
                     </Form.Group>
-
-                    <Button type="submit">Sign In</Button>
+                    <div className={css.signInButton}>
+                        <Button type="submit">Sign In</Button>
+                    </div>
                 </Form> 
             </Modal.Body>
 
             <Modal.Footer className={css.modalSignInFooter}>
-                {/* <Button onClick={() => {setModalSignInShow(false); setModalCustomerShow(true);}}>CREATE ACCOUNT AS CUSTOMER</Button>
-                <Button onClick={() => {setModalSignInShow(false); setModalHotelShow(true);}}>CREATE ACCOUNT AS HOTEL OWNER</Button> */}
+                <p>Not a member yet? </p>
+                <p>Sign Up</p>
+                <a onClick={() => {setModalSignInShow(false); setModalCustomerShow(true);}}>Customer</a>
+                <a onClick={() => {setModalSignInShow(false); setModalHotelShow(true);}}>/ Manager</a>
             </Modal.Footer>
         </Modal>
         );

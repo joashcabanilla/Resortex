@@ -13,18 +13,27 @@ import cookie from 'cookie';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
-
 export async function getServerSideProps({req, res}){
   const mycookie = cookie.parse((req && req.headers.cookie) || "");
   const type = mycookie.type;
   const id = mycookie.id;
   if(type != undefined){
-    return {
-      redirect: {
-        destination: `${type}/${id}`,
-        permanent: false,
-      }
-    };
+    if(type == "user"){
+      return {
+        redirect: {
+          destination: `/${type}`,
+          permanent: false,
+        }
+      };
+    }
+    else{
+      return {
+        redirect: {
+          destination: `${type}/${id}`,
+          permanent: false,
+        }
+      };
+    }
   }
   return {
     props: {}
