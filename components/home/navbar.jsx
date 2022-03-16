@@ -7,6 +7,7 @@ import css from '../../styles/Components/modalSignIn.module.css';
 import { getUser, getHotelManager, getAdminAccount } from '../../redux/reduxSlice/userSlice';
 import { useSelector,useDispatch } from 'react-redux';
 import {useRouter} from 'next/router';
+import {CgProfile} from 'react-icons/cg';
 
 export default function navbar() {
     //import variables
@@ -25,6 +26,7 @@ export default function navbar() {
     const [modalCustomerShow, setModalCustomerShow] = useState(false);
     const [modalHotelShow, setModalHotelShow] = useState(false);
     const [formSignInShowPassword, setFormSignInShowPassword] = useState(false);
+    const [uploadProfile, setUploadProfile] = useState("");
     const [errorSignIn,setErrorSignIn] = useState({
         username:{
             isInvalid: false,
@@ -35,11 +37,33 @@ export default function navbar() {
             error: "",
         }
     });
+    const [errorCustomer,setErrorCustomer] = useState({
+        firstname:{
+            isValid: false,
+            isInvalid: false,
+            error:"",
+        },
+        middlename:{
+            isValid: false,
+            isInvalid: false,
+            error: "",
+        },
+        lastname:{
+            isValid: false,
+            isInvalid: false,
+            error: "",
+        }
+    });
+
 
     //react Hooks useRef
     const usernameSignIn = useRef();
     const passwordSignIn = useRef();
     const showPasswordSignIn = useRef();
+    const firstnameCustomer = useRef();
+    const middlenameCustomer = useRef();
+    const lastnameCustomer = useRef();
+    const profilePicCustomer = useRef();
 
     //react Hooks use effect
     useEffect(() => {
@@ -72,7 +96,25 @@ export default function navbar() {
         showPasswordSignIn.current.checked ? setFormSignInShowPassword(true) : setFormSignInShowPassword(false);
     }
 
+    const setImgProfile = () => {
+       return uploadProfile != "" ? (
+            <div className={css.profileIcon}>
+                <img src={uploadProfile} alt="profile picture"/>
+            </div>
+        ) : (
+        <div className={css.profileIcon}>
+            <CgProfile />
+        </div>
+       ); 
+    }
+
     //event handlers functions
+    const changeProfilePic = () => {
+        let profilepic = profilePicCustomer.current.value;
+        let srcProfile = profilepic != "" ? URL.createObjectURL(profilePicCustomer.current.files[0]) : "";  
+        srcProfile != "" ? setUploadProfile(srcProfile) : setUploadProfile("");
+    }
+
     //sign in form submit
     const handleSubmitSignIn = (e) => {
         e.preventDefault();
@@ -124,12 +166,9 @@ export default function navbar() {
                 },
                 body: JSON.stringify({type: type, id: id}),
             });
-            router.replace(`${type}/${id}`);
+            type == "user" ? router.replace(`/${type}`) : router.replace(`${type}/${id}`);
         }
-        validatedUsername = true;
-        validatedPassword = true;
-        type= "user";
-        id = "asdsadsadsa21321";
+        
         if(validatedUsername && validatedPassword){
             type == "admin" ? setRouterLogin(type, id) : null;
             type == "manager" ? setRouterLogin(type, id) : null;
@@ -145,20 +184,69 @@ export default function navbar() {
         }
         
     }
-    
+
+    //customer form submit
+    const handleSubmitCustomer = (e) => {
+        e.preventDefault();
+    }
+
     //components
     const customerModal = () => {
         return (
             <Modal show={modalCustomerShow} onHide={()=> setModalCustomerShow(false)} animation={true}  centered>
-                <Modal.Header closeButton className={css.modalCustomerHeader}>
-                    <p>CUSTOMER</p>
+                <Modal.Header closeButton className={css.modalSignInHeader}>
+                    <div>
+                        <p>Join For Free</p>
+                        <p>Access thousand of online Resorts</p>
+                    </div>
                 </Modal.Header>
     
-                <Modal.Body>
+                <Modal.Body className={css.modalCustomerBody}>
+                    <Form onSubmit={handleSubmitCustomer}>
+                        <Form.Group className={css.customerInput}>
+                            <div className={css.CustomerConProfile}>
+                                {setImgProfile()}
+                                <Form.Label>UPLOAD PROFILE PICTURE</Form.Label>
+                                <Form.Control type="file" size="sm" ref={profilePicCustomer} onChange={()=>{changeProfilePic()}}/>
+                            </div>
+                        </Form.Group>
+
+                        <Form.Group className={css.customerInput}>
+                            <Form.Control type="text" disabled value={`Account ID:`} readOnly />
+                        </Form.Group>
+
+                        <Form.Group className={css.customerInput}>
+                            <Form.Floating>
+                                <Form.Control ref={firstnameCustomer} type="text" placeholder='First Name' isInvalid={errorCustomer.firstname.isInvalid} isValid={errorCustomer.firstname.isValid} />
+                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.firstname.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="valid" tooltip>{errorCustomer.firstname.error}</Form.Control.Feedback>
+                                <Form.Label>First Name</Form.Label>
+                            </Form.Floating>
+                        </Form.Group>
+
+                        <Form.Group className={css.customerInput}>
+                            <Form.Floating>
+                                <Form.Control ref={middlenameCustomer} type="text" placeholder='Middle Name' isInvalid={errorCustomer.middlename.isInvalid} isValid={errorCustomer.middlename.isValid} />
+                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.middlename.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="valid" tooltip>{errorCustomer.middlename.error}</Form.Control.Feedback>
+                                <Form.Label>Middle Name</Form.Label>
+                            </Form.Floating>
+                        </Form.Group>
+
+                        <Form.Group className={css.customerInput}>
+                            <Form.Floating>
+                                <Form.Control ref={lastnameCustomer} type="text" placeholder='Last Name' isInvalid={errorCustomer.lastname.isInvalid} isValid={errorCustomer.lastname.isValid} />
+                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.lastname.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="valid" tooltip>{errorCustomer.lastname.error}</Form.Control.Feedback>
+                                <Form.Label>Last Name</Form.Label>
+                            </Form.Floating>
+                        </Form.Group>
+
+                        <div className={css.customerButton}>
+                            <Button type="submit">SIGN UP</Button>
+                        </div>
+                    </Form>
                 </Modal.Body>
-    
-                <Modal.Footer className={css.modalCustomerFooter}>
-                </Modal.Footer>
             </Modal>
             );
     }

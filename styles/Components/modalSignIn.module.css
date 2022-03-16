@@ -16,7 +16,7 @@
 .modalSignInFooter p,
 .modalSignInFooter a {
   padding: 0;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-family: "Open Sans", sans-serif;
   font-weight: 800;
 }
@@ -61,3 +61,5 @@
 .modalSignInBody {
   margin-top: -1.5rem;
 }
+
+
