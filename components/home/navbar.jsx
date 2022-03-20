@@ -7,7 +7,6 @@ import css from '../../styles/Components/modalSignIn.module.css';
 import { getUser, getHotelManager, getAdminAccount } from '../../redux/reduxSlice/userSlice';
 import { useSelector,useDispatch } from 'react-redux';
 import {useRouter} from 'next/router';
-import {CgProfile} from 'react-icons/cg';
 
 export default function navbar() {
     //import variables
@@ -52,6 +51,51 @@ export default function navbar() {
             isValid: false,
             isInvalid: false,
             error: "",
+        },
+        address:{
+            isValid: false,
+            isInvalid: false,
+            error: "",
+        },
+        phone:{
+            isValid: false,
+            isInvalid: false,
+            error: "",
+        },
+        telephone:{
+            isValid: false,
+            isInvalid: false,
+            error: "",
+        },
+        birthdate:{
+            isValid: false,
+            isInvalid: false,
+            error: "",
+        },
+        gender:{
+            isValid: false,
+            isInvalid: false,
+            error: "",
+        },
+        nationality:{
+            isValid: false,
+            isInvalid: false,
+            error: "",
+        },
+        username:{
+            isValid: false,
+            isInvalid: false,
+            error: "",
+        },
+        password:{
+            isValid: false,
+            isInvalid: false,
+            error: "",
+        },
+        confirmpassword:{
+            isValid: false,
+            isInvalid: false,
+            error: "",
         }
     });
 
@@ -64,6 +108,16 @@ export default function navbar() {
     const middlenameCustomer = useRef();
     const lastnameCustomer = useRef();
     const profilePicCustomer = useRef();
+    const addressCustomer = useRef();
+    const phoneCustomer = useRef();
+    const telephoneCustomer = useRef();
+    const birthdateCustomer = useRef();
+    const genderCustomer = useRef();
+    const nationalityCustomer = useRef();
+    const usernameCustomer = useRef();
+    const passwordCustomer = useRef();
+    const confirmpasswordCustomer = useRef();
+
 
     //react Hooks use effect
     useEffect(() => {
@@ -92,6 +146,11 @@ export default function navbar() {
         updateStateSignIn("",false,"password");
     }
 
+    const hidemodalCustomer = () => {
+        setModalCustomerShow(false);
+        setUploadProfile("");
+    }
+
     const changeShowpasswordSignIn = () => {
         showPasswordSignIn.current.checked ? setFormSignInShowPassword(true) : setFormSignInShowPassword(false);
     }
@@ -99,11 +158,11 @@ export default function navbar() {
     const setImgProfile = () => {
        return uploadProfile != "" ? (
             <div className={css.profileIcon}>
-                <img src={uploadProfile} alt="profile picture"/>
+                <img src={uploadProfile} alt="profile picture" />
             </div>
         ) : (
         <div className={css.profileIcon}>
-            <CgProfile />
+            <img src='/image/profile-icon-9.png' alt="profile picture" />
         </div>
        ); 
     }
@@ -193,7 +252,7 @@ export default function navbar() {
     //components
     const customerModal = () => {
         return (
-            <Modal show={modalCustomerShow} onHide={()=> setModalCustomerShow(false)} animation={true}  centered>
+            <Modal className={css.customerModal} show={modalCustomerShow} onHide={()=> {hidemodalCustomer()}} animation={true}  centered>
                 <Modal.Header closeButton className={css.modalSignInHeader}>
                     <div>
                         <p>Join For Free</p>
@@ -202,21 +261,19 @@ export default function navbar() {
                 </Modal.Header>
     
                 <Modal.Body className={css.modalCustomerBody}>
+                    {setImgProfile()}
                     <Form onSubmit={handleSubmitCustomer}>
-                        <Form.Group className={css.customerInput}>
-                            <div className={css.CustomerConProfile}>
-                                {setImgProfile()}
-                                <Form.Label>UPLOAD PROFILE PICTURE</Form.Label>
-                                <Form.Control type="file" size="sm" ref={profilePicCustomer} onChange={()=>{changeProfilePic()}}/>
-                            </div>
+                        <Form.Group className={`${css.customerInput} ${css.conProfileCustomer}`}>
+                            <Form.Label>PROFILE PICTURE</Form.Label>
+                            <Form.Control type="file" ref={profilePicCustomer} onChange={()=>{changeProfilePic()}}/>
+                        </Form.Group>
+
+                        <Form.Group className={`${css.customerInput} ${css.conAccountIDCustomer}`}>
+                            <Form.Control type="text" disabled value={`Account ID: `} readOnly />
                         </Form.Group>
 
                         <Form.Group className={css.customerInput}>
-                            <Form.Control type="text" disabled value={`Account ID:`} readOnly />
-                        </Form.Group>
-
-                        <Form.Group className={css.customerInput}>
-                            <Form.Floating>
+                            <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={firstnameCustomer} type="text" placeholder='First Name' isInvalid={errorCustomer.firstname.isInvalid} isValid={errorCustomer.firstname.isValid} />
                                 <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.firstname.error}</Form.Control.Feedback>
                                 <Form.Control.Feedback type="valid" tooltip>{errorCustomer.firstname.error}</Form.Control.Feedback>
@@ -225,7 +282,7 @@ export default function navbar() {
                         </Form.Group>
 
                         <Form.Group className={css.customerInput}>
-                            <Form.Floating>
+                            <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={middlenameCustomer} type="text" placeholder='Middle Name' isInvalid={errorCustomer.middlename.isInvalid} isValid={errorCustomer.middlename.isValid} />
                                 <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.middlename.error}</Form.Control.Feedback>
                                 <Form.Control.Feedback type="valid" tooltip>{errorCustomer.middlename.error}</Form.Control.Feedback>
@@ -234,7 +291,7 @@ export default function navbar() {
                         </Form.Group>
 
                         <Form.Group className={css.customerInput}>
-                            <Form.Floating>
+                            <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={lastnameCustomer} type="text" placeholder='Last Name' isInvalid={errorCustomer.lastname.isInvalid} isValid={errorCustomer.lastname.isValid} />
                                 <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.lastname.error}</Form.Control.Feedback>
                                 <Form.Control.Feedback type="valid" tooltip>{errorCustomer.lastname.error}</Form.Control.Feedback>
@@ -242,8 +299,87 @@ export default function navbar() {
                             </Form.Floating>
                         </Form.Group>
 
+                        <Form.Group className={css.customerInput}>
+                            <Form.Floating className={css.customerFloating}>
+                                <Form.Control ref={addressCustomer} type="text" placeholder='Address' isInvalid={errorCustomer.address.isInvalid} isValid={errorCustomer.address.isValid} />
+                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.address.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="valid" tooltip>{errorCustomer.address.error}</Form.Control.Feedback>
+                                <Form.Label>Address</Form.Label>
+                            </Form.Floating>
+                        </Form.Group>
+
+                        <Form.Group className={`${css.customerInput} ${css.conPhoneCustomer}`}>
+                            <Form.Label>+63</Form.Label>
+                            <Form.Floating className={css.customerFloating}>
+                                <Form.Control ref={phoneCustomer} type="number" placeholder='Phone Number' isInvalid={errorCustomer.phone.isInvalid} isValid={errorCustomer.phone.isValid} />
+                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.phone.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="valid" tooltip>{errorCustomer.phone.error}</Form.Control.Feedback>
+                                <Form.Label>Phone Number</Form.Label>
+                            </Form.Floating>
+                        </Form.Group>
+
+                        <Form.Group className={css.customerInput}>
+                            <Form.Floating className={css.customerFloating}>
+                                <Form.Control ref={telephoneCustomer} type="number" placeholder='Telephone Number' isInvalid={errorCustomer.telephone.isInvalid} isValid={errorCustomer.telephone.isValid} />
+                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.telephone.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="valid" tooltip>{errorCustomer.telephone.error}</Form.Control.Feedback>
+                                <Form.Label>Telephone Number</Form.Label>
+                            </Form.Floating>
+                        </Form.Group>
+
+                        <Form.Group className={`${css.customerInput} ${css.conBirthdateCustomer}`}>
+                                <Form.Label>Birth Date</Form.Label>
+                                <Form.Control ref={birthdateCustomer} type="date" placeholder='Birth Date' isInvalid={errorCustomer.birthdate.isInvalid} isValid={errorCustomer.birthdate.isValid} />
+                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.birthdate.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="valid" tooltip>{errorCustomer.birthdate.error}</Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className={`${css.customerInput} ${css.genderCustomer}`}>
+                            <Form.Label>Gender</Form.Label>
+                            <Form.Select ref={genderCustomer} className={css.genderCustomer}>
+                                <option value="MALE">MALE</option>
+                                <option value="FEMALE">FEMALE</option>
+                            </Form.Select>
+                        </Form.Group>
+
+                        <Form.Group className={css.customerInput}>
+                            <Form.Floating className={css.customerFloating}>
+                                <Form.Control ref={nationalityCustomer} type="text" placeholder='Nationality' isInvalid={errorCustomer.nationality.isInvalid} isValid={errorCustomer.nationality.isValid} />
+                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.nationality.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="valid" tooltip>{errorCustomer.nationality.error}</Form.Control.Feedback>
+                                <Form.Label>Nationality</Form.Label>
+                            </Form.Floating>
+                        </Form.Group>
+
+                        <Form.Group className={css.customerInput}>
+                            <Form.Floating className={css.customerFloating}>
+                                <Form.Control ref={usernameCustomer} type="text" placeholder='Username' isInvalid={errorCustomer.username.isInvalid} isValid={errorCustomer.username.isValid} />
+                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.username.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="valid" tooltip>{errorCustomer.username.error}</Form.Control.Feedback>
+                                <Form.Label>Username</Form.Label>
+                            </Form.Floating>
+                        </Form.Group>
+
+                        <Form.Group className={css.customerInput}>
+                            <Form.Floating className={css.customerFloating}>
+                                <Form.Control ref={passwordCustomer} type="password" placeholder='Password' isInvalid={errorCustomer.password.isInvalid} isValid={errorCustomer.password.isValid} />
+                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.password.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="valid" tooltip>{errorCustomer.password.error}</Form.Control.Feedback>
+                                <Form.Label>Password</Form.Label>
+                            </Form.Floating>
+                        </Form.Group>
+                        
+                        <Form.Group className={css.customerInput}>
+                            <Form.Floating className={css.customerFloating}>
+                                <Form.Control ref={confirmpasswordCustomer} type="password" placeholder='Password' isInvalid={errorCustomer.confirmpassword.isInvalid} isValid={errorCustomer.confirmpassword.isValid} />
+                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.confirmpassword.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="valid" tooltip>{errorCustomer.confirmpassword.error}</Form.Control.Feedback>
+                                <Form.Label>Confirm Password</Form.Label>
+                            </Form.Floating>
+                        </Form.Group>
+
                         <div className={css.customerButton}>
-                            <Button type="submit">SIGN UP</Button>
+                            <Button type="submit">Sign Up</Button>
                         </div>
                     </Form>
                 </Modal.Body>

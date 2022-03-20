@@ -52,14 +52,106 @@
   justify-content: center;
   align-items: center;
 }
-.signInButton button {
+.signInButton button,
+.customerButton button {
   width: 100%;
   margin: 1.2rem;
   margin-top: 0;
   border-radius: 1rem;
 }
+.customerButton button {
+  margin: 0;
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+}
 .modalSignInBody {
   margin-top: -1.5rem;
 }
-
-
+.modalCustomerBody {
+  margin-top: -1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.profileIcon {
+  width: 8rem;
+  height: 8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%);
+  border-radius: 1rem;
+}
+.profileIcon img {
+  width: 85%;
+  height: 85%;
+}
+.customerInput {
+  padding: 0.3rem;
+}
+.customerInput label {
+  font-size: 0.8rem;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 600;
+  margin: 0;
+}
+.conProfileCustomer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  margin-top: 1rem;
+}
+.conProfileCustomer label {
+  width: 60%;
+}
+.customerInput input,
+.customerInput select {
+  font-size: 0.8rem;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 400;
+  margin: 0;
+}
+.conPhoneCustomer,
+.conBirthdateCustomer,
+.genderCustomer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+}
+.conPhoneCustomer label:nth-child(1) {
+  border: 1px solid #ced4da;
+  border-width: 1px 0px 1px 1px;
+  border-radius: 0.25rem;
+  color: #00000099;
+  height: 58px;
+  padding-top: 1rem;
+  padding-left: 0.5rem;
+  margin-right: -0.5rem;
+  width: 3rem;
+}
+.conPhoneCustomer .customerFloating {
+  width: 100%;
+}
+.conPhoneCustomer .customerFloating input {
+  border-width: 1px 1px 1px 0px;
+}
+.conBirthdateCustomer label,
+.genderCustomer label {
+  width: 30%;
+}
+.customerModal {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+.conAccountIDCustomer input {
+  font-weight: 600;
+}
