@@ -26,6 +26,7 @@ export default function navbar() {
     const [modalHotelShow, setModalHotelShow] = useState(false);
     const [formSignInShowPassword, setFormSignInShowPassword] = useState(false);
     const [uploadProfile, setUploadProfile] = useState("");
+    const [customerAccountID, setCustomerAccountID] = useState("");
     const [errorSignIn,setErrorSignIn] = useState({
         username:{
             isInvalid: false,
@@ -167,6 +168,16 @@ export default function navbar() {
        ); 
     }
 
+    const customerCreateAccount = () => {
+        setModalSignInShow(false); 
+        setModalCustomerShow(true);
+        setCustomerAccountID("ACCOUNT ID: ");
+    }
+    
+    const managerCreateAccount = () => {
+        setModalSignInShow(false); 
+        setModalHotelShow(true);
+    }
     //event handlers functions
     const changeProfilePic = () => {
         let profilepic = profilePicCustomer.current.value;
@@ -269,7 +280,7 @@ export default function navbar() {
                         </Form.Group>
 
                         <Form.Group className={`${css.customerInput} ${css.conAccountIDCustomer}`}>
-                            <Form.Control type="text" disabled value={`Account ID: `} readOnly />
+                            <Form.Control type="text" disabled value={customerAccountID} readOnly />
                         </Form.Group>
 
                         <Form.Group className={css.customerInput}>
@@ -442,8 +453,8 @@ export default function navbar() {
             <Modal.Footer className={css.modalSignInFooter}>
                 <p>Not a member yet? </p>
                 <p>Sign Up</p>
-                <a onClick={() => {setModalSignInShow(false); setModalCustomerShow(true);}}>Customer</a>
-                <a onClick={() => {setModalSignInShow(false); setModalHotelShow(true);}}>/ Manager</a>
+                <a onClick={() => {customerCreateAccount()}}>Customer</a>
+                <a onClick={() => {managerCreateAccount()}}>/ Manager</a>
             </Modal.Footer>
         </Modal>
         );
