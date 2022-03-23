@@ -123,7 +123,7 @@ export default function navbar() {
     //react Hooks use effect
     useEffect(() => {
         window.addEventListener('scroll', onScroll);
-        // dispatch(getUser());
+        dispatch(getUser());
         // dispatch(getHotelManager());
         // dispatch(getAdminAccount());
     }, []);
@@ -169,9 +169,18 @@ export default function navbar() {
     }
 
     const customerCreateAccount = () => {
+        let date = new Date();
+        let month = date.getMonth()+1 < 10 ?  `0${date.getMonth()+1}` : date.getMonth()+1;
+        let day = date.getDate() < 10 ?  `0${date.getDate()}` : date.getDate();
+        let accountDate = `HRS-${date.getFullYear()}-${month}-${day}`;
+        let id = 0;
+        Object.values(stateUser).forEach(value => {
+            let dataId = value['ACCOUNT-ID NUMBER'];
+            id = parseInt(dataId.split("-")[4]) + 1;
+        });
         setModalSignInShow(false); 
         setModalCustomerShow(true);
-        setCustomerAccountID("ACCOUNT ID: ");
+        setCustomerAccountID(`${accountDate}-${'0000'.substr( String(id).length ) + id}`);
     }
     
     const managerCreateAccount = () => {
@@ -217,7 +226,6 @@ export default function navbar() {
             let id = value['ACCOUNT-ID NUMBER'];
             signInAcct.push({username: datausername, password: datapassword, type: "user", id: id});
         });
-
         
         signInAcct.forEach((value) => {
             if(value.username == username) validatedUsername = true;    
@@ -280,7 +288,7 @@ export default function navbar() {
                         </Form.Group>
 
                         <Form.Group className={`${css.customerInput} ${css.conAccountIDCustomer}`}>
-                            <Form.Control type="text" disabled value={customerAccountID} readOnly />
+                            <Form.Control type="text" disabled value={`ACCOUNT ID:  ${customerAccountID}`} readOnly />
                         </Form.Group>
 
                         <Form.Group className={css.customerInput}>

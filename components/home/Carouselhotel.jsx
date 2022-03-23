@@ -3,13 +3,11 @@ import Slider from "react-slick";
 import {FaArrowRight, FaArrowLeft,FaStar} from 'react-icons/fa';
 import { useState } from 'react';
 import {Button} from 'react-bootstrap';
-import {useRouter} from 'next/router';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 export default function Carouselhotel({hotel}) {
     //import variable
-    const router = useRouter();
     const mySwal = withReactContent(Swal);
 
     //state management
