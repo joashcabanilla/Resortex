@@ -33,19 +33,6 @@ export const getHotelManager = createAsyncThunk('manager/getData', async () => {
     return data;
 });
 
-//get admin account
-export const getAdminAccount = createAsyncThunk('admin/getData', async () => {
-    const databasePath = 'ADMIN/ACCOUNT';
-    let data = {};
-    await get(child(hotelRef, databasePath))
-        .then((snapshot) => {
-            snapshot.exists() ? data = { ...snapshot.val() } : null;
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-    return data;
-});
 
 const initialState = {
     userList: {},
@@ -85,20 +72,6 @@ export const usersSlice = createSlice({
         },
 
         [getHotelManager.rejected]: (state) => {
-            state.status = 'failed';
-        },
-
-        //get admin account
-        [getAdminAccount.pending]: (state) => {
-            state.status = 'Loading';
-        },
-
-        [getAdminAccount.fulfilled]: (state, { payload }) => {
-            state.status = 'success';
-            state.adminList = payload;
-        },
-
-        [getAdminAccount.rejected]: (state) => {
             state.status = 'failed';
         },
     }

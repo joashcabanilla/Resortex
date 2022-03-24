@@ -4,7 +4,7 @@ import Link from 'next/link';
 import cssNavbar from '../../styles/Components/Navbar.module.css';
 import { useState, useEffect, useRef } from 'react';
 import css from '../../styles/Components/modalSignIn.module.css';
-import { getUser, getHotelManager, getAdminAccount } from '../../redux/reduxSlice/userSlice';
+import { getUser, getHotelManager} from '../../redux/reduxSlice/userSlice';
 import { useSelector,useDispatch } from 'react-redux';
 import {useRouter} from 'next/router';
 
@@ -123,9 +123,8 @@ export default function navbar() {
     //react Hooks use effect
     useEffect(() => {
         window.addEventListener('scroll', onScroll);
-        dispatch(getUser());
+        // dispatch(getUser());
         // dispatch(getHotelManager());
-        // dispatch(getAdminAccount());
     }, []);
 
     const onScroll = () => {
@@ -205,14 +204,6 @@ export default function navbar() {
         let validatedPassword = false;
         let signInAcct = [];
         
-        Object.values(stateAdminAccount).forEach(value => {
-            let datausername = value['USERNAME'];
-            let datapassword = value['PASSWORD'];
-            let id = value['ID'];
-            signInAcct.push({username: datausername, password: datapassword, type: "admin", id: id});
-        });
-
-        
         Object.values(stateHotelManagerAcct).forEach(value => {
             let datausername = value['USERNAME'];
             let datapassword = value['PASSWORD'];
@@ -246,9 +237,8 @@ export default function navbar() {
             });
             type == "user" ? router.replace(`/${type}`) : router.replace(`${type}/${id}`);
         }
-        
+         
         if(validatedUsername && validatedPassword){
-            type == "admin" ? setRouterLogin(type, id) : null;
             type == "manager" ? setRouterLogin(type, id) : null;
             type == "user" ? setRouterLogin(type, id) : null;
             updateStateSignIn("",false,"username"); 
