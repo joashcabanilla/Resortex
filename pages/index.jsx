@@ -64,7 +64,7 @@ export default function Home() {
   const btnSearch = () => {
     mySwal.fire({
       icon: 'error',
-      title: <p className={cssHome.swalText}>PLEASE SIGN IN TO CONTINUE...</p>,
+      title: <p className={cssHome.swalText}>PLEASE DOWNLOAD THE APP TO CONTINUE...</p>,
       customClass:{
         confirmButton: `${cssHome.swalButton}`,
       }

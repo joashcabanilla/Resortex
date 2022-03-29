@@ -4,7 +4,7 @@ import Link from 'next/link';
 import cssNavbar from '../../styles/Components/Navbar.module.css';
 import { useState, useEffect, useRef } from 'react';
 import css from '../../styles/Components/modalSignIn.module.css';
-import { getUser, getHotelManager} from '../../redux/reduxSlice/userSlice';
+import {getUser,getHotelManager} from '../../redux/reduxSlice/userSlice';
 import { useSelector,useDispatch } from 'react-redux';
 import {useRouter} from 'next/router';
 
@@ -14,9 +14,8 @@ export default function navbar() {
     const router = useRouter();
 
     //reducer state
-    const stateUser = useSelector(state => state.storeUsers.userList);
     const stateHotelManagerAcct = useSelector(state => state.storeUsers.hotelManagerAcct);
-    const stateAdminAccount = useSelector(state => state.storeUsers.adminList);
+    const stateUser = useSelector(state => state.storeUsers.userList);
 
     //state declaration
     const [navbar, setNavbar] = useState(false);
@@ -99,7 +98,6 @@ export default function navbar() {
             error: "",
         }
     });
-
 
     //react Hooks useRef
     const usernameSignIn = useRef();
@@ -211,13 +209,6 @@ export default function navbar() {
             signInAcct.push({username: datausername, password: datapassword, type: "manager", id: id});
         });
 
-        Object.values(stateUser).forEach(value => {
-            let datausername = value['ACCOUNT-USERNAME'];
-            let datapassword = value['ACCOUNT-PASSWORD'];
-            let id = value['ACCOUNT-ID NUMBER'];
-            signInAcct.push({username: datausername, password: datapassword, type: "user", id: id});
-        });
-        
         signInAcct.forEach((value) => {
             if(value.username == username) validatedUsername = true;    
             if(value.password == password) validatedPassword = true;
@@ -235,12 +226,11 @@ export default function navbar() {
                 },
                 body: JSON.stringify({type: type, id: id}),
             });
-            type == "user" ? router.replace(`/${type}`) : router.replace(`${type}/${id}`);
+            router.replace(`${type}/${id}`);
         }
          
         if(validatedUsername && validatedPassword){
             type == "manager" ? setRouterLogin(type, id) : null;
-            type == "user" ? setRouterLogin(type, id) : null;
             updateStateSignIn("",false,"username"); 
             updateStateSignIn("",false,"password");
         }
@@ -253,9 +243,18 @@ export default function navbar() {
         
     }
 
+    //sign in form username and password onchage
+    const signInchangeInput = (input) => {
+        
+        input == "username" ? updateStateSignIn("",false,"username") : updateStateSignIn("",false,"password");
+    }
+
+
     //customer form submit
     const handleSubmitCustomer = (e) => {
         e.preventDefault();
+        let firstname = firstnameCustomer.current.value;
+        console.log(firstname);
     }
 
     //components
@@ -281,7 +280,7 @@ export default function navbar() {
                             <Form.Control type="text" disabled value={`ACCOUNT ID:  ${customerAccountID}`} readOnly />
                         </Form.Group>
 
-                        <Form.Group className={css.customerInput}>
+                        <Form.Group className={`${css.customerInput} ${css.name}`}>
                             <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={firstnameCustomer} type="text" placeholder='First Name' isInvalid={errorCustomer.firstname.isInvalid} isValid={errorCustomer.firstname.isValid} />
                                 <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.firstname.error}</Form.Control.Feedback>
@@ -290,7 +289,7 @@ export default function navbar() {
                             </Form.Floating>
                         </Form.Group>
 
-                        <Form.Group className={css.customerInput}>
+                        <Form.Group className={`${css.customerInput} ${css.name}`}>
                             <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={middlenameCustomer} type="text" placeholder='Middle Name' isInvalid={errorCustomer.middlename.isInvalid} isValid={errorCustomer.middlename.isValid} />
                                 <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.middlename.error}</Form.Control.Feedback>
@@ -299,7 +298,7 @@ export default function navbar() {
                             </Form.Floating>
                         </Form.Group>
 
-                        <Form.Group className={css.customerInput}>
+                        <Form.Group className={`${css.customerInput} ${css.name}`}>
                             <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={lastnameCustomer} type="text" placeholder='Last Name' isInvalid={errorCustomer.lastname.isInvalid} isValid={errorCustomer.lastname.isValid} />
                                 <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.lastname.error}</Form.Control.Feedback>
@@ -308,7 +307,7 @@ export default function navbar() {
                             </Form.Floating>
                         </Form.Group>
 
-                        <Form.Group className={css.customerInput}>
+                        <Form.Group className={`${css.customerInput} ${css.address}`}>
                             <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={addressCustomer} type="text" placeholder='Address' isInvalid={errorCustomer.address.isInvalid} isValid={errorCustomer.address.isValid} />
                                 <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.address.error}</Form.Control.Feedback>
@@ -424,7 +423,7 @@ export default function navbar() {
                 <Form onSubmit={handleSubmitSignIn}>
                     <Form.Group className={css.signInInput}> 
                         <Form.Floating>
-                            <Form.Control ref={usernameSignIn} type="text" placeholder="Username" isInvalid={errorSignIn.username.isInvalid} />
+                            <Form.Control ref={usernameSignIn} type="text" placeholder="Username" isInvalid={errorSignIn.username.isInvalid} onChange={() => {signInchangeInput("username")}} />
                             <Form.Control.Feedback type='invalid' tooltip>{errorSignIn.username.error}</Form.Control.Feedback>
                             <Form.Label>Username</Form.Label>
                         </Form.Floating>
@@ -432,7 +431,7 @@ export default function navbar() {
                     
                     <Form.Group className={css.signInInput}>
                         <Form.Floating>
-                            <Form.Control ref={passwordSignIn} type={formSignInShowPassword ? "text" : "password"} placeholder="Password" isInvalid={errorSignIn.password.isInvalid} />
+                            <Form.Control ref={passwordSignIn} type={formSignInShowPassword ? "text" : "password"} placeholder="Password" isInvalid={errorSignIn.password.isInvalid} onChange={() => {signInchangeInput("password")}} />
                             <Form.Control.Feedback type='invalid' tooltip>{errorSignIn.password.error}</Form.Control.Feedback>
                             <Form.Label>Password</Form.Label>
                         </Form.Floating>

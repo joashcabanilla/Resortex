@@ -37,7 +37,7 @@ export default function Carouselhotel({hotel}) {
     const clickBookNow = () => {
         mySwal.fire({
             icon: 'error',
-            title: <p className={css.swalText}>PLEASE SIGN IN TO CONTINUE...</p>,
+            title: <p className={css.swalText}>PLEASE DOWNLOAD THE APP TO CONTINUE...</p>,
             customClass:{
               confirmButton: `${css.swalButton}`,
             }

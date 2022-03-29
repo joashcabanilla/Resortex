@@ -116,6 +116,10 @@
   font-weight: 400;
   margin: 0;
 }
+.customerInput.name input,
+.customerInput.address input {
+  text-transform: capitalize;
+}
 .conPhoneCustomer,
 .conBirthdateCustomer,
 .genderCustomer {
