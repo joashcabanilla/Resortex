@@ -245,7 +245,6 @@ export default function navbar() {
 
     //sign in form username and password onchage
     const signInchangeInput = (input) => {
-        
         input == "username" ? updateStateSignIn("",false,"username") : updateStateSignIn("",false,"password");
     }
 
@@ -254,7 +253,29 @@ export default function navbar() {
     const handleSubmitCustomer = (e) => {
         e.preventDefault();
         let firstname = firstnameCustomer.current.value;
+        let middlename = middlenameCustomer.current.value;
+        let lastname = lastnameCustomer.current.value;
+        let phonenumber = phoneCustomer.current.value;
+        let telephonenumber = telephoneCustomer.current.value;
+        let birthdate = birthdateCustomer.current.value;
+        let gender = genderCustomer.current.value;
+        let nationality = nationalityCustomer.current.value;
+        let username = usernameCustomer.current.value;
+        let password = passwordCustomer.current.value;
+        let confirmpassword = confirmpasswordCustomer.current.value;
+        let profilepic = uploadProfile;
         console.log(firstname);
+        console.log(middlename);
+        console.log(lastname);
+        console.log(phonenumber);
+        console.log(telephonenumber);
+        console.log(birthdate);
+        console.log(gender);
+        console.log(nationality);
+        console.log(username);
+        console.log(password);
+        console.log(confirmpassword);
+        console.log(profilepic);    
     }
 
     //components
