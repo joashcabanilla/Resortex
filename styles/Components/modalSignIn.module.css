@@ -117,7 +117,8 @@
   margin: 0;
 }
 .customerInput.name input,
-.customerInput.address input {
+.customerInput.address input,
+.customerInput.nationality input {
   text-transform: capitalize;
 }
 .conPhoneCustomer,
