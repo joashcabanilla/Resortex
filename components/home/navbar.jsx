@@ -7,7 +7,6 @@ import css from '../../styles/Components/modalSignIn.module.css';
 import {getUser,getHotelManager} from '../../redux/reduxSlice/userSlice';
 import { useSelector,useDispatch } from 'react-redux';
 import {useRouter} from 'next/router';
-import cssError from  '../../styles/Components/modalError.module.css';
 
 export default function navbar() {
     //import variables
@@ -327,6 +326,12 @@ export default function navbar() {
             }}));
     }
 
+    //onkeydown customer phonenumber and telephone
+    const keyDownNumber = (e) => {
+        e.key == "ArrowUp" && e.preventDefault() || e.key == "ArrowDown" && e.preventDefault();
+        e.key == "-"  && e.preventDefault() || e.key == "e"  && e.preventDefault() || e.key == "."  && e.preventDefault();
+    }
+
     //customer form control onchage
     const customerchangeInput = (input) => {
         switch(input){
@@ -385,8 +390,22 @@ export default function navbar() {
            return words.map(word => word[0].toUpperCase() + word.substring(1)).join(" ");
         }
 
-        if(profilepic == "") updateStateCustomer("UPLOAD PROFILE PICTURE",true,false,"profilepic");
-
+        if(profilepic == ""){
+            updateStateCustomer("UPLOAD PROFILE PICTURE",true,false,"profilepic");
+            profilePicCustomer.current.focus();
+        }
+        else if(firstname == ""){
+            updateStateCustomer("ENTER YOUR FIRSTNAME",true,false,"firstname");
+            firstnameCustomer.current.focus();
+        }
+        else if(middlename == ""){
+            updateStateCustomer("ENTER YOUR MIDDLENAME",true,false,"middlename");
+            middlenameCustomer.current.focus();
+        }
+        else if(lastname == ""){
+            updateStateCustomer("ENTER YOUR LASTNAME",true,false,"lastname");
+            lastnameCustomer.current.focus();
+        }
     }
 
     //components
@@ -407,7 +426,7 @@ export default function navbar() {
                             <Form.Label>PROFILE PICTURE</Form.Label>
                             <div>
                                 <Form.Control type="file" ref={profilePicCustomer} onChange={()=>{customerchangeInput("profilepic")}} isInvalid={errorCustomer.profilepic.isInvalid} isValid={errorCustomer.profilepic.isValid} />
-                                <Form.Control.Feedback className={cssError.errorProfile} type="invalid" tooltip>{errorCustomer.profilepic.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.profilepic.error}</Form.Control.Feedback>
                             </div>
                         </Form.Group>
 
@@ -418,7 +437,7 @@ export default function navbar() {
                         <Form.Group className={`${css.customerInput} ${css.name}`}>
                             <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={firstnameCustomer} type="text" placeholder='First Name' isInvalid={errorCustomer.firstname.isInvalid} isValid={errorCustomer.firstname.isValid} onChange={() => {customerchangeInput("firstname")}} />
-                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.firstname.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.firstname.error}</Form.Control.Feedback>
                                 <Form.Label>First Name</Form.Label>
                             </Form.Floating>
                         </Form.Group>
@@ -426,7 +445,7 @@ export default function navbar() {
                         <Form.Group className={`${css.customerInput} ${css.name}`}>
                             <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={middlenameCustomer} type="text" placeholder='Middle Name' isInvalid={errorCustomer.middlename.isInvalid} isValid={errorCustomer.middlename.isValid} onChange={() => {customerchangeInput("middlename")}} />
-                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.middlename.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.middlename.error}</Form.Control.Feedback>
                                 <Form.Label>Middle Name</Form.Label>
                             </Form.Floating>
                         </Form.Group>
@@ -434,7 +453,7 @@ export default function navbar() {
                         <Form.Group className={`${css.customerInput} ${css.name}`}>
                             <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={lastnameCustomer} type="text" placeholder='Last Name' isInvalid={errorCustomer.lastname.isInvalid} isValid={errorCustomer.lastname.isValid} onChange={() => {customerchangeInput("lastname")}} />
-                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.lastname.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback className={css.error}  type="invalid" tooltip>{errorCustomer.lastname.error}</Form.Control.Feedback>
                                 <Form.Label>Last Name</Form.Label>
                             </Form.Floating>
                         </Form.Group>
@@ -442,24 +461,24 @@ export default function navbar() {
                         <Form.Group className={`${css.customerInput} ${css.address}`}>
                             <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={addressCustomer} type="text" placeholder='Address' isInvalid={errorCustomer.address.isInvalid} isValid={errorCustomer.address.isValid} onChange={() => {customerchangeInput("address")}} />
-                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.address.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback className={css.error}  type="invalid" tooltip>{errorCustomer.address.error}</Form.Control.Feedback>
                                 <Form.Label>Address</Form.Label>
                             </Form.Floating>
                         </Form.Group>
 
                         <Form.Group className={`${css.customerInput} ${css.conPhoneCustomer}`}>
-                            <Form.Label>+63</Form.Label>
+                            <Form.Label className={errorCustomer.phone.isValid ? css.phoneValid : errorCustomer.phone.isInvalid ? css.phoneInvalid : null}>+63</Form.Label>
                             <Form.Floating className={css.customerFloating}>
-                                <Form.Control ref={phoneCustomer} type="number" placeholder='Phone Number' isInvalid={errorCustomer.phone.isInvalid} isValid={errorCustomer.phone.isValid} onChange={() => {customerchangeInput("phone")}} />
-                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.phone.error}</Form.Control.Feedback>
+                                <Form.Control ref={phoneCustomer} onWheel={(e) => e.target.blur()} onKeyDown={keyDownNumber} type="number" placeholder='Phone Number' isInvalid={errorCustomer.phone.isInvalid} isValid={errorCustomer.phone.isValid} onChange={() => {customerchangeInput("phone")}} />
+                                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.phone.error}</Form.Control.Feedback>
                                 <Form.Label>Phone Number</Form.Label>
                             </Form.Floating>
                         </Form.Group>
 
                         <Form.Group className={`${css.customerInput} ${css.conTelephoneCustomer}`}>
                             <Form.Floating className={css.customerFloating}>
-                                <Form.Control ref={telephoneCustomer} type="number" placeholder='Telephone Number' isInvalid={errorCustomer.telephone.isInvalid} isValid={errorCustomer.telephone.isValid} onChange={() => {customerchangeInput("telephone")}} />
-                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.telephone.error}</Form.Control.Feedback>
+                                <Form.Control ref={telephoneCustomer} onWheel={(e) => e.target.blur()} onKeyDown={keyDownNumber} type="number" placeholder='Telephone Number' isInvalid={errorCustomer.telephone.isInvalid} isValid={errorCustomer.telephone.isValid} onChange={() => {customerchangeInput("telephone")}} />
+                                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.telephone.error}</Form.Control.Feedback>
                                 <Form.Label>Telephone Number</Form.Label>
                             </Form.Floating>
                         </Form.Group>
@@ -467,7 +486,7 @@ export default function navbar() {
                         <Form.Group className={`${css.customerInput} ${css.conBirthdateCustomer}`}>
                                 <Form.Label>Birth Date</Form.Label>
                                 <Form.Control ref={birthdateCustomer} type="date" placeholder='Birth Date' isInvalid={errorCustomer.birthdate.isInvalid} isValid={errorCustomer.birthdate.isValid} onChange={() => {customerchangeInput("birthdate")}} />
-                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.birthdate.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.birthdate.error}</Form.Control.Feedback>
                         </Form.Group>
 
                         <Form.Group className={`${css.customerInput} ${css.genderCustomer}`} >
@@ -477,13 +496,13 @@ export default function navbar() {
                                 <option value="MALE">MALE</option>
                                 <option value="FEMALE">FEMALE</option>
                             </Form.Select>
-                            <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.gender.error}</Form.Control.Feedback>
+                            <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.gender.error}</Form.Control.Feedback>
                         </Form.Group>
 
                         <Form.Group className={`${css.customerInput} ${css.nationality}`}>
                             <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={nationalityCustomer} type="text" placeholder='Nationality' isInvalid={errorCustomer.nationality.isInvalid} isValid={errorCustomer.nationality.isValid} onChange={() => {customerchangeInput("nationality")}} />
-                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.nationality.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.nationality.error}</Form.Control.Feedback>
                                 <Form.Label>Nationality</Form.Label>
                             </Form.Floating>
                         </Form.Group>
@@ -491,7 +510,7 @@ export default function navbar() {
                         <Form.Group className={css.customerInput}>
                             <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={usernameCustomer} type="text" placeholder='Username' isInvalid={errorCustomer.username.isInvalid} isValid={errorCustomer.username.isValid} onChange={() => {customerchangeInput("username")}}/>
-                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.username.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.username.error}</Form.Control.Feedback>
                                 <Form.Label>Username</Form.Label>
                             </Form.Floating>
                         </Form.Group>
@@ -499,7 +518,7 @@ export default function navbar() {
                         <Form.Group className={css.customerInput}>
                             <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={passwordCustomer} type="password" placeholder='Password' isInvalid={errorCustomer.password.isInvalid} isValid={errorCustomer.password.isValid} onChange={() => {customerchangeInput("password")}}/>
-                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.password.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.password.error}</Form.Control.Feedback>
                                 <Form.Label>Password</Form.Label>
                             </Form.Floating>
                         </Form.Group>
@@ -507,7 +526,7 @@ export default function navbar() {
                         <Form.Group className={css.customerInput}>
                             <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={confirmpasswordCustomer} type="password" placeholder='Password' isInvalid={errorCustomer.confirmpassword.isInvalid} isValid={errorCustomer.confirmpassword.isValid} onChange={() => {customerchangeInput("confirmpassword")}} />
-                                <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.confirmpassword.error}</Form.Control.Feedback>
+                                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.confirmpassword.error}</Form.Control.Feedback>
                                 <Form.Label>Confirm Password</Form.Label>
                             </Form.Floating>
                         </Form.Group>
