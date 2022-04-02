@@ -90,6 +90,7 @@
 }
 .customerInput {
   padding: 0.3rem;
+  margin-top: 0.5rem;
 }
 .customerInput label {
   font-size: 0.8rem;
@@ -143,6 +144,12 @@
   margin-right: -0.5rem;
   width: 3rem;
 }
+.conPhoneCustomer input[type="number"]::-webkit-inner-spin-button,
+.conPhoneCustomer input[type="number"]::-webkit-outer-spin-button,
+.conTelephoneCustomer input[type="number"]::-webkit-inner-spin-button,
+.conTelephoneCustomer input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
 .conPhoneCustomer .customerFloating {
   width: 100%;
 }
@@ -154,6 +161,7 @@
   width: 30%;
 }
 .customerModal {
+  padding-left: 0 !important;
   padding: 0;
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;

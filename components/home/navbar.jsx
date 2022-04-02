@@ -7,6 +7,7 @@ import css from '../../styles/Components/modalSignIn.module.css';
 import {getUser,getHotelManager} from '../../redux/reduxSlice/userSlice';
 import { useSelector,useDispatch } from 'react-redux';
 import {useRouter} from 'next/router';
+import cssError from  '../../styles/Components/modalError.module.css';
 
 export default function navbar() {
     //import variables
@@ -93,6 +94,11 @@ export default function navbar() {
             error: "",
         },
         confirmpassword:{
+            isValid: false,
+            isInvalid: false,
+            error: "",
+        },
+        profilepic:{
             isValid: false,
             isInvalid: false,
             error: "",
@@ -207,6 +213,11 @@ export default function navbar() {
                 isValid: false,
                 isInvalid: false,
                 error: "",
+            },
+            profilepic:{
+                isValid: false,
+                isInvalid: false,
+                error: "",
             }
         });
     }
@@ -247,13 +258,8 @@ export default function navbar() {
         setModalSignInShow(false); 
         setModalHotelShow(true);
     }
-    //event handlers functions
-    const changeProfilePic = () => {
-        let profilepic = profilePicCustomer.current.value;
-        let srcProfile = profilepic != "" ? URL.createObjectURL(profilePicCustomer.current.files[0]) : "";  
-        srcProfile != "" ? setUploadProfile(srcProfile) : setUploadProfile("");
-    }
 
+    //event handlers functions
     //sign in form username and password onchage
     const signInchangeInput = (input) => {
         input == "username" ? updateStateSignIn("",false,"username") : updateStateSignIn("",false,"password");
@@ -324,21 +330,35 @@ export default function navbar() {
     //customer form control onchage
     const customerchangeInput = (input) => {
         switch(input){
+            case "profilepic":
+                let profilepic = profilePicCustomer.current.value;
+                profilepic != "" ? setUploadProfile(URL.createObjectURL(profilePicCustomer.current.files[0])) : setUploadProfile("");
+                profilepic != "" ? updateStateCustomer("",false,true,"profilepic") :updateStateCustomer("",false,false,"profilepic");  
+            break;
+
             case "firstname":
                 let firstname = firstnameCustomer.current.value;
                 firstname == "" ?  updateStateCustomer("",false,false,"firstname") : updateStateCustomer("",false,true,"firstname");
             break;
+
             case "middlename":
                 let middlename = middlenameCustomer.current.value;
                 middlename == "" ?  updateStateCustomer("",false,false,"middlename") : updateStateCustomer("",false,true,"middlename");
             break;
+
             case "lastname":
                 let lastname = lastnameCustomer.current.value;
                 lastname == "" ?  updateStateCustomer("",false,false,"lastname") : updateStateCustomer("",false,true,"lastname");
             break;
+
             case "address":
                 let address = addressCustomer.current.value;
                 address == "" ?  updateStateCustomer("",false,false,"address") : updateStateCustomer("",false,true,"address");
+            break;
+
+            case "phone":
+                let phone = phoneCustomer.current.value;
+                phone != "" && phone.length == 10 && phone[0] == "9" ? updateStateCustomer("",false,true,"phone") : updateStateCustomer("",false,false,"phone");
             break;
         }
     }
@@ -346,6 +366,7 @@ export default function navbar() {
     //customer form submit
     const handleSubmitCustomer = (e) => {
         e.preventDefault();
+        let profilepic = profilePicCustomer.current.value;
         let firstname = firstnameCustomer.current.value;
         let middlename = middlenameCustomer.current.value;
         let lastname = lastnameCustomer.current.value;
@@ -363,6 +384,9 @@ export default function navbar() {
             let words = word.split(" ");
            return words.map(word => word[0].toUpperCase() + word.substring(1)).join(" ");
         }
+
+        if(profilepic == "") updateStateCustomer("UPLOAD PROFILE PICTURE",true,false,"profilepic");
+
     }
 
     //components
@@ -381,7 +405,10 @@ export default function navbar() {
                     <Form onSubmit={handleSubmitCustomer}>
                         <Form.Group className={`${css.customerInput} ${css.conProfileCustomer}`}>
                             <Form.Label>PROFILE PICTURE</Form.Label>
-                            <Form.Control type="file" ref={profilePicCustomer} onChange={()=>{changeProfilePic()}}/>
+                            <div>
+                                <Form.Control type="file" ref={profilePicCustomer} onChange={()=>{customerchangeInput("profilepic")}} isInvalid={errorCustomer.profilepic.isInvalid} isValid={errorCustomer.profilepic.isValid} />
+                                <Form.Control.Feedback className={cssError.errorProfile} type="invalid" tooltip>{errorCustomer.profilepic.error}</Form.Control.Feedback>
+                            </div>
                         </Form.Group>
 
                         <Form.Group className={`${css.customerInput} ${css.conAccountIDCustomer}`}>
@@ -429,7 +456,7 @@ export default function navbar() {
                             </Form.Floating>
                         </Form.Group>
 
-                        <Form.Group className={css.customerInput}>
+                        <Form.Group className={`${css.customerInput} ${css.conTelephoneCustomer}`}>
                             <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={telephoneCustomer} type="number" placeholder='Telephone Number' isInvalid={errorCustomer.telephone.isInvalid} isValid={errorCustomer.telephone.isValid} onChange={() => {customerchangeInput("telephone")}} />
                                 <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.telephone.error}</Form.Control.Feedback>
@@ -455,7 +482,7 @@ export default function navbar() {
 
                         <Form.Group className={`${css.customerInput} ${css.nationality}`}>
                             <Form.Floating className={css.customerFloating}>
-                                <Form.Control ref={nationalityCustomer} type="text" placeholder='Nationality' isInvalid={errorCustomer.nationality.isInvalid} isValid={errorCustomer.nationality.isValid} />
+                                <Form.Control ref={nationalityCustomer} type="text" placeholder='Nationality' isInvalid={errorCustomer.nationality.isInvalid} isValid={errorCustomer.nationality.isValid} onChange={() => {customerchangeInput("nationality")}} />
                                 <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.nationality.error}</Form.Control.Feedback>
                                 <Form.Label>Nationality</Form.Label>
                             </Form.Floating>
@@ -463,7 +490,7 @@ export default function navbar() {
 
                         <Form.Group className={css.customerInput}>
                             <Form.Floating className={css.customerFloating}>
-                                <Form.Control ref={usernameCustomer} type="text" placeholder='Username' isInvalid={errorCustomer.username.isInvalid} isValid={errorCustomer.username.isValid} />
+                                <Form.Control ref={usernameCustomer} type="text" placeholder='Username' isInvalid={errorCustomer.username.isInvalid} isValid={errorCustomer.username.isValid} onChange={() => {customerchangeInput("username")}}/>
                                 <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.username.error}</Form.Control.Feedback>
                                 <Form.Label>Username</Form.Label>
                             </Form.Floating>
@@ -471,7 +498,7 @@ export default function navbar() {
 
                         <Form.Group className={css.customerInput}>
                             <Form.Floating className={css.customerFloating}>
-                                <Form.Control ref={passwordCustomer} type="password" placeholder='Password' isInvalid={errorCustomer.password.isInvalid} isValid={errorCustomer.password.isValid} />
+                                <Form.Control ref={passwordCustomer} type="password" placeholder='Password' isInvalid={errorCustomer.password.isInvalid} isValid={errorCustomer.password.isValid} onChange={() => {customerchangeInput("password")}}/>
                                 <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.password.error}</Form.Control.Feedback>
                                 <Form.Label>Password</Form.Label>
                             </Form.Floating>
@@ -479,7 +506,7 @@ export default function navbar() {
                         
                         <Form.Group className={css.customerInput}>
                             <Form.Floating className={css.customerFloating}>
-                                <Form.Control ref={confirmpasswordCustomer} type="password" placeholder='Password' isInvalid={errorCustomer.confirmpassword.isInvalid} isValid={errorCustomer.confirmpassword.isValid} />
+                                <Form.Control ref={confirmpasswordCustomer} type="password" placeholder='Password' isInvalid={errorCustomer.confirmpassword.isInvalid} isValid={errorCustomer.confirmpassword.isValid} onChange={() => {customerchangeInput("confirmpassword")}} />
                                 <Form.Control.Feedback type="invalid" tooltip>{errorCustomer.confirmpassword.error}</Form.Control.Feedback>
                                 <Form.Label>Confirm Password</Form.Label>
                             </Form.Floating>
@@ -586,7 +613,7 @@ export default function navbar() {
                                 <p className={navbar ? 'navLinkP-scroll' : 'navLinkP'}>ABOUT US</p>
                             </Link>
                         </Nav.Link>
-                        <Nav.Link className={navbar ? 'navLink-scroll' : 'navLink'} onClick={()=> {setModalSignInShow(true); setExpanded(false);}}>
+                        <Nav.Link className={navbar ? 'navLink-scroll' : 'navLink'} onClick={()=> {setModalSignInShow(true);setExpanded(false);updateStateSignIn("",false,"username");updateStateSignIn("",false,"password");}}>
                             <p className={navbar ? 'navLinkP-scroll' : 'navLinkP'}>SIGN IN</p>
                         </Nav.Link>
                     </Nav>
