@@ -26,6 +26,8 @@ export default function navbar() {
     const [formSignInShowPassword, setFormSignInShowPassword] = useState(false);
     const [uploadProfile, setUploadProfile] = useState("");
     const [customerAccountID, setCustomerAccountID] = useState("");
+    const [customerPhone,setCustomerPhone] = useState("");
+    const [customerTelephone,setCustomerTelephone] = useState("");
     const [errorSignIn,setErrorSignIn] = useState({
         username:{
             isInvalid: false,
@@ -152,6 +154,8 @@ export default function navbar() {
     const hidemodalCustomer = () => {
         setModalCustomerShow(false);
         setUploadProfile("");
+        setCustomerPhone("");
+        setCustomerTelephone("");
         setErrorCustomer({
             firstname:{
                 isValid: false,
@@ -326,12 +330,6 @@ export default function navbar() {
             }}));
     }
 
-    //onkeydown customer phonenumber and telephone
-    const keyDownNumber = (e) => {
-        e.key == "ArrowUp" && e.preventDefault() || e.key == "ArrowDown" && e.preventDefault();
-        e.key == "-"  && e.preventDefault() || e.key == "e"  && e.preventDefault() || e.key == "."  && e.preventDefault();
-    }
-
     //customer form control onchage
     const customerchangeInput = (input) => {
         switch(input){
@@ -361,9 +359,21 @@ export default function navbar() {
                 address == "" ?  updateStateCustomer("",false,false,"address") : updateStateCustomer("",false,true,"address");
             break;
 
-            case "phone":
+            case "phone": 
                 let phone = phoneCustomer.current.value;
+                setCustomerPhone(value => phoneCustomer.current.validity.valid ? phone : value); 
                 phone != "" && phone.length == 10 && phone[0] == "9" ? updateStateCustomer("",false,true,"phone") : updateStateCustomer("",false,false,"phone");
+            break;
+
+            case "telephone":
+                let telephone = telephoneCustomer.current.value;
+                // (00)0008-7000
+                setCustomerTelephone(value => telephoneCustomer.current.validity.valid ? telephone : value);
+            break;
+
+            case "birthdate":
+                let birthdate = birthdateCustomer.current.value;
+                birthdate == "" ?  updateStateCustomer("",false,false,"birthdate") : updateStateCustomer("",false,true,"birthdate");
             break;
         }
     }
@@ -469,7 +479,7 @@ export default function navbar() {
                         <Form.Group className={`${css.customerInput} ${css.conPhoneCustomer}`}>
                             <Form.Label className={errorCustomer.phone.isValid ? css.phoneValid : errorCustomer.phone.isInvalid ? css.phoneInvalid : null}>+63</Form.Label>
                             <Form.Floating className={css.customerFloating}>
-                                <Form.Control ref={phoneCustomer} onWheel={(e) => e.target.blur()} onKeyDown={keyDownNumber} type="number" placeholder='Phone Number' isInvalid={errorCustomer.phone.isInvalid} isValid={errorCustomer.phone.isValid} onChange={() => {customerchangeInput("phone")}} />
+                                <Form.Control ref={phoneCustomer} type="text" maxLength="10" pattern="[0-9]*" value={customerPhone} placeholder='Phone Number' isInvalid={errorCustomer.phone.isInvalid} isValid={errorCustomer.phone.isValid} onChange={() => {customerchangeInput("phone")}} />
                                 <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.phone.error}</Form.Control.Feedback>
                                 <Form.Label>Phone Number</Form.Label>
                             </Form.Floating>
@@ -477,7 +487,7 @@ export default function navbar() {
 
                         <Form.Group className={`${css.customerInput} ${css.conTelephoneCustomer}`}>
                             <Form.Floating className={css.customerFloating}>
-                                <Form.Control ref={telephoneCustomer} onWheel={(e) => e.target.blur()} onKeyDown={keyDownNumber} type="number" placeholder='Telephone Number' isInvalid={errorCustomer.telephone.isInvalid} isValid={errorCustomer.telephone.isValid} onChange={() => {customerchangeInput("telephone")}} />
+                                <Form.Control ref={telephoneCustomer} type="text" maxLength="10" pattern="[0-9]*" value={customerTelephone} placeholder='Telephone Number' isInvalid={errorCustomer.telephone.isInvalid} isValid={errorCustomer.telephone.isValid} onChange={() => {customerchangeInput("telephone")}} />
                                 <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.telephone.error}</Form.Control.Feedback>
                                 <Form.Label>Telephone Number</Form.Label>
                             </Form.Floating>
