@@ -368,7 +368,8 @@ export default function navbar() {
             case "telephone":
                 let telephone = telephoneCustomer.current.value;
                 // (00)0008-7000
-                setCustomerTelephone(value => telephoneCustomer.current.validity.valid ? telephone : value);
+                setCustomerTelephone(telephone);
+                //lastIndexOf(); 
             break;
 
             case "birthdate":
@@ -487,7 +488,7 @@ export default function navbar() {
 
                         <Form.Group className={`${css.customerInput} ${css.conTelephoneCustomer}`}>
                             <Form.Floating className={css.customerFloating}>
-                                <Form.Control ref={telephoneCustomer} type="text" maxLength="10" pattern="[0-9]*" value={customerTelephone} placeholder='Telephone Number' isInvalid={errorCustomer.telephone.isInvalid} isValid={errorCustomer.telephone.isValid} onChange={() => {customerchangeInput("telephone")}} />
+                                <Form.Control ref={telephoneCustomer} type="text" maxLength="13" pattern="[0-9]*" value={customerTelephone} placeholder='Telephone Number' isInvalid={errorCustomer.telephone.isInvalid} isValid={errorCustomer.telephone.isValid} onChange={() => {customerchangeInput("telephone")}} />
                                 <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.telephone.error}</Form.Control.Feedback>
                                 <Form.Label>Telephone Number</Form.Label>
                             </Form.Floating>
