@@ -330,6 +330,46 @@ export default function navbar() {
             }}));
     }
 
+    //onkeydown customer telephone
+    const keydownCustomerTelephone = (e) => {
+        if(e.key == "Backspace"){
+            setCustomerTelephone(customerTelephone.slice(0, -1));
+        }
+        else{
+            switch(customerTelephone.length){
+                case 0:
+                case 1:
+                    if(!isNaN(e.key)){
+                        setCustomerTelephone(`(${e.key}`);
+                    } 
+                break;
+                
+                case 2:
+                    if(!isNaN(e.key)) setCustomerTelephone(`${customerTelephone}${e.key})`);
+                break;
+                
+                case 3:
+                    if(!isNaN(e.key)) setCustomerTelephone(`${customerTelephone})${e.key}`);
+                break;
+
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                case 9:
+                case 10:
+                case 11:
+                case 12:
+                    if(!isNaN(e.key)) setCustomerTelephone(`${customerTelephone}${e.key}`);
+                break;
+
+                case 8:             
+                    if(!isNaN(e.key)) setCustomerTelephone(`${customerTelephone}-${e.key}`);
+                break;
+            }
+        }
+    }
+
     //customer form control onchage
     const customerchangeInput = (input) => {
         switch(input){
@@ -367,9 +407,7 @@ export default function navbar() {
 
             case "telephone":
                 let telephone = telephoneCustomer.current.value;
-                // (00)0008-7000
-                setCustomerTelephone(telephone);
-                //lastIndexOf(); 
+                telephone != "" && telephone.length == 13 && telephone.length == 12 ? updateStateCustomer("",false,true,"telephone") : updateStateCustomer("",false,false,"telephone");
             break;
 
             case "birthdate":
@@ -488,7 +526,7 @@ export default function navbar() {
 
                         <Form.Group className={`${css.customerInput} ${css.conTelephoneCustomer}`}>
                             <Form.Floating className={css.customerFloating}>
-                                <Form.Control ref={telephoneCustomer} type="text" maxLength="13" pattern="[0-9]*" value={customerTelephone} placeholder='Telephone Number' isInvalid={errorCustomer.telephone.isInvalid} isValid={errorCustomer.telephone.isValid} onChange={() => {customerchangeInput("telephone")}} />
+                                <Form.Control ref={telephoneCustomer} onKeyDown={keydownCustomerTelephone} type="text" maxLength="13" pattern="[0-9]*" value={customerTelephone} placeholder='Telephone Number' isInvalid={errorCustomer.telephone.isInvalid} isValid={errorCustomer.telephone.isValid} onChange={() => {customerchangeInput("telephone")}} />
                                 <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.telephone.error}</Form.Control.Feedback>
                                 <Form.Label>Telephone Number</Form.Label>
                             </Form.Floating>
