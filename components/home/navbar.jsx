@@ -370,11 +370,6 @@ export default function navbar() {
         }
     }
 
-    //function validate customer username
-    const validateCustomerUsername = () => {
-        return true;
-    }
-
     //customer form control onchage
     const customerchangeInput = (input) => {
         switch(input){
@@ -412,7 +407,7 @@ export default function navbar() {
 
             case "telephone":
                 let telephone = telephoneCustomer.current.value;
-                telephone != "" && telephone.length >= 13 ? updateStateCustomer("",false,true,"telephone") : updateStateCustomer("",false,false,"telephone");
+                telephone != "" && customerTelephone.length >= 12 ? updateStateCustomer("",false,true,"telephone") : updateStateCustomer("",false,false,"telephone");
             break;
 
             case "birthdate":
@@ -432,7 +427,17 @@ export default function navbar() {
 
             case "username":
                 let username = usernameCustomer.current.value;
-                username == "" && validateCustomerUsername() ?  updateStateCustomer("",false,false,"username") : updateStateCustomer("",false,true,"username");
+                username == "" ?  updateStateCustomer("",false,false,"username") : updateStateCustomer("",false,true,"username");
+            break;
+            
+            case "password":
+                let password = passwordCustomer.current.value;
+                password == "" ?  updateStateCustomer("",false,false,"password") : updateStateCustomer("",false,true,"password");
+            break;
+            
+            case "confirmpassword":
+                let confirmpassword = confirmpasswordCustomer.current.value;
+                confirmpassword == "" ?  updateStateCustomer("",false,false,"confirmpassword") : updateStateCustomer("",false,true,"confirmpassword");
             break;
         }
     }
@@ -444,8 +449,9 @@ export default function navbar() {
         let firstname = firstnameCustomer.current.value;
         let middlename = middlenameCustomer.current.value;
         let lastname = lastnameCustomer.current.value;
-        let phonenumber = phoneCustomer.current.value;
-        let telephonenumber = telephoneCustomer.current.value;
+        let address = addressCustomer.current.value;
+        let phone = phoneCustomer.current.value;
+        let telephone = telephoneCustomer.current.value;
         let birthdate = birthdateCustomer.current.value;
         let gender = genderCustomer.current.value;
         let nationality = nationalityCustomer.current.value;
@@ -460,20 +466,60 @@ export default function navbar() {
         }
 
         if(profilepic == ""){
-            updateStateCustomer("UPLOAD PROFILE PICTURE",true,false,"profilepic");
+            updateStateCustomer("Upload Profile Picture",true,false,"profilepic");
             profilePicCustomer.current.focus();
         }
         else if(firstname == ""){
-            updateStateCustomer("ENTER YOUR FIRSTNAME",true,false,"firstname");
+            updateStateCustomer("Enter Your First Name",true,false,"firstname");
             firstnameCustomer.current.focus();
         }
-        else if(middlename == ""){
-            updateStateCustomer("ENTER YOUR MIDDLENAME",true,false,"middlename");
-            middlenameCustomer.current.focus();
-        }
         else if(lastname == ""){
-            updateStateCustomer("ENTER YOUR LASTNAME",true,false,"lastname");
+            updateStateCustomer("Enter Your Last Name",true,false,"lastname");
             lastnameCustomer.current.focus();
+        }
+        else if(address == ""){
+            updateStateCustomer("Enter Your Address",true,false,"address");
+            addressCustomer.current.focus();
+        }
+        else if(phone == ""){
+            updateStateCustomer("Enter Your Phone Number",true,false,"phone");
+            phoneCustomer.current.focus();
+        }
+        else if(telephone == ""){
+            updateStateCustomer("Enter Your Telephone Number",true,false,"telephone");
+            telephoneCustomer.current.focus();
+        }
+        else if(birthdate == ""){
+            updateStateCustomer("Set Your Birthday",true,false,"birthdate");
+            birthdateCustomer.current.focus();
+        }
+        else if(gender == ""){
+            updateStateCustomer("Select Your Gender",true,false,"gender");
+            genderCustomer.current.focus();
+        }
+        else if(nationality == ""){
+            updateStateCustomer("Enter Your Nationality",true,false,"nationality");
+            nationalityCustomer.current.focus();
+        }
+        else if(username == ""){
+            updateStateCustomer("Enter Your Username",true,false,"username");
+            usernameCustomer.current.focus();
+        }
+        else if(username.length < 4){
+            updateStateCustomer("Username must contain atleast 4 characters",true,false,"username");
+            usernameCustomer.current.focus();
+        }
+        else if(password == ""){
+            updateStateCustomer("Enter Your Password",true,false,"password");
+            passwordCustomer.current.focus();
+        }
+        else if(password.length < 6){
+            updateStateCustomer("Password must contain atleast 6 characters",true,false,"password");
+            passwordCustomer.current.focus();
+        }
+        else if(confirmpassword != password){
+            updateStateCustomer("Password and Confirm Password do not match",true,false,"confirmpassword");
+            confirmpasswordCustomer.current.focus();
         }
     }
 
@@ -546,16 +592,16 @@ export default function navbar() {
 
                         <Form.Group className={`${css.customerInput} ${css.conTelephoneCustomer}`}>
                             <Form.Floating className={css.customerFloating}>
-                                <Form.Control ref={telephoneCustomer} onKeyDown={keydownCustomerTelephone} type="text" maxLength="13" pattern="[0-9]*" value={customerTelephone} placeholder='Telephone Number' isInvalid={errorCustomer.telephone.isInvalid} isValid={errorCustomer.telephone.isValid} onChange={() => {customerchangeInput("telephone")}} />
+                                <Form.Control ref={telephoneCustomer} onKeyDown={keydownCustomerTelephone} type="text" maxLength="13" value={customerTelephone} placeholder='Telephone Number' isInvalid={errorCustomer.telephone.isInvalid} isValid={errorCustomer.telephone.isValid} onChange={() => {customerchangeInput("telephone")}} />
                                 <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.telephone.error}</Form.Control.Feedback>
                                 <Form.Label>Telephone Number</Form.Label>
                             </Form.Floating>
                         </Form.Group>
 
                         <Form.Group className={`${css.customerInput} ${css.conBirthdateCustomer}`}>
-                                <Form.Label>Birth Date</Form.Label>
-                                <Form.Control ref={birthdateCustomer} type="date" placeholder='Birth Date' isInvalid={errorCustomer.birthdate.isInvalid} isValid={errorCustomer.birthdate.isValid} onChange={() => {customerchangeInput("birthdate")}} />
-                                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.birthdate.error}</Form.Control.Feedback>
+                                <Form.Label>Birthday</Form.Label>
+                                <Form.Control ref={birthdateCustomer} type="date" placeholder='Birthday' isInvalid={errorCustomer.birthdate.isInvalid} isValid={errorCustomer.birthdate.isValid} onChange={() => {customerchangeInput("birthdate")}} />
+                                <Form.Control.Feedback className={`${css.error} ${css.errorBirthday}`} type="invalid" tooltip>{errorCustomer.birthdate.error}</Form.Control.Feedback>
                         </Form.Group>
 
                         <Form.Group className={`${css.customerInput} ${css.genderCustomer}`} >
@@ -565,7 +611,7 @@ export default function navbar() {
                                 <option value="MALE">MALE</option>
                                 <option value="FEMALE">FEMALE</option>
                             </Form.Select>
-                            <Form.Control.Feedback className={css.error} type="invalid" tooltip>{errorCustomer.gender.error}</Form.Control.Feedback>
+                            <Form.Control.Feedback className={`${css.error} ${css.errorGender}`} type="invalid" tooltip>{errorCustomer.gender.error}</Form.Control.Feedback>
                         </Form.Group>
 
                         <Form.Group className={`${css.customerInput} ${css.nationality}`}>
