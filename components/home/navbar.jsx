@@ -370,6 +370,11 @@ export default function navbar() {
         }
     }
 
+    //function validate customer username
+    const validateCustomerUsername = () => {
+        return true;
+    }
+
     //customer form control onchage
     const customerchangeInput = (input) => {
         switch(input){
@@ -407,19 +412,34 @@ export default function navbar() {
 
             case "telephone":
                 let telephone = telephoneCustomer.current.value;
-                telephone != "" && telephone.length == 13 && telephone.length == 12 ? updateStateCustomer("",false,true,"telephone") : updateStateCustomer("",false,false,"telephone");
+                telephone != "" && telephone.length >= 13 ? updateStateCustomer("",false,true,"telephone") : updateStateCustomer("",false,false,"telephone");
             break;
 
             case "birthdate":
                 let birthdate = birthdateCustomer.current.value;
                 birthdate == "" ?  updateStateCustomer("",false,false,"birthdate") : updateStateCustomer("",false,true,"birthdate");
             break;
+
+            case "gender":
+                let gender = genderCustomer.current.value;
+                gender == "" ?  updateStateCustomer("",false,false,"gender") : updateStateCustomer("",false,true,"gender");
+            break;
+
+            case "nationality":
+                let nationality = nationalityCustomer.current.value;
+                nationality == "" ?  updateStateCustomer("",false,false,"nationality") : updateStateCustomer("",false,true,"nationality");
+            break;
+
+            case "username":
+                let username = usernameCustomer.current.value;
+                username == "" && validateCustomerUsername() ?  updateStateCustomer("",false,false,"username") : updateStateCustomer("",false,true,"username");
+            break;
         }
     }
 
     //customer form submit
     const handleSubmitCustomer = (e) => {
-        e.preventDefault();
+        e.preventDefault(); 
         let profilepic = profilePicCustomer.current.value;
         let firstname = firstnameCustomer.current.value;
         let middlename = middlenameCustomer.current.value;
