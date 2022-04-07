@@ -465,6 +465,20 @@ export default function navbar() {
            return words.map(word => word[0].toUpperCase() + word.substring(1)).join(" ");
         }
 
+        //converting blob to base64
+        const profilepicToBase64 = () => {
+            // const reader = new FileReader();
+            // reader.readAsDataURL(uploadProfile);
+            // let profile = reader.onloadend = () => reader.result;
+            // console.log(profile);  
+            // var reader = new FileReader();
+            // reader.readAsDataURL(uploadProfile); 
+            // reader.onloadend = function() {
+            // var base64data = reader.result;                
+            // console.log(base64data);
+            // }
+        }
+
         if(profilepic == ""){
             updateStateCustomer("Upload Profile Picture",true,false,"profilepic");
             profilePicCustomer.current.focus();
@@ -485,8 +499,16 @@ export default function navbar() {
             updateStateCustomer("Enter Your Phone Number",true,false,"phone");
             phoneCustomer.current.focus();
         }
+        else if(phone[0] != "9" || phone.length != 10){
+            updateStateCustomer("Invalid Phone Number",true,false,"phone");
+            phoneCustomer.current.focus();
+        }
         else if(telephone == ""){
             updateStateCustomer("Enter Your Telephone Number",true,false,"telephone");
+            telephoneCustomer.current.focus();
+        }
+        else if(customerTelephone.length < 12){
+            updateStateCustomer("Invalid Telephone Number",true,false,"telephone");
             telephoneCustomer.current.focus();
         }
         else if(birthdate == ""){
@@ -520,6 +542,12 @@ export default function navbar() {
         else if(confirmpassword != password){
             updateStateCustomer("Password and Confirm Password do not match",true,false,"confirmpassword");
             confirmpasswordCustomer.current.focus();
+        }
+        else{
+            firstname = CapitalizedWord(firstname);
+            middlename = middlename != "" ? CapitalizedWord(middlename):"";
+            lastname = CapitalizedWord(lastname);
+            profilepicToBase64();
         }
     }
 
@@ -607,9 +635,9 @@ export default function navbar() {
                         <Form.Group className={`${css.customerInput} ${css.genderCustomer}`} >
                             <Form.Label>Gender</Form.Label>
                             <Form.Select type="select" ref={genderCustomer} className={css.genderCustomer} isInvalid={errorCustomer.gender.isInvalid} isValid={errorCustomer.gender.isValid} onChange={() => {customerchangeInput("gender")}} >
-                                <option value="" hidden>SELECT GENDER</option>
-                                <option value="MALE">MALE</option>
-                                <option value="FEMALE">FEMALE</option>
+                                <option value="" hidden>Select Gender</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
                             </Form.Select>
                             <Form.Control.Feedback className={`${css.error} ${css.errorGender}`} type="invalid" tooltip>{errorCustomer.gender.error}</Form.Control.Feedback>
                         </Form.Group>
