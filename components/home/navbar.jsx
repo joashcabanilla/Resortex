@@ -25,6 +25,7 @@ export default function navbar() {
     const [modalHotelShow, setModalHotelShow] = useState(false);
     const [formSignInShowPassword, setFormSignInShowPassword] = useState(false);
     const [uploadProfile, setUploadProfile] = useState("");
+    const [imageBase64, setImageBase64] = useState("");
     const [customerAccountID, setCustomerAccountID] = useState("");
     const [customerPhone,setCustomerPhone] = useState("");
     const [customerTelephone,setCustomerTelephone] = useState("");
@@ -458,25 +459,38 @@ export default function navbar() {
         let username = usernameCustomer.current.value;
         let password = passwordCustomer.current.value;
         let confirmpassword = confirmpasswordCustomer.current.value; 
-
+        let phoneInput = `(+63)${phone.substring(0,3)}-${phone.substring(3,6)}-${phone.substring(6,10)}`;
+        
         //function for capitalized each word
         const CapitalizedWord = (word) => {
             let words = word.split(" ");
            return words.map(word => word[0].toUpperCase() + word.substring(1)).join(" ");
         }
 
-        //converting blob to base64
-        const profilepicToBase64 = () => {
-            // const reader = new FileReader();
-            // reader.readAsDataURL(uploadProfile);
-            // let profile = reader.onloadend = () => reader.result;
-            // console.log(profile);  
-            // var reader = new FileReader();
-            // reader.readAsDataURL(uploadProfile); 
-            // reader.onloadend = function() {
-            // var base64data = reader.result;                
-            // console.log(base64data);
-            // }
+        //converting image file to base64
+        const profilepicToBase64 = (file) => {
+            let imageFiletype = `data:${file.type};base64,`;
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+               setImageBase64(reader.result.substring(imageFiletype.length));
+            };
+
+        }
+
+        //phone number and username validation if already used
+        const inputDataValidation = () => {
+            let validation = {
+                phone: false,
+                username: false,
+            };
+            Object.values(stateUser).forEach(value => {
+                let phoneNumber = value['CONTACT-PHONE NUMBER'];
+                let userName = value['ACCOUNT-USERNAME'];
+                if(phoneNumber == phoneInput) validation.phone = true;
+                if(userName == username) validation.username = true;
+            });
+            return validation;
         }
 
         if(profilepic == ""){
@@ -501,6 +515,10 @@ export default function navbar() {
         }
         else if(phone[0] != "9" || phone.length != 10){
             updateStateCustomer("Invalid Phone Number",true,false,"phone");
+            phoneCustomer.current.focus();
+        }
+        else if(inputDataValidation().phone == true){
+            updateStateCustomer("Phone Number Already Used",true,false,"phone");
             phoneCustomer.current.focus();
         }
         else if(telephone == ""){
@@ -531,6 +549,10 @@ export default function navbar() {
             updateStateCustomer("Username must contain atleast 4 characters",true,false,"username");
             usernameCustomer.current.focus();
         }
+        else if(inputDataValidation().username == true){
+            updateStateCustomer("Username Already Exist",true,false,"username");
+            usernameCustomer.current.focus();
+        }
         else if(password == ""){
             updateStateCustomer("Enter Your Password",true,false,"password");
             passwordCustomer.current.focus();
@@ -544,10 +566,20 @@ export default function navbar() {
             confirmpasswordCustomer.current.focus();
         }
         else{
+            profilepicToBase64(profilePicCustomer.current.files[0]);
             firstname = CapitalizedWord(firstname);
             middlename = middlename != "" ? CapitalizedWord(middlename):"";
             lastname = CapitalizedWord(lastname);
-            profilepicToBase64();
+            address = CapitalizedWord(address);
+            birthdate = `${birthdate.substring(5,7)}/${birthdate.substring(8)}/${birthdate.substring(0,4)}`;
+            nationality = CapitalizedWord(nationality);
+            let date = new Date();
+            let month = date.getMonth()+1 < 10 ?  `0${date.getMonth()+1}` : date.getMonth()+1;
+            let day = date.getDate() < 10 ?  `0${date.getDate()}` : date.getDate();
+            let year = date.getFullYear();
+            let time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+            let registrationDate = `${year}-${month}-${day} | ${time}`;
+            let registrationStatus = "PENDING";
         }
     }
 
@@ -636,8 +668,8 @@ export default function navbar() {
                             <Form.Label>Gender</Form.Label>
                             <Form.Select type="select" ref={genderCustomer} className={css.genderCustomer} isInvalid={errorCustomer.gender.isInvalid} isValid={errorCustomer.gender.isValid} onChange={() => {customerchangeInput("gender")}} >
                                 <option value="" hidden>Select Gender</option>
-                                <option value="MALE">Male</option>
-                                <option value="FEMALE">Female</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
                             </Form.Select>
                             <Form.Control.Feedback className={`${css.error} ${css.errorGender}`} type="invalid" tooltip>{errorCustomer.gender.error}</Form.Control.Feedback>
                         </Form.Group>
