@@ -4,7 +4,7 @@ import Link from 'next/link';
 import cssNavbar from '../../styles/Components/Navbar.module.css';
 import { useState, useEffect, useRef } from 'react';
 import css from '../../styles/Components/modalSignIn.module.css';
-import {getUser,getHotelManager} from '../../redux/reduxSlice/userSlice';
+import {getUser,getHotelManager,addUser} from '../../redux/reduxSlice/userSlice';
 import { useSelector,useDispatch } from 'react-redux';
 import {useRouter} from 'next/router';
 
@@ -23,6 +23,7 @@ export default function navbar() {
     const [modalSignInShow, setModalSignInShow] = useState(false);
     const [modalCustomerShow, setModalCustomerShow] = useState(false);
     const [modalHotelShow, setModalHotelShow] = useState(false);
+    const [modalCustomerAuthShow,setModalCustomerAuthShow] = useState(false);
     const [formSignInShowPassword, setFormSignInShowPassword] = useState(false);
     const [uploadProfile, setUploadProfile] = useState("");
     const [imageBase64, setImageBase64] = useState("");
@@ -106,7 +107,10 @@ export default function navbar() {
             error: "",
         }
     });
-
+    const [errorCustomerAuth, setErrorCustomerAuth] = useState({
+        isInvalid: false,
+        error:"",
+    });
     //react Hooks useRef
     const usernameSignIn = useRef();
     const passwordSignIn = useRef();
@@ -124,7 +128,6 @@ export default function navbar() {
     const usernameCustomer = useRef();
     const passwordCustomer = useRef();
     const confirmpasswordCustomer = useRef();
-
 
     //react Hooks use effect
     useEffect(() => {
@@ -152,8 +155,7 @@ export default function navbar() {
         updateStateSignIn("",false,"password");
     }
 
-    const hidemodalCustomer = () => {
-        setModalCustomerShow(false);
+    const resetCustomerSignUpState = () => {
         setUploadProfile("");
         setCustomerPhone("");
         setCustomerTelephone("");
@@ -225,6 +227,20 @@ export default function navbar() {
             }
         });
     }
+
+    const hidemodalCustomer = () => {
+        setModalCustomerShow(false);
+        resetCustomerSignUpState();
+    }
+
+    const hidemodalCustomerAuth = () => {
+        resetCustomerSignUpState();
+        setModalCustomerAuthShow(false);
+        setErrorCustomerAuth({
+            isInvalid: false,
+            error:"",
+        });
+    } 
 
     const changeShowpasswordSignIn = () => {
         showPasswordSignIn.current.checked ? setFormSignInShowPassword(true) : setFormSignInShowPassword(false);
@@ -579,10 +595,22 @@ export default function navbar() {
             let year = date.getFullYear();
             let time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
             let registrationDate = `${year}-${month}-${day} | ${time}`;
-            let registrationStatus = "PENDING";
+            let registrationStatus = "ACTIVE";
+            setModalCustomerAuthShow(true);
+            setModalCustomerShow(false);
+            sendCustomerAuth();
         }
     }
 
+    //customer authentication function
+    const sendCustomerAuth = () => {
+
+    }
+
+    //customer authentication verfiy code
+    const verifyCustomerAuth = (e) => {
+        e.preventDefault();
+    }
     //components
     const customerModal = () => {
         return (
@@ -776,6 +804,37 @@ export default function navbar() {
         </Modal>
         );
     }
+    const customerAuth = () => {
+        return(
+            <Modal show={modalCustomerAuthShow} onHide={()=> {hidemodalCustomerAuth()}} animation={true}  centered>
+                <Modal.Header closeButton className={css.modalSignInHeader}>
+                    <div>
+                        <p>Customer Phone Authentication</p>
+                        <p>Verify Your Phone Number</p>
+                    </div>
+                </Modal.Header>
+
+                <Modal.Body className={css.modalSignInBody}>
+                    <Form onSubmit={verifyCustomerAuth}>
+                        <Form.Group className={css.signInInput}> 
+                            <Form.Floating>
+                                <Form.Control type="number" placeholder="Code" isInvalid={errorCustomerAuth.isInvalid} />
+                                <Form.Control.Feedback type='invalid' tooltip>{errorCustomerAuth.error}</Form.Control.Feedback>
+                                <Form.Label>Code</Form.Label>
+                            </Form.Floating>
+                        </Form.Group>
+                    </Form>         
+                </Modal.Body>
+
+                <Modal.Footer className={css.modalSignInFooter}>
+                    <div className={css.customerAuthConBtn}>
+                        <Button variant='success' onClick={verifyCustomerAuth}>Verify</Button>
+                        <Button variant='danger' onClick={sendCustomerAuth}>Resend Code</Button>
+                    </div>
+                </Modal.Footer>
+            </Modal>
+        );
+    }
 
     return (
         <>
@@ -817,6 +876,7 @@ export default function navbar() {
             {signInModal()}
             {customerModal()}
             {hotelModal()}
+            {customerAuth()}
         </>
     );
 }

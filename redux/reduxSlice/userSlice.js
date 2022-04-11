@@ -38,13 +38,18 @@ const initialState = {
     userList: {},
     status: null,
     hotelManagerAcct: {},
-    adminList: {},
 }
 
 export const usersSlice = createSlice({
     name: 'users',
     initialState,
     reducers: {
+        addUser: (state, {payload}) => {
+            state.userList = {
+                ...state.userList,
+                ...payload,
+            };
+        }
     },
     extraReducers: {
         //get user account
@@ -77,4 +82,5 @@ export const usersSlice = createSlice({
     }
 });
 
+export const { addUser } = usersSlice.actions;
 export default usersSlice.reducer; 
