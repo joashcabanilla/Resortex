@@ -7,6 +7,8 @@ import css from '../../styles/Components/modalSignIn.module.css';
 import {getUser,getHotelManager,addUser} from '../../redux/reduxSlice/userSlice';
 import { useSelector,useDispatch } from 'react-redux';
 import {useRouter} from 'next/router';
+import {auth} from '../../firebase/firebaseConfig';
+import {signInWithPhoneNumber, RecaptchaVerifier} from 'firebase/auth';
 
 export default function navbar() {
     //import variables
@@ -596,22 +598,24 @@ export default function navbar() {
             let time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
             let registrationDate = `${year}-${month}-${day} | ${time}`;
             let registrationStatus = "ACTIVE";
-            setModalCustomerAuthShow(true);
-            setModalCustomerShow(false);
-            sendCustomerAuth();
-        }
+            // setModalCustomerAuthShow(true);
+            // setModalCustomerShow(false);
+            setupRecaptcha(`+63${phone}`);
+        }   
     }
 
-    //customer authentication function
-    const sendCustomerAuth = () => {
-
+    //setup Recaptcha customer phone number
+    const setupRecaptcha = (phone) => {
+        const recaptchaVerifier = new RecaptchaVerifier("customer-recaptcha-container",{}, auth);
+        recaptchaVerifier.render();
     }
 
     //customer authentication verfiy code
     const verifyCustomerAuth = (e) => {
         e.preventDefault();
     }
-    //components
+
+    //components--------------------------------------------------
     const customerModal = () => {
         return (
             <Modal className={css.customerModal} show={modalCustomerShow} onHide={()=> {hidemodalCustomer()}} animation={true}  centered>
@@ -734,6 +738,10 @@ export default function navbar() {
                             </Form.Floating>
                         </Form.Group>
 
+                        <Form.Group className={css.customerInput}>
+                            <div id="customer-recaptcha-container" />
+                        </Form.Group>
+
                         <div className={css.customerButton}>
                             <Button type="submit">Sign Up</Button>
                         </div>
@@ -810,32 +818,31 @@ export default function navbar() {
                 <Modal.Header closeButton className={css.modalSignInHeader}>
                     <div>
                         <p>Customer Phone Authentication</p>
-                        <p>Verify Your Phone Number</p>
+                        <p>Verify Your Phone Number </p>
                     </div>
                 </Modal.Header>
 
                 <Modal.Body className={css.modalSignInBody}>
-                    <Form onSubmit={verifyCustomerAuth}>
-                        <Form.Group className={css.signInInput}> 
-                            <Form.Floating>
-                                <Form.Control type="number" placeholder="Code" isInvalid={errorCustomerAuth.isInvalid} />
-                                <Form.Control.Feedback type='invalid' tooltip>{errorCustomerAuth.error}</Form.Control.Feedback>
-                                <Form.Label>Code</Form.Label>
-                            </Form.Floating>
-                        </Form.Group>
-                    </Form>         
-                </Modal.Body>
-
-                <Modal.Footer className={css.modalSignInFooter}>
-                    <div className={css.customerAuthConBtn}>
-                        <Button variant='success' onClick={verifyCustomerAuth}>Verify</Button>
-                        <Button variant='danger' onClick={sendCustomerAuth}>Resend Code</Button>
-                    </div>
-                </Modal.Footer>
+                        <Form onSubmit={verifyCustomerAuth}>
+                            <Form.Group className={css.signInInput}> 
+                                <Form.Floating>
+                                    <Form.Control type="number" placeholder="Code" isInvalid={errorCustomerAuth.isInvalid} />
+                                    <Form.Control.Feedback type='invalid' tooltip>{errorCustomerAuth.error}</Form.Control.Feedback>
+                                    <Form.Label>Code</Form.Label>
+                                </Form.Floating>
+                            </Form.Group>
+                        </Form>       
+                    </Modal.Body>
+    
+                    <Modal.Footer className={css.modalSignInFooter}>
+                        <div className={css.customerAuthConBtn}>
+                            <Button variant='success' onClick={verifyCustomerAuth}>Verify</Button>
+                            <Button variant='danger'>Resend Code</Button>
+                        </div>
+                    </Modal.Footer>
             </Modal>
         );
     }
-
     return (
         <>
             <Navbar expanded={expanded} fixed='top' expand='sm' variant='dark' bg={navbar ? `light` : null} collapseOnSelect className={navbar ? `${cssNavbar[`navbar-scroll`]}` : `${cssNavbar[`navbar`]}`}>
@@ -872,7 +879,6 @@ export default function navbar() {
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
-
             {signInModal()}
             {customerModal()}
             {hotelModal()}
