@@ -25,13 +25,14 @@ export default function navbar() {
     const [modalSignInShow, setModalSignInShow] = useState(false);
     const [modalCustomerShow, setModalCustomerShow] = useState(false);
     const [modalHotelShow, setModalHotelShow] = useState(false);
-    const [modalCustomerAuthShow,setModalCustomerAuthShow] = useState(false);
+    const [modalCustomerAuthShow, setModalCustomerAuthShow] = useState(false);
     const [formSignInShowPassword, setFormSignInShowPassword] = useState(false);
     const [uploadProfile, setUploadProfile] = useState("");
     const [imageBase64, setImageBase64] = useState("");
     const [customerAccountID, setCustomerAccountID] = useState("");
-    const [customerPhone,setCustomerPhone] = useState("");
-    const [customerTelephone,setCustomerTelephone] = useState("");
+    const [customerPhone, setCustomerPhone] = useState("");
+    const [customerTelephone, setCustomerTelephone] = useState("");
+    const [customerVerifyAuth, setCustomerVerifyAuth] = useState("");
     const [errorSignIn,setErrorSignIn] = useState({
         username:{
             isInvalid: false,
@@ -113,6 +114,10 @@ export default function navbar() {
         isInvalid: false,
         error:"",
     });
+    const [errorCustomerAuthVerify, setErrorCustomerAuthVerify] = useState("");
+    const [customerSignUpData, setCustomerSignUpData] = useState("");
+
+
     //react Hooks useRef
     const usernameSignIn = useRef();
     const passwordSignIn = useRef();
@@ -130,6 +135,7 @@ export default function navbar() {
     const usernameCustomer = useRef();
     const passwordCustomer = useRef();
     const confirmpasswordCustomer = useRef();
+    const customerAuthInputCode = useRef();
 
     //react Hooks use effect
     useEffect(() => {
@@ -238,6 +244,8 @@ export default function navbar() {
     const hidemodalCustomerAuth = () => {
         resetCustomerSignUpState();
         setModalCustomerAuthShow(false);
+        setErrorCustomerAuthVerify("");
+        setCustomerSignUpData("");
         setErrorCustomerAuth({
             isInvalid: false,
             error:"",
@@ -462,7 +470,7 @@ export default function navbar() {
     }
 
     //customer form submit
-    const handleSubmitCustomer = (e) => {
+    const handleSubmitCustomer = async (e) => {
         e.preventDefault(); 
         let profilepic = profilePicCustomer.current.value;
         let firstname = firstnameCustomer.current.value;
@@ -598,21 +606,70 @@ export default function navbar() {
             let time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
             let registrationDate = `${year}-${month}-${day} | ${time}`;
             let registrationStatus = "ACTIVE";
-            // setModalCustomerAuthShow(true);
-            // setModalCustomerShow(false);
             setupRecaptcha(`+63${phone}`);
+            setCustomerSignUpData({
+                fullname: `${lastname},${firstname} ${middlename}`,
+                account_id: customerAccountID,
+                password: password,
+                username: username,
+                profilepicture: imageBase64,
+                address: address,
+                phone: phoneInput,
+                telephone: telephone,
+                firstname: firstname,
+                lastname: lastname,
+                middlename: middlename,
+                birthdate: birthdate,
+                gender: gender,
+                nationality: nationality,
+                registrationDate: registrationDate,
+                registrationStatus: registrationStatus,
+            });
         }   
     }
 
     //setup Recaptcha customer phone number
     const setupRecaptcha = (phone) => {
+        auth.settings.appVerificationDisabledForTesting = true; //for phone authentication testing remove this in production/deploy mode 
         const recaptchaVerifier = new RecaptchaVerifier("customer-recaptcha-container",{}, auth);
         recaptchaVerifier.render();
+        signInWithPhoneNumber(auth, phone, recaptchaVerifier)
+        .then((confirmationResult) => {
+            setCustomerVerifyAuth(confirmationResult);
+            setModalCustomerAuthShow(true);
+            setModalCustomerShow(false);
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+
+    //firebase database customer sign up
+    const databaseCustomerSignUp = () => {
+        dispatch(addUser({
+            [customerAccountID]:{
+                ...customerSignUpData,
+            }
+        }));
+        console.log(stateUser);
     }
 
     //customer authentication verfiy code
     const verifyCustomerAuth = (e) => {
         e.preventDefault();
+        let code = customerAuthInputCode.current.value;
+        if(code == ""){
+            setErrorCustomerAuth({isInvalid:true, error: "Enter OTP"});
+        }
+        else{
+            errorCustomerAuthVerify != "" ? setErrorCustomerAuth({isInvalid:true, error: "Invalid/Expired OTP"}) : setErrorCustomerAuth({isInvalid:false, error: ""});
+            customerVerifyAuth.confirm(code).then(result => {
+                setErrorCustomerAuthVerify("");
+                databaseCustomerSignUp();            
+            }).catch((error) => {
+                console.log(error);
+                setErrorCustomerAuthVerify(`${error.message}`);
+            });
+        }
     }
 
     //components--------------------------------------------------
@@ -826,7 +883,7 @@ export default function navbar() {
                         <Form onSubmit={verifyCustomerAuth}>
                             <Form.Group className={css.signInInput}> 
                                 <Form.Floating>
-                                    <Form.Control type="number" placeholder="Code" isInvalid={errorCustomerAuth.isInvalid} />
+                                    <Form.Control ref={customerAuthInputCode} type="number" placeholder="Code" isInvalid={errorCustomerAuth.isInvalid} />
                                     <Form.Control.Feedback type='invalid' tooltip>{errorCustomerAuth.error}</Form.Control.Feedback>
                                     <Form.Label>Code</Form.Label>
                                 </Form.Floating>
@@ -837,7 +894,6 @@ export default function navbar() {
                     <Modal.Footer className={css.modalSignInFooter}>
                         <div className={css.customerAuthConBtn}>
                             <Button variant='success' onClick={verifyCustomerAuth}>Verify</Button>
-                            <Button variant='danger'>Resend Code</Button>
                         </div>
                     </Modal.Footer>
             </Modal>

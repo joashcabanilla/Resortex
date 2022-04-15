@@ -187,8 +187,8 @@
 .customerAuthConBtn{
   width: 100%;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
 }
 .customerAuthConBtn button{
-  width: 8rem;
+  width: 60%;
 }
