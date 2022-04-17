@@ -1,21 +1,29 @@
-import { Navbar, Nav, Modal, Button, FloatingLabel, Form } from 'react-bootstrap';
+import { Navbar, Nav, Modal, Button, Form } from 'react-bootstrap';
 import Image from 'next/image';
 import Link from 'next/link';
 import cssNavbar from '../../styles/Components/Navbar.module.css';
 import { useState, useEffect, useRef } from 'react';
 import css from '../../styles/Components/modalSignIn.module.css';
-import {getUser,getHotelManager,addUser} from '../../redux/reduxSlice/userSlice';
+import {addUser} from '../../redux/reduxSlice/userSlice';
 import { useSelector,useDispatch } from 'react-redux';
 import {useRouter} from 'next/router';
 import {auth} from '../../firebase/firebaseConfig';
 import {signInWithPhoneNumber, RecaptchaVerifier} from 'firebase/auth';
+import {database} from '../../firebase/firebaseConfig';
+import { ref, set } from "firebase/database";
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import cssHome from '../../styles/Pages/Home.module.css';
+import Hotelmanager from './Hotelmanager';
+import { showModalHotelManager } from '../../redux/reduxSlice/hotelSlice';
 
 export default function navbar() {
     //import variables
     const dispatch = useDispatch();
     const router = useRouter();
-
-    //reducer state
+    const mySwal = withReactContent(Swal);
+    
+    //redux state
     const stateHotelManagerAcct = useSelector(state => state.storeUsers.hotelManagerAcct);
     const stateUser = useSelector(state => state.storeUsers.userList);
 
@@ -24,11 +32,9 @@ export default function navbar() {
     const [expanded, setExpanded] = useState(false);
     const [modalSignInShow, setModalSignInShow] = useState(false);
     const [modalCustomerShow, setModalCustomerShow] = useState(false);
-    const [modalHotelShow, setModalHotelShow] = useState(false);
     const [modalCustomerAuthShow, setModalCustomerAuthShow] = useState(false);
     const [formSignInShowPassword, setFormSignInShowPassword] = useState(false);
     const [uploadProfile, setUploadProfile] = useState("");
-    const [imageBase64, setImageBase64] = useState("");
     const [customerAccountID, setCustomerAccountID] = useState("");
     const [customerPhone, setCustomerPhone] = useState("");
     const [customerTelephone, setCustomerTelephone] = useState("");
@@ -117,7 +123,6 @@ export default function navbar() {
     const [errorCustomerAuthVerify, setErrorCustomerAuthVerify] = useState("");
     const [customerSignUpData, setCustomerSignUpData] = useState("");
 
-
     //react Hooks useRef
     const usernameSignIn = useRef();
     const passwordSignIn = useRef();
@@ -140,8 +145,6 @@ export default function navbar() {
     //react Hooks use effect
     useEffect(() => {
         window.addEventListener('scroll', onScroll);
-        // dispatch(getUser());
-        // dispatch(getHotelManager());
     }, []);
 
     const onScroll = () => {
@@ -286,7 +289,7 @@ export default function navbar() {
     
     const managerCreateAccount = () => {
         setModalSignInShow(false); 
-        setModalHotelShow(true);
+        dispatch(showModalHotelManager(true));
     }
 
     //event handlers functions
@@ -493,17 +496,6 @@ export default function navbar() {
            return words.map(word => word[0].toUpperCase() + word.substring(1)).join(" ");
         }
 
-        //converting image file to base64
-        const profilepicToBase64 = (file) => {
-            let imageFiletype = `data:${file.type};base64,`;
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => {
-               setImageBase64(reader.result.substring(imageFiletype.length));
-            };
-
-        }
-
         //phone number and username validation if already used
         const inputDataValidation = () => {
             let validation = {
@@ -547,11 +539,7 @@ export default function navbar() {
             updateStateCustomer("Phone Number Already Used",true,false,"phone");
             phoneCustomer.current.focus();
         }
-        else if(telephone == ""){
-            updateStateCustomer("Enter Your Telephone Number",true,false,"telephone");
-            telephoneCustomer.current.focus();
-        }
-        else if(customerTelephone.length < 12){
+        else if(customerTelephone != "" && customerTelephone.length < 12){
             updateStateCustomer("Invalid Telephone Number",true,false,"telephone");
             telephoneCustomer.current.focus();
         }
@@ -592,11 +580,11 @@ export default function navbar() {
             confirmpasswordCustomer.current.focus();
         }
         else{
-            profilepicToBase64(profilePicCustomer.current.files[0]);
             firstname = CapitalizedWord(firstname);
             middlename = middlename != "" ? CapitalizedWord(middlename):"";
             lastname = CapitalizedWord(lastname);
             address = CapitalizedWord(address);
+            telephone = telephone == "" ? "N/A" : telephone;
             birthdate = `${birthdate.substring(5,7)}/${birthdate.substring(8)}/${birthdate.substring(0,4)}`;
             nationality = CapitalizedWord(nationality);
             let date = new Date();
@@ -607,30 +595,43 @@ export default function navbar() {
             let registrationDate = `${year}-${month}-${day} | ${time}`;
             let registrationStatus = "ACTIVE";
             setupRecaptcha(`+63${phone}`);
-            setCustomerSignUpData({
-                fullname: `${lastname},${firstname} ${middlename}`,
-                account_id: customerAccountID,
-                password: password,
-                username: username,
-                profilepicture: imageBase64,
-                address: address,
-                phone: phoneInput,
-                telephone: telephone,
-                firstname: firstname,
-                lastname: lastname,
-                middlename: middlename,
-                birthdate: birthdate,
-                gender: gender,
-                nationality: nationality,
-                registrationDate: registrationDate,
-                registrationStatus: registrationStatus,
-            });
+
+            //converting image file to base64
+            try{
+                let file = profilePicCustomer.current.files[0];
+                let imageFiletype = `data:${file.type};base64,`;
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    setCustomerSignUpData({
+                        "ACCOUNT-FULL NAME": `${lastname}, ${firstname} ${middlename}`,
+                        "ACCOUNT-ID NUMBER": customerAccountID,
+                        "ACCOUNT-PASSWORD": password,
+                        "ACCOUNT-USERNAME": username,
+                        "ACCOUNT-USER_PROFILE": reader.result.substring(imageFiletype.length),
+                        "CONTACT-HOME ADDRESS": address,
+                        "CONTACT-PHONE NUMBER": phoneInput,
+                        "CONTACT-TELEPHONE NUMBER": telephone,
+                        "NAME-FIRST NAME": firstname,
+                        "NAME-LAST NAME": lastname,
+                        "NAME-MIDDLE NAME": middlename,
+                        "PERSONAL-BIRTHDATE": birthdate,
+                        "PERSONAL-GENDER": gender,
+                        "PERSONAL-NATIONALITY": nationality,
+                        "REGISTRATION-DATE AND TIME": registrationDate,
+                        "REGISTRATION-STATUS": registrationStatus,
+                    });
+                };
+            }
+            catch(error){
+                console.log(error);
+            }
         }   
     }
 
     //setup Recaptcha customer phone number
     const setupRecaptcha = (phone) => {
-        auth.settings.appVerificationDisabledForTesting = true; //for phone authentication testing remove this in production/deploy mode 
+        // auth.settings.appVerificationDisabledForTesting = true; //for phone authentication testing remove this in production/deploy mode 
         const recaptchaVerifier = new RecaptchaVerifier("customer-recaptcha-container",{}, auth);
         recaptchaVerifier.render();
         signInWithPhoneNumber(auth, phone, recaptchaVerifier)
@@ -644,13 +645,28 @@ export default function navbar() {
     }
 
     //firebase database customer sign up
-    const databaseCustomerSignUp = () => {
-        dispatch(addUser({
+    const databaseCustomerSignUp = async () => {
+        await dispatch(addUser({
             [customerAccountID]:{
                 ...customerSignUpData,
             }
         }));
-        console.log(stateUser);
+        await set(ref(database, `HOTEL-RESERVATION-SYSTEM/USERS/${customerAccountID}`),{
+            ...customerSignUpData,
+        })
+        .then(() => {
+            hidemodalCustomerAuth();
+            mySwal.fire({
+                icon: 'success',
+                title: <p className={cssHome.swalText}>Account has been successfully registered</p>,
+                customClass:{
+                  confirmButton: `${cssHome.swalButton}`,
+                }
+              });
+        })
+        .catch((error) => {
+            console.log(error);
+        });
     }
 
     //customer authentication verfiy code
@@ -663,8 +679,8 @@ export default function navbar() {
         else{
             errorCustomerAuthVerify != "" ? setErrorCustomerAuth({isInvalid:true, error: "Invalid/Expired OTP"}) : setErrorCustomerAuth({isInvalid:false, error: ""});
             customerVerifyAuth.confirm(code).then(result => {
-                setErrorCustomerAuthVerify("");
-                databaseCustomerSignUp();            
+                setErrorCustomerAuthVerify("");  
+                databaseCustomerSignUp();    
             }).catch((error) => {
                 console.log(error);
                 setErrorCustomerAuthVerify(`${error.message}`);
@@ -807,21 +823,6 @@ export default function navbar() {
             </Modal>
             );
     }
-    const hotelModal = () => {
-        return(
-            <Modal show={modalHotelShow} onHide={()=> setModalHotelShow(false)} animation={true}  centered>
-                <Modal.Header closeButton className={css.modalHotelHeader}>
-                    <p>HOTEL</p>
-                </Modal.Header>
-    
-                <Modal.Body>
-                </Modal.Body>
-    
-                <Modal.Footer className={css.modalHotelFooter}>
-                </Modal.Footer>
-            </Modal>
-            );
-    }
     const signInModal = () => {
         return (
         <Modal show={modalSignInShow} onHide={()=> {hidemodalSignIn()}} animation={true}  centered>
@@ -937,8 +938,8 @@ export default function navbar() {
             </Navbar>
             {signInModal()}
             {customerModal()}
-            {hotelModal()}
             {customerAuth()}
+            <Hotelmanager />
         </>
     );
 }
