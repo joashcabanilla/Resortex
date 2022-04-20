@@ -33,6 +33,9 @@ export default function Hotelmanager(){
         },
         confirmpassword:{
             ...errorObject,
+        },
+        hotelcover:{
+            ...errorObject,  
         }
     });
 
@@ -43,6 +46,7 @@ export default function Hotelmanager(){
     const refUsername = useRef();
     const refPassword = useRef();
     const refConfirmpassword = useRef();
+    const refHotelcover = useRef();
 
     //redux state-------------------------------------------------------------------
     const showModal = useSelector(state => state.storeHotel.hotelManagerAccount);
@@ -269,6 +273,15 @@ export default function Hotelmanager(){
                             <p>Hotel Information</p>
                             <hr />
                         </Form.Group>
+
+                        <Form.Group className={`${css.customerInput} ${css.conProfileCustomer}`}>
+                            <Form.Label>PROFILE PICTURE</Form.Label>
+                            <div>
+                                <Form.Control type="file" ref={refHotelcover} onChange={()=>{formOnchange("profilepic")}} isInvalid={formError.hotelcover.isInvalid} isValid={formError.hotelcover.isValid} />
+                                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelcover.error}</Form.Control.Feedback>
+                            </div>
+                        </Form.Group>
+
                         <div className={css.customerButton}>
                             <Button type="submit">Sign Up</Button>
                         </div>
