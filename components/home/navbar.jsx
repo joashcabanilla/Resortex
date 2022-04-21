@@ -259,17 +259,17 @@ export default function navbar() {
         showPasswordSignIn.current.checked ? setFormSignInShowPassword(true) : setFormSignInShowPassword(false);
     }
 
-    const setImgProfile = () => {
-       return uploadProfile != "" ? (
+        const setImgProfile = () => {
+        return uploadProfile != "" ? (
+                <div className={css.profileIcon}>
+                    <img src={uploadProfile} alt="profile picture" />
+                </div>
+            ) : (
             <div className={css.profileIcon}>
-                <img src={uploadProfile} alt="profile picture" />
+                <img src='/image/profile-icon-9.png' alt="profile picture" />
             </div>
-        ) : (
-        <div className={css.profileIcon}>
-            <img src='/image/profile-icon-9.png' alt="profile picture" />
-        </div>
-       ); 
-    }
+        ); 
+        }
 
     //get new customer account id
     const customerCreateAccount = () => {

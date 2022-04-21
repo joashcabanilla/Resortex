@@ -38,6 +38,7 @@ export default function Hotelmanager(){
             ...errorObject,  
         }
     });
+    const [hotelCover, setHotelCover] = useState("");
 
     //react Hooks useRef--------------------------------------------------------------
     const refFirstname = useRef();
@@ -131,10 +132,26 @@ export default function Hotelmanager(){
             },
             confirmpassword:{
                 ...errorObject,
+            },
+            hotelcover:{
+                ...errorObject,  
             }
         });
     }
     
+    //Set Hotel Cover Image Component------------------------------------------------
+    const hotelCoverComponent = () => {
+        return hotelCover != "" ? (
+             <div className={cssSignUp.conHotelCover}>
+                 <img src={hotelCover} alt="Hotel Cover Picture" />
+             </div>
+         ) : (
+         <div className={cssSignUp.conHotelCover}>
+             <img src='/image/profile-icon-9.png' alt="Hotel Cover Picture" />
+         </div>
+        ); 
+     }
+
     //Form Submit--------------------------------------------------------------------
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -275,13 +292,13 @@ export default function Hotelmanager(){
                         </Form.Group>
 
                         <Form.Group className={`${css.customerInput} ${css.conProfileCustomer}`}>
-                            <Form.Label>PROFILE PICTURE</Form.Label>
+                            <Form.Label>Hotel Cover Photo:</Form.Label>
                             <div>
-                                <Form.Control type="file" ref={refHotelcover} onChange={()=>{formOnchange("profilepic")}} isInvalid={formError.hotelcover.isInvalid} isValid={formError.hotelcover.isValid} />
+                                <Form.Control type="file" ref={refHotelcover} onChange={()=>{formOnchange("hotelcover")}} isInvalid={formError.hotelcover.isInvalid} isValid={formError.hotelcover.isValid} />
                                 <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelcover.error}</Form.Control.Feedback>
                             </div>
                         </Form.Group>
-
+                        {hotelCoverComponent()}
                         <div className={css.customerButton}>
                             <Button type="submit">Sign Up</Button>
                         </div>
