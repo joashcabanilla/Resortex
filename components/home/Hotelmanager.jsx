@@ -142,12 +142,12 @@ export default function Hotelmanager(){
     //Set Hotel Cover Image Component------------------------------------------------
     const hotelCoverComponent = () => {
         return hotelCover != "" ? (
-             <div className={cssSignUp.conHotelCover}>
+             <div className={`${cssSignUp.conHotelCover} ${css.profileIcon}`}>
                  <img src={hotelCover} alt="Hotel Cover Picture" />
              </div>
          ) : (
-         <div className={cssSignUp.conHotelCover}>
-             <img src='/image/profile-icon-9.png' alt="Hotel Cover Picture" />
+        <div className={`${cssSignUp.conHotelCover} ${css.profileIcon}`}>
+             <img src='/image/image_icon.png' alt="Hotel Cover Picture" />
          </div>
         ); 
      }
@@ -298,7 +298,10 @@ export default function Hotelmanager(){
                                 <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelcover.error}</Form.Control.Feedback>
                             </div>
                         </Form.Group>
-                        {hotelCoverComponent()}
+                        <div className={cssSignUp.HotelCover}>
+                            {hotelCoverComponent()}
+                        </div>
+                        
                         <div className={css.customerButton}>
                             <Button type="submit">Sign Up</Button>
                         </div>

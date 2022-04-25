@@ -13,8 +13,18 @@
 }
 .conHotelInformation{
     margin-top: 1.5rem;
+    margin-bottom: -1.2rem;
 }
 .conHotelCover{
+    width: 95%;
+    height: 12rem;
+}
+.conHotelCover img{
+    width: 20%;
+    height: 20%;
+}
+.HotelCover{
     width: 100%;
-    height: 40%;
+    display: flex;
+    justify-content: center;
 }
