@@ -20,11 +20,29 @@
     height: 12rem;
 }
 .conHotelCover img{
-    width: 20%;
-    height: 20%;
+    width: 30%;
+    height: 30%;
 }
 .HotelCover{
     width: 100%;
     display: flex;
     justify-content: center;
+}
+.conHotelCoverImage{
+    width: 95%;
+    height: 12rem;
+}
+.conHotelCoverImage img{
+    width: 90%;
+}
+.hotelDescription, 
+.hotelLocation{
+    font-size: 0.8rem;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 400;
+    margin-top: 0.5rem;
+    height: 5rem;
+}
+.hotelLocation{
+    height: 4rem;
 }

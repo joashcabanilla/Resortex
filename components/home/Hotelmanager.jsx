@@ -36,7 +36,16 @@ export default function Hotelmanager(){
         },
         hotelcover:{
             ...errorObject,  
-        }
+        },
+        hotelDescription:{
+            ...errorObject,  
+        },
+        hotelLocation:{
+            ...errorObject,  
+        },
+        hotelName:{
+            ...errorObject,  
+        },
     });
     const [hotelCover, setHotelCover] = useState("");
 
@@ -48,7 +57,11 @@ export default function Hotelmanager(){
     const refPassword = useRef();
     const refConfirmpassword = useRef();
     const refHotelcover = useRef();
-
+    const refHotelDescription = useRef();
+    const refHotelLocation = useRef();
+    const refHotelName = useRef();
+    const refSubmit = useRef();
+    
     //redux state-------------------------------------------------------------------
     const showModal = useSelector(state => state.storeHotel.hotelManagerAccount);
     const stateManager = useSelector(state => state.storeUsers.hotelManagerAcct);
@@ -108,11 +121,33 @@ export default function Hotelmanager(){
                 let confirmpassword = refConfirmpassword.current.value;
                 confirmpassword == "" ? updateFormError("",false,false,"confirmpassword") : updateFormError("",false,true,"confirmpassword");
             break;
+
+            case "hotelcover":
+                let hotelcover = refHotelcover.current.value;
+                hotelcover != "" ? setHotelCover(URL.createObjectURL(refHotelcover.current.files[0])) : setHotelCover("");
+                hotelcover != "" ? updateFormError("",false,true,"hotelcover") : updateFormError("",false,false,"hotelcover");
+            break;
+
+            case "hotelDescription":
+                let hotelDescription = refHotelDescription.current.value;
+                hotelDescription == "" ? updateFormError("",false,false,"hotelDescription") : updateFormError("",false,true,"hotelDescription");
+            break;
+
+            case "hotelLocation":
+                let hotelLocation = refHotelLocation.current.value;
+                hotelLocation == "" ? updateFormError("",false,false,"hotelLocation") : updateFormError("",false,true,"hotelLocation");
+            break;
+
+            case "hotelName":
+                let hotelName = refHotelName.current.value;
+                hotelName == "" ? updateFormError("",false,false,"hotelName") : updateFormError("",false,true,"hotelName");
+            break;
         }
     }
 
     //Modal Hide function------------------------------------------------------------
     const hideModalForm = () => {
+        setHotelCover("");
         dispatch(showModalHotelManager(false));
         setFormError({
             firstname:{
@@ -135,6 +170,15 @@ export default function Hotelmanager(){
             },
             hotelcover:{
                 ...errorObject,  
+            },
+            hotelDescription:{
+                ...errorObject,  
+            },
+            hotelLocation:{
+                ...errorObject,  
+            },
+            hotelName:{
+                ...errorObject,  
             }
         });
     }
@@ -142,7 +186,7 @@ export default function Hotelmanager(){
     //Set Hotel Cover Image Component------------------------------------------------
     const hotelCoverComponent = () => {
         return hotelCover != "" ? (
-             <div className={`${cssSignUp.conHotelCover} ${css.profileIcon}`}>
+             <div className={`${cssSignUp.conHotelCoverImage} ${css.profileIcon}`}>
                  <img src={hotelCover} alt="Hotel Cover Picture" />
              </div>
          ) : (
@@ -151,6 +195,15 @@ export default function Hotelmanager(){
          </div>
         ); 
      }
+    
+    //Form Key Down Event------------------------------------------------------------
+    const descriptionKeyDown = (e) => {
+        if(e.key == "Enter")  refSubmit.current.focus();
+    }
+
+    const locationKeyDown = (e) => {
+        if(e.key == "Enter") refSubmit.current.focus();
+    }
 
     //Form Submit--------------------------------------------------------------------
     const handleSubmit = (e) => {
@@ -161,6 +214,10 @@ export default function Hotelmanager(){
         let username = refUsername.current.value;
         let password = refPassword.current.value;
         let confirmpassword = refConfirmpassword.current.value;
+        let hotelcover = refHotelcover.current.value;
+        let hotelDescription = refHotelDescription.current.value;
+        let hotelLocation = refHotelLocation.current.value;
+        let hotelName = refHotelName.current.value;
 
          //function for capitalized each word
          const CapitalizedWord = (word) => {
@@ -210,9 +267,25 @@ export default function Hotelmanager(){
             updateFormError("Password and Confirm Password do not match",true,false,"confirmpassword");
             refConfirmpassword.current.focus();
         }
+        else if(hotelcover == ""){
+            updateFormError("Upload Hotel Cover",true,false,"hotelcover");
+            refHotelcover.current.focus();
+        }
+        else if(hotelName == ""){
+            updateFormError("Enter Hotel Name",true,false,"hotelName");
+            refHotelName.current.focus();
+        }
+        else if(hotelDescription == ""){
+            updateFormError("Enter Hotel Description",true,false,"hotelDescription");
+            refHotelDescription.current.focus();
+        }
+        else if(hotelLocation == ""){
+            updateFormError("Enter Hotel Location",true,false,"hotelLocation");
+            refHotelLocation.current.focus();
+        }
         else{
             firstname = CapitalizedWord(firstname);
-            middlename = middlename != "" ? CapitalizedWord(middlename):"";
+            middlename = middlename != "" ? CapitalizedWord(middlename): " ";
             lastname = CapitalizedWord(lastname);
         }
     }
@@ -301,9 +374,29 @@ export default function Hotelmanager(){
                         <div className={cssSignUp.HotelCover}>
                             {hotelCoverComponent()}
                         </div>
-                        
+
+                        <Form.Group className={css.customerInput}>
+                            <Form.Floating className={css.customerFloating}>
+                                <Form.Control ref={refHotelName} type="text" placeholder='Hotel Name' isInvalid={formError.hotelName.isInvalid} isValid={formError.hotelName.isValid} onChange={() => {formOnchange("hotelName")}} />
+                                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelName.error}</Form.Control.Feedback>
+                                <Form.Label>Hotel Name</Form.Label>
+                            </Form.Floating>
+                        </Form.Group>
+
+                        <Form.Group className={css.customerInput}>
+                            <Form.Label>Hotel Description</Form.Label>
+                            <Form.Control className={cssSignUp.hotelDescription} onKeyDown={descriptionKeyDown} ref={refHotelDescription} as="textarea" placeholder='Enter Hotel Description' isInvalid={formError.hotelDescription.isInvalid} isValid={formError.hotelDescription.isValid} onChange={() => {formOnchange("hotelDescription")}} />
+                            <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelDescription.error}</Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className={css.customerInput}>
+                            <Form.Label>Hotel Location</Form.Label>
+                            <Form.Control className={cssSignUp.hotelLocation} onKeyDown={locationKeyDown}  ref={refHotelLocation} as="textarea" placeholder='Enter Hotel Location' isInvalid={formError.hotelLocation.isInvalid} isValid={formError.hotelLocation.isValid} onChange={() => {formOnchange("hotelLocation")}} />
+                            <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelLocation.error}</Form.Control.Feedback>
+                        </Form.Group>
+
                         <div className={css.customerButton}>
-                            <Button type="submit">Sign Up</Button>
+                            <Button type="submit" ref={refSubmit}>Sign Up</Button>
                         </div>
                 </Form>
             </Modal.Body>
