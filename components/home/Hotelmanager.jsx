@@ -46,8 +46,12 @@ export default function Hotelmanager(){
         hotelName:{
             ...errorObject,  
         },
+        hotelRoom:{
+            ...errorObject,  
+        }
     });
     const [hotelCover, setHotelCover] = useState("");
+    const [hotelRoom, setHotelRoom] = useState("");
 
     //react Hooks useRef--------------------------------------------------------------
     const refFirstname = useRef();
@@ -60,6 +64,7 @@ export default function Hotelmanager(){
     const refHotelDescription = useRef();
     const refHotelLocation = useRef();
     const refHotelName = useRef();
+    const refHotelRoom = useRef();
     const refSubmit = useRef();
     
     //redux state-------------------------------------------------------------------
@@ -142,6 +147,13 @@ export default function Hotelmanager(){
                 let hotelName = refHotelName.current.value;
                 hotelName == "" ? updateFormError("",false,false,"hotelName") : updateFormError("",false,true,"hotelName");
             break;
+
+            case "hotelRoom":
+                let inputHotelRoom = refHotelRoom.current.value;
+                setHotelRoom(value => refHotelRoom.current.validity.valid ? inputHotelRoom : value);
+                isNaN(inputHotelRoom) ? updateFormError("",false,false,"hotelRoom") : updateFormError("",false,true,"hotelRoom");
+                inputHotelRoom == "" ? updateFormError("",false,false,"hotelRoom") : null;
+            break;
         }
     }
 
@@ -178,6 +190,9 @@ export default function Hotelmanager(){
                 ...errorObject,  
             },
             hotelName:{
+                ...errorObject,  
+            },
+            hotelRoom:{
                 ...errorObject,  
             }
         });
@@ -218,6 +233,7 @@ export default function Hotelmanager(){
         let hotelDescription = refHotelDescription.current.value;
         let hotelLocation = refHotelLocation.current.value;
         let hotelName = refHotelName.current.value;
+        let hotelRoom = refHotelRoom.current.value;
 
          //function for capitalized each word
          const CapitalizedWord = (word) => {
@@ -283,6 +299,10 @@ export default function Hotelmanager(){
             updateFormError("Enter Hotel Location",true,false,"hotelLocation");
             refHotelLocation.current.focus();
         }
+        else if(hotelRoom == ""){
+            updateFormError("Enter Number of Hotel Rooms",true,false,"hotelRoom");
+            refHotelRoom.current.focus();
+        }
         else{
             firstname = CapitalizedWord(firstname);
             middlename = middlename != "" ? CapitalizedWord(middlename): " ";
@@ -294,8 +314,8 @@ export default function Hotelmanager(){
         <Modal show={showModal} onHide={()=> hideModalForm()} animation={true}  centered>
             <Modal.Header closeButton className={css.modalSignInHeader}>
                     <div>
-                        <p>Hotel Manager Sign Up</p>
-                        <p>Hotel Account Registration</p>
+                        <p>Resort Manager Sign Up</p>
+                        <p>Resort Account Registration</p>
                     </div>
             </Modal.Header>
 
@@ -303,7 +323,7 @@ export default function Hotelmanager(){
                 <Form onSubmit={handleSubmit}>
                     
                     <Form.Group className={`${css.customerInput} ${cssSignUp.conHotelManager}`}>
-                            <p>Hotel Manager Account</p>
+                            <p>Resort Manager Account</p>
                             <hr />
                     </Form.Group>
 
@@ -360,12 +380,12 @@ export default function Hotelmanager(){
                         </Form.Group>
 
                         <Form.Group className={`${css.customerInput} ${cssSignUp.conHotelInformation}`}>
-                            <p>Hotel Information</p>
+                            <p>Resort Information</p>
                             <hr />
                         </Form.Group>
 
                         <Form.Group className={`${css.customerInput} ${css.conProfileCustomer}`}>
-                            <Form.Label>Hotel Cover Photo:</Form.Label>
+                            <Form.Label>Resort Cover Photo:</Form.Label>
                             <div>
                                 <Form.Control type="file" ref={refHotelcover} onChange={()=>{formOnchange("hotelcover")}} isInvalid={formError.hotelcover.isInvalid} isValid={formError.hotelcover.isValid} />
                                 <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelcover.error}</Form.Control.Feedback>
@@ -377,22 +397,28 @@ export default function Hotelmanager(){
 
                         <Form.Group className={css.customerInput}>
                             <Form.Floating className={css.customerFloating}>
-                                <Form.Control ref={refHotelName} type="text" placeholder='Hotel Name' isInvalid={formError.hotelName.isInvalid} isValid={formError.hotelName.isValid} onChange={() => {formOnchange("hotelName")}} />
+                                <Form.Control ref={refHotelName} type="text" placeholder='Resort Name' isInvalid={formError.hotelName.isInvalid} isValid={formError.hotelName.isValid} onChange={() => {formOnchange("hotelName")}} />
                                 <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelName.error}</Form.Control.Feedback>
-                                <Form.Label>Hotel Name</Form.Label>
+                                <Form.Label>Resort Name</Form.Label>
                             </Form.Floating>
                         </Form.Group>
 
                         <Form.Group className={css.customerInput}>
-                            <Form.Label>Hotel Description</Form.Label>
+                            <Form.Label>Resort Description</Form.Label>
                             <Form.Control className={cssSignUp.hotelDescription} onKeyDown={descriptionKeyDown} ref={refHotelDescription} as="textarea" placeholder='Enter Hotel Description' isInvalid={formError.hotelDescription.isInvalid} isValid={formError.hotelDescription.isValid} onChange={() => {formOnchange("hotelDescription")}} />
                             <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelDescription.error}</Form.Control.Feedback>
                         </Form.Group>
 
                         <Form.Group className={css.customerInput}>
-                            <Form.Label>Hotel Location</Form.Label>
+                            <Form.Label>Resort Location</Form.Label>
                             <Form.Control className={cssSignUp.hotelLocation} onKeyDown={locationKeyDown}  ref={refHotelLocation} as="textarea" placeholder='Enter Hotel Location' isInvalid={formError.hotelLocation.isInvalid} isValid={formError.hotelLocation.isValid} onChange={() => {formOnchange("hotelLocation")}} />
                             <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelLocation.error}</Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className={css.customerInput}>
+                            <Form.Label>Number of Resort Rooms</Form.Label>
+                            <Form.Control className={cssSignUp.hotelRoom} ref={refHotelRoom} type="text" pattern="[0-9]*" value={hotelRoom} placeholder='Enter Number of Hotel Rooms' isInvalid={formError.hotelRoom.isInvalid} isValid={formError.hotelRoom.isValid} onChange={() => {formOnchange("hotelRoom")}} />
+                            <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelRoom.error}</Form.Control.Feedback>
                         </Form.Group>
 
                         <div className={css.customerButton}>
