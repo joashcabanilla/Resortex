@@ -42,7 +42,11 @@
     font-weight: 400;
     margin-top: 0.5rem;
     height: 5rem;
+    text-transform: capitalize;
 }
 .hotelLocation{
     height: 4rem;
+}
+.hotel textarea{
+    text-transform: capitalize;
 }

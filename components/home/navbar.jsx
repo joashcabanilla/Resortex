@@ -39,6 +39,8 @@ export default function navbar() {
     const [customerPhone, setCustomerPhone] = useState("");
     const [customerTelephone, setCustomerTelephone] = useState("");
     const [customerVerifyAuth, setCustomerVerifyAuth] = useState("");
+    const [hotelAccountID, setHotelAccountID] = useState("");
+
     const [errorSignIn,setErrorSignIn] = useState({
         username:{
             isInvalid: false,
@@ -290,6 +292,18 @@ export default function navbar() {
     const managerCreateAccount = () => {
         setModalSignInShow(false); 
         dispatch(showModalHotelManager(true));
+
+        //Get Hotel Manager Account ID-------------------------------------------------
+        let date = new Date();
+        let month = date.getMonth()+1 < 10 ?  `0${date.getMonth()+1}` : date.getMonth()+1;
+        let accountDate = `${date.getFullYear()}-${month}`;
+        let id = 0;
+        Object.values(stateHotelManagerAcct).forEach(value => {
+            let dataId = value['ID'];
+            id = parseInt(dataId.split("-")[2]) + 1;
+        });
+        const accountID = `${accountDate}-${'0000'.substr( String(id).length ) + id}`;
+        setHotelAccountID(accountID);
     }
 
     //event handlers functions
@@ -939,7 +953,7 @@ export default function navbar() {
             {signInModal()}
             {customerModal()}
             {customerAuth()}
-            <Hotelmanager />
+            <Hotelmanager accountId={hotelAccountID} />
         </>
     );
 }

@@ -26,9 +26,16 @@ export const usersSlice = createSlice({
             state.hotelManagerAcct = {
                 ...payload,
             }
+        },
+
+        addHotelManager: (state, { payload }) => {
+            state.hotelManagerAcct = {
+                ...state.hotelManagerAcct,
+                ...payload,
+            }
         }
     },
 });
 
-export const { getUser, addUser, getHotelManager } = usersSlice.actions;
+export const { getUser, addUser, getHotelManager, addHotelManager } = usersSlice.actions;
 export default usersSlice.reducer; 

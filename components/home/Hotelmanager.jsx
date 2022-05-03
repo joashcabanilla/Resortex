@@ -1,13 +1,21 @@
 import {Modal, Button, Form } from 'react-bootstrap';
 import cssSignUp from '../../styles/Components/hotelManager.module.css';
 import css from '../../styles/Components/modalSignIn.module.css';
+import cssHome from '../../styles/Pages/Home.module.css';
 import {useState, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { showModalHotelManager } from '../../redux/reduxSlice/hotelSlice';
+import { addHotelManager } from '../../redux/reduxSlice/userSlice';
+import { getHotel } from '../../redux/reduxSlice/hotelSlice';
+import {database} from '../../firebase/firebaseConfig';
+import { ref, set } from "firebase/database";
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
-export default function Hotelmanager(){
+export default function Hotelmanager({accountId}){
     //import variables------------------------------------------------------------
     const dispatch = useDispatch();
+    const mySwal = withReactContent(Swal);
 
     //initializing component state---------------------------------------------------
     const errorObject = {
@@ -70,18 +78,7 @@ export default function Hotelmanager(){
     //redux state-------------------------------------------------------------------
     const showModal = useSelector(state => state.storeHotel.hotelManagerAccount);
     const stateManager = useSelector(state => state.storeUsers.hotelManagerAcct);
-
-    //Get Hotel Manager Account ID-------------------------------------------------
-    let date = new Date();
-    let month = date.getMonth()+1 < 10 ?  `0${date.getMonth()+1}` : date.getMonth()+1;
-    let accountDate = `${date.getFullYear()}-${month}`;
-    let id = 0;
-    Object.values(stateManager).forEach(value => {
-        let dataId = value['ID'];
-        id = parseInt(dataId.split("-")[2]) + 1;
-    });
-    const accountID = `${accountDate}-${'0000'.substr( String(id).length ) + id}`;
-
+    
     //Update Form Error State Function-----------------------------------------------
     const updateFormError = (error, invalid, valid, input) => {
         setFormError(formError => ({
@@ -159,6 +156,7 @@ export default function Hotelmanager(){
 
     //Modal Hide function------------------------------------------------------------
     const hideModalForm = () => {
+        setHotelRoom("");
         setHotelCover("");
         dispatch(showModalHotelManager(false));
         setFormError({
@@ -307,6 +305,95 @@ export default function Hotelmanager(){
             firstname = CapitalizedWord(firstname);
             middlename = middlename != "" ? CapitalizedWord(middlename): " ";
             lastname = CapitalizedWord(lastname);
+            hotelName = CapitalizedWord(hotelName);
+            hotelDescription = CapitalizedWord(hotelDescription);
+            hotelLocation = CapitalizedWord(hotelLocation);
+
+            try{
+                let file = refHotelcover.current.files[0];
+                let imageFiletype = `data:${file.type};base64,`;
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    
+                    dispatch(addHotelManager({
+                        [accountId]: {
+                            "FIRSTNAME": firstname,
+                            "ID": accountId,
+                            "LASTNAME": lastname,
+                            "MIDDLENAME": middlename,
+                            "PASSWORD": password,
+                            "USERNAME": username,
+                        }
+                    }));
+
+                    set(ref(database, `ADMIN/HOTEL-MANAGER/${accountId}`),{
+                        "FIRSTNAME": firstname,
+                        "ID": accountId,
+                        "LASTNAME": lastname,
+                        "MIDDLENAME": middlename,
+                        "PASSWORD": password,
+                        "USERNAME": username,
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+
+                    dispatch(getHotel({
+                        [accountId]: {
+                            "HOTEL-COVER": reader.result.substring(imageFiletype.length),
+                            "HOTEL-DESCRIPTION": hotelDescription,
+                            "HOTEL-LOCATION": hotelLocation,
+                            "HOTEL-NAME": hotelName,
+                            "HOTEL-REFERENCE NUMBER": accountId,
+                            "RATING-TOTAL ACCOMODATION": 0,
+                            "RATING-USER RATING": 0,
+                            "ROOMS": parseInt(hotelRoom),
+                            "VIEW-ROOM GALLERY":{
+                                "ROOM-01": "N/A",
+                                "ROOM-02": "N/A"
+                            },
+                            "VIEW-USER COMMENTS":{
+                                "COMMENT-COUNT": 0,
+                            }
+                        }
+                    }));
+
+                    set(ref(database, `HOTEL-RESERVATION-SYSTEM/HOTELS/${accountId}`),{
+                            "HOTEL-COVER": reader.result.substring(imageFiletype.length),
+                            "HOTEL-DESCRIPTION": hotelDescription,
+                            "HOTEL-LOCATION": hotelLocation,
+                            "HOTEL-NAME": hotelName,
+                            "HOTEL-REFERENCE NUMBER": accountId,
+                            "RATING-TOTAL ACCOMODATION": 0,
+                            "RATING-USER RATING": 0,
+                            "ROOMS": parseInt(hotelRoom),
+                            "VIEW-ROOM GALLERY":{
+                                "ROOM-01": "N/A",
+                                "ROOM-02": "N/A"
+                            },
+                            "VIEW-USER COMMENTS":{
+                                "COMMENT-COUNT": 0,
+                            }
+                    })
+                    .then(() => {
+                        mySwal.fire({
+                            icon: 'success',
+                            title: <p className={cssHome.swalText}>Account has been successfully registered</p>,
+                            customClass:{
+                              confirmButton: `${cssHome.swalButton}`,
+                            }
+                          });
+                        hideModalForm();
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+                };
+            }
+            catch(error){
+                console.log(error);
+            }
         }
     }
 
@@ -328,7 +415,7 @@ export default function Hotelmanager(){
                     </Form.Group>
 
                     <Form.Group className={`${css.customerInput} ${css.conAccountIDCustomer}`}>
-                        <Form.Control type="text" disabled value={`ACCOUNT ID:  ${accountID}`} readOnly />
+                        <Form.Control type="text" disabled value={`ACCOUNT ID:  ${accountId}`} readOnly />
                     </Form.Group>
 
                     <Form.Group className={`${css.customerInput} ${css.name}`}>
@@ -395,7 +482,7 @@ export default function Hotelmanager(){
                             {hotelCoverComponent()}
                         </div>
 
-                        <Form.Group className={css.customerInput}>
+                        <Form.Group className={`${css.customerInput} ${css.name}`}>
                             <Form.Floating className={css.customerFloating}>
                                 <Form.Control ref={refHotelName} type="text" placeholder='Resort Name' isInvalid={formError.hotelName.isInvalid} isValid={formError.hotelName.isValid} onChange={() => {formOnchange("hotelName")}} />
                                 <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelName.error}</Form.Control.Feedback>
