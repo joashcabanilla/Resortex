@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+.mainContainer{
+    width: 100vw;
+    height: 100vh;
+    background: var(--color-background) !important;
+    user-select: none;
+    overflow-x: hidden;
+}
+
+.sidebar a{
+    color: var(--color-dark) !important;
+    font-family: poppins, sans-serif;
+}
+.sidebar h3{
+    font-size: 1rem;
+    font-family: poppins, sans-serif;
+}
+
+.logo h2{
+    font-family: poppins, sans-serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+    padding-top: 0.5rem;
+}
+.logo img{
+    display: block;
+    width: 100%;
+}
+
+.text-muted{
+    color: var(--color-info-dark) !important;
+}
+
+.primary{
+    color: var(--color-primary) !important;
+}
+.danger{
+    color: var(--color-danger) !important;
+}
+.success{
+    color: var(--color-success) !important;
+}
+.warning{
+    color: var(--color-warning) !important;
+}
+
+.container{
+    display: grid;
+    width: 98%;
+    margin: 0 auto;
+    gap: 1.5rem;
+    grid-template-columns: 16rem auto;
+}
+.container aside{
+    height: 100vh;
+}
+
+.top{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.2rem;
+}
+.closebtn{
+    padding: 0.5rem;
+    display: none;
+}
+.logo{
+    display: flex;
+    gap: 0.8rem;
+}
+.logo img{
+    width: 3rem;
+    height: 3rem;
+}
+
+.sidebar{
+    display: flex;
+    flex-direction: column;
+    height: 86vh;
+    position: relative;
+    top: 2.3rem;
+}
+.sidebar h3{
+    font-weight: 500;
+}
+.sidebar a{
+    display: flex;
+    color: var(--color-info-dark) !important;
+    margin-left: 1rem;
+    gap: 1rem;
+    align-items: center;
+    position: relative;
+    height: 3.7rem;
+    transition: all 300ms ease;
+}
+.sidebar a span{
+    font-size: 1.6rem;
+    transition: all 300ms ease;
+}
+.sidebar a:last-child{
+    position: absolute;
+    bottom: 2rem;
+    width: 100%;
+}
+
+.sidebar a.active{
+background: var(--color-light) !important;
+color: var(--color-primary) !important;
+margin-left: 0;
+}
+.sidebar a.active:before{
+    content: '';
+    width: 8px;
+    height: 100%;
+    background: var(--color-primary) !important;
+}
+.sidebar a.active span{
+    color: var(--color-primary) !important;
+    margin-left: calc(1rem -3px);
+}
+.sidebar a:hover{
+    color: var(--color-primary) !important;
+}
+.sidebar a:hover span{
+    margin-left: 1rem;
+}
+
+.main h1{
+    font-family: poppins, sans-serif;
+    font-weight: 800;
+    font-size: 1.8rem;
+}

@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
+import data from '../../data.json';
 
 const initialState = {
     userList: {},
-    hotelManagerAcct: {},
+    hotelManagerAcct: { ...data['ADMIN']['HOTEL-MANAGER'] },
 }
 
 export const usersSlice = createSlice({
@@ -24,6 +25,7 @@ export const usersSlice = createSlice({
 
         getHotelManager: (state, { payload }) => {
             state.hotelManagerAcct = {
+                ...state.hotelManagerAcct,
                 ...payload,
             }
         },
