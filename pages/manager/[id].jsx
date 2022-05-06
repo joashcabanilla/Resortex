@@ -114,6 +114,15 @@ export default function Manager() {
                   <input type="date" />
                 </div>
                 
+
+                {/* //PENDING
+                //CHECKED OUT
+                //TOTAL INCOME */}
+                <div className={css.insights}>
+                  <div className={css.pending}>
+                  <span class="material-icons-sharp">pending_actions</span>  
+                  </div>
+                </div>
             </main>
         </div>
       </div>
