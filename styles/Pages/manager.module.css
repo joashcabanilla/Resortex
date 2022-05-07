@@ -8,6 +8,19 @@
     overflow-x: hidden;
 }
 
+.mainContainer img{
+    display: block;
+    width: 100%;
+}
+.mainContainer h1,
+.mainContainer h2,
+.mainContainer h3,
+.mainContainer h4,
+.mainContainer h5,
+{
+    
+}
+
 .sidebar a{
     color: var(--color-dark) !important;
     font-family: poppins, sans-serif;
@@ -20,12 +33,8 @@
 .logo h2{
     font-family: poppins, sans-serif;
     font-weight: 600;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     padding-top: 0.5rem;
-}
-.logo img{
-    display: block;
-    width: 100%;
 }
 
 .text-muted{

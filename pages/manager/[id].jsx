@@ -120,7 +120,13 @@ export default function Manager() {
                 //TOTAL INCOME */}
                 <div className={css.insights}>
                   <div className={css.pending}>
-                  <span class="material-icons-sharp">pending_actions</span>  
+                    <span className="material-icons-sharp">pending_actions</span> 
+                    <div className={css.middle}>
+                      <div className={css.left}>
+                        <h3>Total Sales</h3>
+                        <h1>₱10,000</h1>
+                      </div>
+                    </div>                   
                   </div>
                 </div>
             </main>
