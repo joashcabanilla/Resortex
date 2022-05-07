@@ -7,7 +7,10 @@
     user-select: none;
     overflow-x: hidden;
 }
-
+.mainContainer a{
+    color: var(--color-dark) !important;
+    font-family: poppins, sans-serif;
+}
 .mainContainer img{
     display: block;
     width: 100%;
@@ -16,29 +19,46 @@
 .mainContainer h2,
 .mainContainer h3,
 .mainContainer h4,
-.mainContainer h5,
+.mainContainer h5
 {
-    
-}
-
-.sidebar a{
-    color: var(--color-dark) !important;
     font-family: poppins, sans-serif;
 }
-.sidebar h3{
-    font-size: 1rem;
-    font-family: poppins, sans-serif;
+.mainContainer h1{
+    font-weight: 800;
+    font-size: 1.8rem;
 }
-
-.logo h2{
-    font-family: poppins, sans-serif;
-    font-weight: 600;
+.mainContainer h2{
     font-size: 1.4rem;
-    padding-top: 0.5rem;
+}
+.mainContainer h3{
+    font-size: 0.87rem;
+}
+.mainContainer h4{
+    font-size: 0.8rem;
+}
+.mainContainer h5{
+    font-size: 0.77rem;
+}
+.mainContainer small{
+    font-size: 0.75rem;
+}
+
+.profile-photo{
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 50%;
+    overflow: hidden;
 }
 
 .text-muted{
     color: var(--color-info-dark) !important;
+}
+
+.mainContainer p{
+    color: var(--color-dark-variant) !important;
+}
+.mainContainer b{
+    color: var(--color-dark) !important;
 }
 
 .primary{
@@ -83,13 +103,17 @@
     width: 3rem;
     height: 3rem;
 }
+.logo h2{
+    padding-top: 0.5rem;
+    font-size: 1.6rem;
+}
 
-.sidebar{
+.sidebar{ 
     display: flex;
     flex-direction: column;
     height: 86vh;
     position: relative;
-    top: 2.3rem;
+    top: 3rem;
 }
 .sidebar h3{
     font-weight: 500;
