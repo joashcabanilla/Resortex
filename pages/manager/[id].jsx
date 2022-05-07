@@ -119,15 +119,38 @@ export default function Manager() {
                 //CHECKED OUT
                 //TOTAL INCOME */}
                 <div className={css.insights}>
-                  <div className={css.pending}>
-                    <span className="material-icons-sharp">pending_actions</span> 
-                    <div className={css.middle}>
-                      <div className={css.left}>
-                        <h3>Total Sales</h3>
-                        <h1>₱10,000</h1>
+                    <div className={css.pending}>
+                      <span className="material-icons-sharp">pending_actions</span> 
+                      <div className={css.middle}>
+                        <div className={css.left}>
+                          <h3>Pending</h3>
+                          <h1>10</h1>
+                        </div>
                       </div>
-                    </div>                   
-                  </div>
+                      <small className={css['text-muted']}>Last 24 Hours</small>                   
+                    </div>
+
+                    <div className={css['checked-out']}>
+                    <span className="material-icons-sharp">done_all</span> 
+                      <div className={css.middle}>
+                        <div className={css.left}>
+                          <h3>Checked Out</h3>
+                          <h1>10</h1>
+                        </div>
+                      </div>
+                      <small className={css['text-muted']}>Last 24 Hours</small>                   
+                    </div>
+
+                    <div className={css['total-income']}>
+                    <span className="material-icons-sharp">stacked_line_chart</span> 
+                      <div className={css.middle}>
+                        <div className={css.left}>
+                          <h3>Total Income</h3>
+                          <h1>₱10,000</h1>
+                        </div>
+                      </div>
+                      <small className={css['text-muted']}>Last 24 Hours</small>                   
+                    </div>
                 </div>
             </main>
         </div>
