@@ -109,15 +109,21 @@ export default function Manager() {
             </aside>
 
             <main className={css.main}>
-              <h1>Dashboard</h1>
-                <div className={css.date}>
-                  <input type="date" />
+                <div className={css['dashboard-header']}>
+                    <div className={css['dashboard-title']}>
+                      <h1>Dashboard</h1>
+                    </div>
+                    <div className={css['dashboard-profile']}>
+                      <div className={css['dashboard-admin']}>
+                          <h3>Joash Cabanilla</h3>
+                          <small className={css['text-muted']}>Resort Manager</small>
+                      </div>
+                      <span className="material-icons-sharp">account_circle_full</span>
+                    </div>
                 </div>
-                
-
-                {/* //PENDING
-                //CHECKED OUT
-                //TOTAL INCOME */}
+                <div className={css['resort-name']}>
+                    <h2>Hotel De Luna Hotel De Luna Hotel De Luna</h2> 
+                </div>
                 <div className={css.insights}>
                     <div className={css.pending}>
                       <span className="material-icons-sharp">pending_actions</span> 
