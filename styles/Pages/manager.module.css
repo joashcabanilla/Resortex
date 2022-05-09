@@ -231,3 +231,43 @@
   justify-content: flex-end;
   align-items: flex-end;
 }
+
+.main .recent-booking{
+  margin-top: 2rem;
+}
+.main .recent-booking h2{
+  font-weight: 800;
+  margin-bottom: 0.8rem;
+}
+.main .recent-booking th,
+.main .recent-booking td{
+  font-size: 0.8rem;
+  font-family: poppins, sans-serif;
+}
+.main .recent-booking table{
+  background: var(--color-white);
+  width: 100%;
+  border-radius: var(--card-border-radius);
+  padding: var(--card-padding);
+  text-align: center;
+  box-shadow: var(--box-shadow);
+  transition: all 300ms ease;
+  margin-bottom: 2rem;
+}
+.main .recent-booking table:hover{
+  box-shadow: none;
+}.main .recent-booking table thead th{
+  height: 2.8rem;
+}
+.main .recent-booking table tbody td{
+  height: 2.8rem;
+  border-bottom: 1px solid var(--color-light);
+  color: var(--color-dark-variant);
+}
+.main .recent-booking table tbody tr:last-child td{
+ border: none;
+}
+.main .recent-booking table tbody tr td:last-child{
+  color: var(--color-warning);
+  font-weight: 600;
+}
