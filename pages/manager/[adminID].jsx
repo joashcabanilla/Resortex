@@ -117,6 +117,10 @@ export default function Manager({reservation}) {
       let totalCustomerServed = 0;
       let totalIncome = 0;
       let recentBookingData = [];
+      let formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'PHP',
+      });
 
       //Get Reservation Data---------------------------------------------------------------------
       Object.values(stateReservation).forEach(valPackage => {
@@ -154,10 +158,7 @@ export default function Manager({reservation}) {
           });
         });
       });
-      var formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'PHP',
-      });
+
       return(
         <main className={css.main}>
         <div className={css['dashboard-header']}>
