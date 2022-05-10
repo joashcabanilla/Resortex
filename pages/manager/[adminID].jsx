@@ -129,7 +129,10 @@ export default function Manager({reservation}) {
             let payment = value['PACKAGE-AMOUNT TOTAL'];
             let status = value['REFERENCE STATUS'];
             let dateReserved = value['USER-DATE OF RESERVATION'].substring(0,10);
+            let totalAmount = value['PACKAGE-RAW-AMOUNT TOTAL'];
+
             recentBookingCounter++;
+
             if(dateReserved == getDateToday() && status == "PENDING"){
               recentBookingCounter <= 5 ? 
               recentBookingData.push({
@@ -141,15 +144,20 @@ export default function Manager({reservation}) {
                 status: status
               }): null;
             }
+
             status == "PENDING" ? totalPending++ : null;
             status == "CHECKED-OUT" ? totalCustomerServed++ : null;
+
             if(status == "CHECKED-OUT"){
-              // totalIncome = totalIncome + parseFloat(payment.payment.substring(3).replace(/,/g, ".")).toFixed(2);
+              totalIncome = totalIncome + totalAmount;
             }
           });
         });
       });
-      console.log(totalIncome);
+      var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'PHP',
+      });
       return(
         <main className={css.main}>
         <div className={css['dashboard-header']}>
@@ -195,7 +203,7 @@ export default function Manager({reservation}) {
               <div className={css.middle}>
                 <div className={css.left}>
                   <h3>Total Income</h3>
-                  <h1>₱10,000</h1>
+                  <h1>{formatter.format(totalIncome)}</h1>
                 </div>
               </div>                   
             </div>
