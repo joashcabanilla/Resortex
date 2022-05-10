@@ -1,0 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+
+.main .insights > div {
+    margin-top: 0.3rem;
+    padding: 0.8rem;
+}
+.main .insights > div span {
+    font-size: 1rem;
+}
+.pending,
+.checked-out,
+.total-income{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.main .insights h3{
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    margin-left: 0.5rem;
+}
+.main .insights h1{
+    margin-bottom: 0;
+    margin-top: 0.2rem;
+    text-indent: 2.5rem;
+}

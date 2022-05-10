@@ -1,6 +1,7 @@
 import {useRouter} from 'next/router';
 import cookie from 'cookie';
 import css from '../../styles/Pages/manager.module.css';
+import cssBooking from '../../styles/Pages/booking.module.css';
 import Head from 'next/head';
 import {useState, useEffect} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -84,7 +85,8 @@ export default function Manager({reservation}) {
     const stateManager = useSelector(state => state.storeUsers.hotelManagerAcct);
     const stateHotel = useSelector(state => state.storeHotel.hotelList);
     const stateReservation = useSelector(state => state.storeHotel.reservation);
-
+    const managerName = `${stateManager[`${adminID}`].FIRSTNAME} ${stateManager[`${adminID}`].LASTNAME}`;
+    const hotelName = stateHotel[`${adminID}`]['HOTEL-NAME'];
     //state UI----------------------------------------------------------------------------------
     const [linkActive, setLinkActive] = useState("dashboard");
 
@@ -110,8 +112,6 @@ export default function Manager({reservation}) {
 
     //Links component----------------------------------------------------------------------------
     const linkDashboard = () => {
-      const managerName = `${stateManager[`${adminID}`].FIRSTNAME} ${stateManager[`${adminID}`].LASTNAME}`;
-      const hotelName = stateHotel[`${adminID}`]['HOTEL-NAME'];
       let recentBookingCounter = 0;
       let totalPending = 0;
       let totalCustomerServed = 0;
@@ -245,7 +245,68 @@ export default function Manager({reservation}) {
     }
 
     const linkBooking = () => {
-      return(<div>booking</div>);
+      return(
+        <main className={`${css.main} ${cssBooking.main}`}>
+        <div className={css['dashboard-header']}>
+            <div className={css['dashboard-title']}>
+              <h1>Booking</h1>
+            </div>
+            <div className={css['dashboard-profile']}>
+              <div className={css['dashboard-admin']}>
+                  <h3>{managerName}</h3>
+                  <small className={css['text-muted']}>Resort Manager</small>
+              </div>
+              <span className="material-icons-sharp">account_circle_full</span>
+            </div>
+        </div>
+        <div className={css['resort-name']}>
+            <h2>{hotelName}</h2> 
+        </div>
+
+        {/* -----------------Booking Status------------------ */}
+        <div className={`${css.insights} ${cssBooking.insights}`}>
+            <div className={css.pending}>
+              <div className={cssBooking.pending}>
+                <span className="material-icons-sharp">pending_actions</span> 
+                <div className={css.middle}>
+                  <div className={css.left}>
+                    <h3>Pending</h3>
+                  </div>
+                </div>   
+              </div>
+              <h1>5</h1>
+            </div>
+
+            <div className={css['checked-out']}>
+              <div className={cssBooking['checked-out']}>
+                <span className="material-icons-sharp">done_all</span> 
+                <div className={css.middle}>
+                  <div className={css.left}>
+                    <h3>Approved</h3>
+                  </div>
+                </div>   
+              </div>   
+              <h1>5</h1>        
+            </div>
+
+            <div className={css['total-income']}>
+              <div className={cssBooking['total-income']}>
+              <span className="material-icons-sharp">event_available</span>
+                  <div className={css.middle}>
+                    <div className={css.left}>
+                      <h3>Checked Out</h3>
+                    </div>
+                  </div>                   
+              </div>
+              <h1>5</h1>
+            </div>
+        </div>
+
+        {/* ---------------RECENT BOOKING--------------------- */}
+        <div className={css['recent-booking']}> 
+        </div>
+        </main>
+      );
     }
 
     const linkPackage = () => {
