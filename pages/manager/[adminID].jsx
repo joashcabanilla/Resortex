@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 // import { ref, child, get } from 'firebase/database';
 import QRCode from 'qrcode.react';
 import { getReservation } from '../../redux/reduxSlice/hotelSlice';
+import { Form, Button } from 'react-bootstrap';
 
 export async function getServerSideProps({req, res}){
   const mycookie = cookie.parse((req && req.headers.cookie) || "");
@@ -71,11 +72,6 @@ export default function Manager({reservation}) {
   //     excavate: true,
   // }}/>
   // </td>
-  //REACT HOOKS-------------------------------------------------------------------------
-  useEffect(() => {
-    dispatch(getReservation({...reservation}));
-  },[]);
-
     //import variables-------------------------------------------------------------------------
     const dispatch = useDispatch();
     const router = useRouter();
@@ -87,8 +83,85 @@ export default function Manager({reservation}) {
     const stateReservation = useSelector(state => state.storeHotel.reservation);
     const managerName = `${stateManager[`${adminID}`].FIRSTNAME} ${stateManager[`${adminID}`].LASTNAME}`;
     const hotelName = stateHotel[`${adminID}`]['HOTEL-NAME'];
+
     //state UI----------------------------------------------------------------------------------
     const [linkActive, setLinkActive] = useState("dashboard");
+    const [stateRecentBooking, setStateRecentBooking] = useState([]);
+    const [statePending, setStatePending] = useState(0);
+    const [stateCustomerServed, setStateCustomerServed] = useState(0);
+    const [stateTotalIncome, setStateTotalIncome] = useState(0);
+    const [stateBookIncome, setStateBookIncome] = useState(0);
+    const [stateApproved, setStateApproved] = useState(0);
+
+  //function Resrvation Get and Update Data-----------------------------------------------------
+  const ReservationData = () => {
+    let recentBookingCounter = 0;
+    let totalIncome = 0;
+    let recentBookingData = [];
+    let totalPending = 0;
+    let totalCustomerServed = 0;
+    let totalApproved = 0;
+    
+    Object.values(stateReservation).forEach(valPackage => {
+      Object.values(valPackage).forEach(valReference => {
+        Object.values(valReference).forEach(value => {
+          let customerName = value['USER-FULL NAME'];
+          let dateCheckIn = value['DATE-CHECK IN'];
+          let dateCheckOut = value['DATE-CHECK OUT'];
+          let packageName = value['PACKAGE-NAME'];
+          let payment = value['PACKAGE-AMOUNT TOTAL'];
+          let status = value['REFERENCE STATUS'];
+          let dateReserved = value['USER-DATE OF RESERVATION'].substring(0,10);
+          let totalAmount = value['PACKAGE-RAW-AMOUNT TOTAL'];
+
+          switch(status){
+            case "PENDING":
+              totalPending++;
+            break;
+            
+            case "APPROVED":
+              totalApproved++;
+            break;
+
+            case "CHECKED-OUT":
+              totalCustomerServed++;
+            break;
+          }
+
+          recentBookingCounter++;
+
+          if(dateReserved == getDateToday() && status == "PENDING"){
+            recentBookingCounter <= 5 ? 
+            recentBookingData.push({
+              customerName: customerName,
+              dateCheckIn: dateCheckIn,
+              dateCheckOut: dateCheckOut,
+              packageName: packageName,
+              payment: payment,
+              status: status
+            }): null;
+          }
+          
+          if(status == "CHECKED-OUT"){
+            totalIncome = totalIncome + totalAmount;
+          }
+          
+        });
+      });
+    });
+    setStatePending(totalPending);
+    setStateCustomerServed(totalCustomerServed);
+    setStateTotalIncome(totalIncome);
+    setStateRecentBooking([...recentBookingData]);
+    setStateApproved(totalApproved);
+    setStateBookIncome(totalIncome);
+  }
+
+  //REACT HOOKS-------------------------------------------------------------------------
+  useEffect(() => {
+    dispatch(getReservation({...reservation}));
+    ReservationData();
+  },[]);
 
     //function for logout-----------------------------------------------------------------------
     const LogOut = () => {
@@ -110,55 +183,25 @@ export default function Manager({reservation}) {
       return `${month}-${day}-${year}`;
     }
 
+    //function select tag for month-------------------------------------------------------------
+    const getSelectMonth = () => {
+      let month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      return(
+        <Form.Select type="select">
+          <option value="" hidden>Select Month</option>
+          {month.map((value, index) => {
+            return <option key={index} value={value}>{value}</option>
+          })}
+        </Form.Select>
+      );
+    }
+
     //Links component----------------------------------------------------------------------------
     const linkDashboard = () => {
-      let recentBookingCounter = 0;
-      let totalPending = 0;
-      let totalCustomerServed = 0;
-      let totalIncome = 0;
-      let recentBookingData = [];
       let formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'PHP',
       });
-
-      //Get Reservation Data---------------------------------------------------------------------
-      Object.values(stateReservation).forEach(valPackage => {
-        Object.values(valPackage).forEach(valReference => {
-          Object.values(valReference).forEach(value => {
-            let customerName = value['USER-FULL NAME'];
-            let dateCheckIn = value['DATE-CHECK IN'];
-            let dateCheckOut = value['DATE-CHECK OUT'];
-            let packageName = value['PACKAGE-NAME'];
-            let payment = value['PACKAGE-AMOUNT TOTAL'];
-            let status = value['REFERENCE STATUS'];
-            let dateReserved = value['USER-DATE OF RESERVATION'].substring(0,10);
-            let totalAmount = value['PACKAGE-RAW-AMOUNT TOTAL'];
-
-            recentBookingCounter++;
-
-            if(dateReserved == getDateToday() && status == "PENDING"){
-              recentBookingCounter <= 5 ? 
-              recentBookingData.push({
-                customerName: customerName,
-                dateCheckIn: dateCheckIn,
-                dateCheckOut: dateCheckOut,
-                packageName: packageName,
-                payment: payment,
-                status: status
-              }): null;
-            }
-
-            status == "PENDING" ? totalPending++ : null;
-            status == "CHECKED-OUT" ? totalCustomerServed++ : null;
-
-            if(status == "CHECKED-OUT"){
-              totalIncome = totalIncome + totalAmount;
-            }
-          });
-        });
-      });
-
       return(
         <main className={css.main}>
         <div className={css['dashboard-header']}>
@@ -184,7 +227,7 @@ export default function Manager({reservation}) {
               <div className={css.middle}>
                 <div className={css.left}>
                   <h3>Pending</h3>
-                  <h1>{totalPending}</h1>
+                  <h1>{statePending}</h1>
                 </div>
               </div>                   
             </div>
@@ -194,7 +237,7 @@ export default function Manager({reservation}) {
               <div className={css.middle}>
                 <div className={css.left}>
                   <h3>Customer Served</h3>
-                  <h1>{totalCustomerServed}</h1>
+                  <h1>{stateCustomerServed}</h1>
                 </div>
               </div>                   
             </div>
@@ -204,7 +247,7 @@ export default function Manager({reservation}) {
               <div className={css.middle}>
                 <div className={css.left}>
                   <h3>Total Income</h3>
-                  <h1>{formatter.format(totalIncome)}</h1>
+                  <h1>{formatter.format(stateTotalIncome)}</h1>
                 </div>
               </div>                   
             </div>
@@ -227,7 +270,7 @@ export default function Manager({reservation}) {
               </thead>
               <tbody>
                   {
-                    recentBookingData.map((value, index) => 
+                    stateRecentBooking.map((value, index) => 
                       <tr key={index}>
                         <td>{value.customerName}</td>
                         <td>{value.dateCheckIn}</td>
@@ -244,67 +287,87 @@ export default function Manager({reservation}) {
       );
     }
 
-    const linkBooking = () => {
+    const linkBooking = () => { 
+      let formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'PHP',
+      });
       return(
         <main className={`${css.main} ${cssBooking.main}`}>
-        <div className={css['dashboard-header']}>
-            <div className={css['dashboard-title']}>
-              <h1>Booking</h1>
-            </div>
-            <div className={css['dashboard-profile']}>
-              <div className={css['dashboard-admin']}>
-                  <h3>{managerName}</h3>
-                  <small className={css['text-muted']}>Resort Manager</small>
+          <div className={css['dashboard-header']}>
+              <div className={css['dashboard-title']}>
+                <h1>Booking</h1>
               </div>
-              <span className="material-icons-sharp">account_circle_full</span>
-            </div>
-        </div>
-        <div className={css['resort-name']}>
-            <h2>{hotelName}</h2> 
-        </div>
+              <div className={css['dashboard-profile']}>
+                <div className={css['dashboard-admin']}>
+                    <h3>{managerName}</h3>
+                    <small className={css['text-muted']}>Resort Manager</small>
+                </div>
+                <span className="material-icons-sharp">account_circle_full</span>
+              </div>
+          </div>
+          <div className={css['resort-name']}>
+                <h2>{hotelName}</h2> 
+          </div>
 
-        {/* -----------------Booking Status------------------ */}
-        <div className={`${css.insights} ${cssBooking.insights}`}>
-            <div className={css.pending}>
-              <div className={cssBooking.pending}>
-                <span className="material-icons-sharp">pending_actions</span> 
-                <div className={css.middle}>
-                  <div className={css.left}>
-                    <h3>Pending</h3>
+          {/* -----------------Booking Status------------------ */}
+          <div className={`${css.insights} ${cssBooking.insights}`}>
+                <div className={css.pending}>
+                  <div className={cssBooking.pending}>
+                    <span className="material-icons-sharp">pending_actions</span> 
+                    <div className={css.middle}>
+                      <div className={css.left}>
+                        <h3>Pending</h3>
+                      </div>
+                    </div>   
                   </div>
-                </div>   
-              </div>
-              <h1>5</h1>
-            </div>
+                  <h1>{statePending}</h1>
+                </div>
 
-            <div className={css['checked-out']}>
-              <div className={cssBooking['checked-out']}>
-                <span className="material-icons-sharp">done_all</span> 
-                <div className={css.middle}>
-                  <div className={css.left}>
-                    <h3>Approved</h3>
+                <div className={css['checked-out']}>
+                  <div className={cssBooking['checked-out']}>
+                    <span className="material-icons-sharp">done_all</span> 
+                    <div className={css.middle}>
+                      <div className={css.left}>
+                        <h3>Approved</h3>
+                      </div>
+                    </div>   
+                  </div>   
+                  <h1>{stateApproved}</h1>        
+                </div>
+
+                <div className={css['total-income']}>
+                  <div className={cssBooking['total-income']}>
+                  <span className="material-icons-sharp">event_available</span>
+                      <div className={css.middle}>
+                        <div className={css.left}>
+                          <h3>Checked Out</h3>
+                        </div>
+                      </div>                   
                   </div>
-                </div>   
-              </div>   
-              <h1>5</h1>        
-            </div>
+                  <h1>{stateCustomerServed}</h1>
+                </div>
+          </div>
 
-            <div className={css['total-income']}>
-              <div className={cssBooking['total-income']}>
-              <span className="material-icons-sharp">event_available</span>
-                  <div className={css.middle}>
-                    <div className={css.left}>
-                      <h3>Checked Out</h3>
-                    </div>
-                  </div>                   
-              </div>
-              <h1>5</h1>
+          {/* ----------------NAVIGATION CARD-------------------------- */}
+          <div className={cssBooking['nav-card']}>
+            <div>
+              <h3>Total Income</h3>
+              <h2>{formatter.format(stateBookIncome)}</h2>
             </div>
-        </div>
-
-        {/* ---------------RECENT BOOKING--------------------- */}
-        <div className={css['recent-booking']}> 
-        </div>
+            <div>
+              <h3>Filter By Date</h3>
+              <Form.Control type="date" />
+            </div>
+            <div>
+              <h3>Filter By Month</h3>
+              {getSelectMonth()}
+            </div>
+            <div>
+              <h3>Clear Filter</h3>
+              <Button variant="outline-danger">Clear</Button>
+            </div>
+          </div>
         </main>
       );
     }
@@ -328,46 +391,48 @@ export default function Manager({reservation}) {
       <div className={css.mainContainer}>
         <div className={css.container}>
             <aside>
-                <div className={css.top}>
-                  <div className={css.logo}>
-                    <img src="/logo/logo.png" />
-                    <h2>Resortex</h2>
+                <div className={cssBooking.aside}>
+                  <div className={css.top}>
+                    <div className={css.logo}>
+                      <img src="/logo/logo.png" />
+                      <h2>Resortex</h2>
+                    </div>
+                    <div className={css.close}>
+                        <span className={`material-icons-sharp ${css.closebtn}`}>close</span>
+                    </div>
                   </div>
-                  <div className={css.close}>
-                      <span className={`material-icons-sharp ${css.closebtn}`}>close</span>
+
+                  <div className={css.sidebar}>
+                    <a onClick={()=> setLinkActive("dashboard")} className={linkActive == "dashboard" ? css.active : ""}>
+                      <span className="material-icons-sharp">grid_view</span>
+                      <h3>Dashboard</h3>
+                    </a>
+
+                    <a onClick={()=> setLinkActive("booking")} className={linkActive == "booking" ? css.active : ""}>
+                      <span className="material-icons-sharp">book_online</span>
+                      <h3>Booking</h3>
+                    </a>
+
+                    <a onClick={()=> setLinkActive("package")} className={linkActive == "package" ? css.active : ""}>
+                      <span className="material-icons-sharp">inventory_2</span>
+                      <h3>Package</h3>
+                    </a>
+
+                    <a onClick={()=> setLinkActive("settings")} className={linkActive == "settings" ? css.active : ""}>
+                      <span className="material-icons-sharp">settings</span>
+                      <h3>Settings</h3>
+                    </a>
+
+                    <a onClick={()=> setLinkActive("account")} className={linkActive == "account" ? css.active : ""}>
+                      <span className="material-icons-sharp">manage_accounts</span>
+                      <h3>Manager Account</h3>
+                    </a>
+
+                    <a onClick={LogOut}>
+                      <span className="material-icons-sharp">logout</span>
+                      <h3>Logout</h3>
+                    </a>
                   </div>
-                </div>
-
-                <div className={css.sidebar}>
-                  <a onClick={()=> setLinkActive("dashboard")} className={linkActive == "dashboard" ? css.active : ""}>
-                    <span className="material-icons-sharp">grid_view</span>
-                    <h3>Dashboard</h3>
-                  </a>
-
-                  <a onClick={()=> setLinkActive("booking")} className={linkActive == "booking" ? css.active : ""}>
-                    <span className="material-icons-sharp">book_online</span>
-                    <h3>Booking</h3>
-                  </a>
-
-                  <a onClick={()=> setLinkActive("package")} className={linkActive == "package" ? css.active : ""}>
-                    <span className="material-icons-sharp">inventory_2</span>
-                    <h3>Package</h3>
-                  </a>
-
-                  <a onClick={()=> setLinkActive("settings")} className={linkActive == "settings" ? css.active : ""}>
-                    <span className="material-icons-sharp">settings</span>
-                    <h3>Settings</h3>
-                  </a>
-
-                  <a onClick={()=> setLinkActive("account")} className={linkActive == "account" ? css.active : ""}>
-                    <span className="material-icons-sharp">manage_accounts</span>
-                    <h3>Manager Account</h3>
-                  </a>
-
-                  <a onClick={LogOut}>
-                    <span className="material-icons-sharp">logout</span>
-                    <h3>Logout</h3>
-                  </a>
                 </div>
             </aside>
 

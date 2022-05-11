@@ -3,6 +3,7 @@
 .main .insights > div {
     margin-top: 0.3rem;
     padding: 0.8rem;
+    box-shadow: 0 0.5rem 1rem var(--color-light);
 }
 .main .insights > div span {
     font-size: 1rem;
@@ -23,4 +24,45 @@
     margin-bottom: 0;
     margin-top: 0.2rem;
     text-indent: 2.5rem;
+}
+.nav-card{
+    background: var(--color-white) !important;
+    border-radius: var(--card-border-radius);
+    margin-top: 1.5rem;
+    transition: all 300ms ease;
+    height: 5rem;
+    box-shadow: 0 0.5rem 1rem var(--color-light);
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 2rem;
+    justify-content: space-between;
+    align-items: center;
+}
+.nav-card:hover{
+    box-shadow: none;
+}
+.aside{
+    position: fixed;
+    width: 16rem;
+}
+.nav-card h3{
+    font-weight: 600;
+}
+.nav-card h2{
+    font-size: 1.1rem;
+}
+.nav-card input, .nav-card select{
+    font-size: 0.8rem; 
+}
+.nav-card div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.nav-card button{
+    font-family: poppins, sans-serif;
+    height: 2rem;
+    font-size: 0.9rem;
+    text-align: center;
 }
