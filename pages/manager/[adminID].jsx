@@ -3,13 +3,13 @@ import cookie from 'cookie';
 import css from '../../styles/Pages/manager.module.css';
 import cssBooking from '../../styles/Pages/booking.module.css';
 import Head from 'next/head';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 // import { database } from '../../firebase/firebaseConfig';
 // import { ref, child, get } from 'firebase/database';
 import QRCode from 'qrcode.react';
 import { getReservation } from '../../redux/reduxSlice/hotelSlice';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Modal } from 'react-bootstrap';
 
 export async function getServerSideProps({req, res}){
   const mycookie = cookie.parse((req && req.headers.cookie) || "");
@@ -94,6 +94,12 @@ export default function Manager({reservation}) {
     const [stateBookApproved, setStateBookApproved] = useState(0);
     const [stateBookCheckOut, setStateBookCheckOut] = useState(0);
     const [stateBookPending, setStateBookPending] = useState(0);
+    const [stateRefFilterDate, setStateRefFilterDate] = useState("");
+    const [stateRefFilterMonth, setStateRefFilterMonth] = useState("");
+    
+    //useRef Hooks variables----------------------------------------------------------------------
+    const bookFilterDate = useRef();
+    const bookFilterMonth = useRef();
 
   //function Resrvation Get and Update Data-----------------------------------------------------
   const ReservationData = () => {
@@ -127,6 +133,7 @@ export default function Manager({reservation}) {
 
             case "CHECKED-OUT":
               totalCustomerServed++;
+              totalIncome = totalIncome + totalAmount;
             break;
           }
 
@@ -143,20 +150,18 @@ export default function Manager({reservation}) {
               status: status
             }): null;
           }
-          
-          if(status == "CHECKED-OUT"){
-            totalIncome = totalIncome + totalAmount;
-          }
-          
         });
       });
     });
     setStatePending(totalPending);
+    setStateBookPending(totalPending);
     setStateCustomerServed(totalCustomerServed);
     setStateTotalIncome(totalIncome);
     setStateRecentBooking([...recentBookingData]);
     setStateBookApproved(totalApproved);
     setStateBookIncome(totalIncome);
+    setStateBookCheckOut(totalCustomerServed);
+
   }
 
   //REACT HOOKS-------------------------------------------------------------------------
@@ -189,14 +194,123 @@ export default function Manager({reservation}) {
     const getSelectMonth = () => {
       let month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       return(
-        <Form.Select type="select">
+        <Form.Select ref={bookFilterMonth} type="select" onChange={() => {BookFilter("month")}} value={stateRefFilterMonth}>
           <option value="" hidden>Select Month</option>
           {month.map((value, index) => {
-            return <option key={index} value={value}>{value}</option>
+            return <option key={index} value={index}>{value}</option>
           })}
         </Form.Select>
       );
     }
+
+    //function booking filter by date-----------------------------------------------------------
+    const BookFilter = (filter) => {
+      let date = bookFilterDate.current.value;
+      let month = parseInt(bookFilterMonth.current.value) + 1; 
+      month = month < 10 ? `0${month}` : month.toString();
+      date = `${date.substring(5,7)}-${date.substring(8)}-${date.substring(0,4)}`;
+
+      let pending = 0;
+      let approved = 0;
+      let checkOut = 0;
+      let totalIncome = 0;
+      
+      const changeData = (totalAmount, status) => {
+        switch(status){
+          case "PENDING":
+            pending++;
+          break;
+          case "APPROVED":
+            approved++;
+          break;
+          case "CHECKED-OUT":
+            checkOut++;
+            totalIncome = totalIncome + totalAmount;
+          break;
+        }
+      }
+
+      const clearData = () => {
+        pending = 0;
+        approved = 0;
+        checkOut = 0;
+        totalIncome = 0;
+      }
+
+      Object.values(stateReservation).forEach(valPackage => {
+        Object.values(valPackage).forEach(valReference => {
+          Object.values(valReference).forEach(value => {
+              let dataDate = value['USER-DATE OF RESERVATION'].substring(0,10);
+              let totalAmount = value['PACKAGE-RAW-AMOUNT TOTAL'];
+              let status = value['REFERENCE STATUS'];
+              
+              switch(filter){
+                case "date":
+                  setStateRefFilterDate(bookFilterDate.current.value);
+                  setStateRefFilterMonth("");
+                  dataDate == date ? changeData(totalAmount,status) : clearData();
+
+                break;
+
+                case "month":
+                  setStateRefFilterMonth(bookFilterMonth.current.value);
+                  setStateRefFilterDate("");
+                  dataDate.substring(0,2) == month ? changeData(totalAmount,status) : clearData();
+                break;
+
+                case "clear":
+                  setStateRefFilterDate("");
+                  setStateRefFilterMonth("");
+                  changeData(totalAmount,status);
+                break;
+              }
+          });
+        });
+      });
+
+      setStateBookPending(pending);
+      setStateBookApproved(approved);
+      setStateBookCheckOut(checkOut);
+      setStateBookIncome(totalIncome);
+    } 
+
+    //function change Tab---------------------------------------------------------------
+    const changeTab = (tab) => {
+      ReservationData();
+      setStateRefFilterDate("");
+      setStateRefFilterMonth("");
+      switch(tab){
+        case "dashboard":
+          setLinkActive("dashboard");
+        break;
+
+        case "booking":
+          setLinkActive("booking");
+        break;
+
+        case "package":
+          setLinkActive("package");
+        break;
+
+        case "settings":
+          setLinkActive("settings");
+        break;
+
+        case "account":
+          setLinkActive("account");
+        break;
+
+        case "package":
+          setLinkActive("package");
+        break;
+        
+        case "package":
+          setLinkActive("package");
+        break;
+        
+      }
+
+    };
 
     //Links component----------------------------------------------------------------------------
     const linkDashboard = () => {
@@ -323,7 +437,7 @@ export default function Manager({reservation}) {
                       </div>
                     </div>   
                   </div>
-                  <h1>{statePending}</h1>
+                  <h1>{stateBookPending}</h1>
                 </div>
 
                 <div className={css['checked-out']}>
@@ -347,7 +461,7 @@ export default function Manager({reservation}) {
                         </div>
                       </div>                   
                   </div>
-                  <h1>{stateCustomerServed}</h1>
+                  <h1>{stateBookCheckOut}</h1>
                 </div>
           </div>
 
@@ -359,7 +473,7 @@ export default function Manager({reservation}) {
             </div>
             <div>
               <h3>Filter By Date</h3>
-              <Form.Control type="date" />
+              <Form.Control ref={bookFilterDate} type="date" onChange={() => {BookFilter("date")}} value={stateRefFilterDate} />
             </div>
             <div>
               <h3>Filter By Month</h3>
@@ -367,8 +481,13 @@ export default function Manager({reservation}) {
             </div>
             <div>
               <h3>Clear Filter</h3>
-              <Button variant="outline-danger">Clear</Button>
+              <Button variant="outline-danger" onClick={() => {BookFilter("clear")}}>Clear</Button>
             </div>
+          </div>
+
+          {/* -------------------Booking Table--------------------------------- */}
+          <div className={cssBooking['booking-table']}>
+
           </div>
         </main>
       );
@@ -405,27 +524,27 @@ export default function Manager({reservation}) {
                   </div>
 
                   <div className={css.sidebar}>
-                    <a onClick={()=> setLinkActive("dashboard")} className={linkActive == "dashboard" ? css.active : ""}>
+                    <a onClick={()=> changeTab("dashboard")} className={linkActive == "dashboard" ? css.active : ""}>
                       <span className="material-icons-sharp">grid_view</span>
                       <h3>Dashboard</h3>
                     </a>
 
-                    <a onClick={()=> setLinkActive("booking")} className={linkActive == "booking" ? css.active : ""}>
+                    <a onClick={()=> changeTab("booking")} className={linkActive == "booking" ? css.active : ""}>
                       <span className="material-icons-sharp">book_online</span>
                       <h3>Booking</h3>
                     </a>
 
-                    <a onClick={()=> setLinkActive("package")} className={linkActive == "package" ? css.active : ""}>
+                    <a onClick={()=> changeTab("package")} className={linkActive == "package" ? css.active : ""}>
                       <span className="material-icons-sharp">inventory_2</span>
                       <h3>Package</h3>
                     </a>
 
-                    <a onClick={()=> setLinkActive("settings")} className={linkActive == "settings" ? css.active : ""}>
+                    <a onClick={()=> changeTab("settings")} className={linkActive == "settings" ? css.active : ""}>
                       <span className="material-icons-sharp">settings</span>
                       <h3>Settings</h3>
                     </a>
 
-                    <a onClick={()=> setLinkActive("account")} className={linkActive == "account" ? css.active : ""}>
+                    <a onClick={()=> changeTab("account")} className={linkActive == "account" ? css.active : ""}>
                       <span className="material-icons-sharp">manage_accounts</span>
                       <h3>Manager Account</h3>
                     </a>
