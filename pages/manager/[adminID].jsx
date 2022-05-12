@@ -91,7 +91,9 @@ export default function Manager({reservation}) {
     const [stateCustomerServed, setStateCustomerServed] = useState(0);
     const [stateTotalIncome, setStateTotalIncome] = useState(0);
     const [stateBookIncome, setStateBookIncome] = useState(0);
-    const [stateApproved, setStateApproved] = useState(0);
+    const [stateBookApproved, setStateBookApproved] = useState(0);
+    const [stateBookCheckOut, setStateBookCheckOut] = useState(0);
+    const [stateBookPending, setStateBookPending] = useState(0);
 
   //function Resrvation Get and Update Data-----------------------------------------------------
   const ReservationData = () => {
@@ -153,7 +155,7 @@ export default function Manager({reservation}) {
     setStateCustomerServed(totalCustomerServed);
     setStateTotalIncome(totalIncome);
     setStateRecentBooking([...recentBookingData]);
-    setStateApproved(totalApproved);
+    setStateBookApproved(totalApproved);
     setStateBookIncome(totalIncome);
   }
 
@@ -333,7 +335,7 @@ export default function Manager({reservation}) {
                       </div>
                     </div>   
                   </div>   
-                  <h1>{stateApproved}</h1>        
+                  <h1>{stateBookApproved}</h1>        
                 </div>
 
                 <div className={css['total-income']}>
