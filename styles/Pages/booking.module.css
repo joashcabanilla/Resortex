@@ -72,15 +72,65 @@
 }
 .booking-table{
     background: var(--color-white) !important;
-    border-radius: var(--card-border-radius);
     margin-top: 1.5rem;
     margin-bottom: 3rem;
     transition: all 300ms ease;
-    height: 31rem;
+    box-shadow: 0 0.5rem 1rem var(--color-light);
 }
-
-@media (min-width: 1600px) {
-    .booking-table{
-        height: 40rem;
-    }
+.booking-table:hover{
+    box-shadow: none;
+}
+.booking-table div nav{
+    border-radius: 0rem 0rem 2rem 2rem !important;
+}
+.control-header{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+}
+.control-header button{
+    width: 5rem;
+    font-family: poppins, sans-serif;
+    font-size: 0.8rem;
+    margin: 0.1rem;
+    padding: 0.2rem;
+}
+.booking-table header{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+}
+.booking-table header input[type="text"],
+.booking-table header label{
+    font-family: poppins, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+}
+.booking-table header label{
+    padding: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    margin-right:0.5rem;
+}
+.booking-table p{
+    font-size: 0.8rem;
+    margin-bottom: 0;
+    font-weight: 600;
+}
+.booking-table p.pending{
+    color: var(--color-primary);
+}
+.booking-table p.approved{
+    color: var(--color-danger);
+}
+.booking-table p.checked-in{
+    color: rgb(0, 159, 180);
+}
+.booking-table p.checked-out{
+    color: #00bb7d;
 }

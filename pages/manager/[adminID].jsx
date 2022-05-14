@@ -10,6 +10,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import QRCode from 'qrcode.react';
 import { getReservation } from '../../redux/reduxSlice/hotelSlice';
 import { Form, Button, Modal } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
+
 
 export async function getServerSideProps({req, res}){
   const mycookie = cookie.parse((req && req.headers.cookie) || "");
@@ -87,6 +89,7 @@ export default function Manager({reservation}) {
     //state UI----------------------------------------------------------------------------------
     const [linkActive, setLinkActive] = useState("dashboard");
     const [stateRecentBooking, setStateRecentBooking] = useState([]);
+    const [stateAllBooking, setStateAllBooking] = useState([]);
     const [statePending, setStatePending] = useState(0);
     const [stateCustomerServed, setStateCustomerServed] = useState(0);
     const [stateTotalIncome, setStateTotalIncome] = useState(0);
@@ -106,10 +109,11 @@ export default function Manager({reservation}) {
     let recentBookingCounter = 0;
     let totalIncome = 0;
     let recentBookingData = [];
+    let allBooking = [];
     let totalPending = 0;
     let totalCustomerServed = 0;
     let totalApproved = 0;
-    
+
     Object.values(stateReservation).forEach(valPackage => {
       Object.values(valPackage).forEach(valReference => {
         Object.values(valReference).forEach(value => {
@@ -139,6 +143,14 @@ export default function Manager({reservation}) {
 
           recentBookingCounter++;
 
+          allBooking.push({
+            customerName: customerName,
+            dateCheckIn: dateCheckIn,
+            dateCheckOut: dateCheckOut,
+            packageName: packageName,
+            status: status
+          });
+
           if(dateReserved == getDateToday() && status == "PENDING"){
             recentBookingCounter <= 5 ? 
             recentBookingData.push({
@@ -161,12 +173,12 @@ export default function Manager({reservation}) {
     setStateBookApproved(totalApproved);
     setStateBookIncome(totalIncome);
     setStateBookCheckOut(totalCustomerServed);
-
+    setStateAllBooking(allBooking);
   }
 
   //REACT HOOKS-------------------------------------------------------------------------
-  useEffect(() => {
-    dispatch(getReservation({...reservation}));
+  useEffect( async () => {
+    await dispatch(getReservation({...reservation}));
     ReservationData();
   },[]);
 
@@ -311,6 +323,138 @@ export default function Manager({reservation}) {
       }
 
     };
+
+    //function component-----------------------------------------------------------------------
+    const bookingTable = () => {
+      const columns = [
+        {
+          name: "Customer Name",
+          selector: (row) => row.customerName,
+          sortable: true,
+          id: "columnName-1",
+          style:{
+            "font-family": "poppins, sans-serif",
+            "font-size": "0.8rem",
+            "text-align": "center",
+            "justify-content": "center",
+          }
+        },
+        {
+          name: "Date Check In",
+          selector: (row) => row.dateCheckIn,
+          id: "columnName-2",
+          style:{
+            "font-family": "poppins, sans-serif",
+            "font-size": "0.8rem",
+            "text-align": "center",
+            "justify-content": "center",
+          }
+        },
+        {
+          name: "Date Check Out",
+          selector: (row) => row.dateCheckOut,
+          id: "columnName-3",
+          style:{
+            "font-family": "poppins, sans-serif",
+            "font-size": "0.8rem",
+            "text-align": "center",
+            "justify-content": "center",
+          }
+        },
+        {
+          name: "Package",
+          selector: (row) => row.packageName,
+          id: "columnName-4",
+          style:{
+            "font-family": "poppins, sans-serif",
+            "font-size": "0.8rem",
+            "text-align": "center",
+            "justify-content": "center",
+          }
+        },
+        {
+          name: "Status",
+          cell: (row) => {
+            switch(row.status){
+              case "PENDING":
+               return <p className={cssBooking['pending']}>{row.status}</p>;
+              break;
+
+              case "APPROVED":
+               return <p className={cssBooking['approved']}>{row.status}</p>;
+              break;
+              
+              case "CHECKED-IN":
+               return <p className={cssBooking['checked-in']}>{row.status}</p>;
+              break;
+
+              case "CHECKED-OUT":
+                return <p className={cssBooking['checked-out']}>{row.status}</p>;
+               break;
+            }
+          },
+          id: "columnName-5",
+          style:{
+            "text-align": "center",
+            "justify-content": "center",
+            "align-items": "center",
+          }
+        },
+        {
+          name: "Action",
+          cell: (row) => {
+            switch(row.status){
+              case "PENDING":
+               return <div className={cssBooking['control-header']}>
+                        <Button variant="info">Approved</Button>
+                      </div>;
+              break;
+
+              case "APPROVED":
+                return <div className={cssBooking['control-header']}>
+                          <Button variant="info">Check In</Button>
+                        </div>;
+              break;
+
+              case "CHECKED-IN":
+                return <div className={cssBooking['control-header']}>
+                          <Button variant="info">Check Out</Button>
+                        </div>;
+              break;
+             
+              case "CHECKED-OUT":
+                return <div className={cssBooking['control-header']}>
+                          <Button variant="info">View Info</Button>
+                        </div>;
+              break;
+            }
+          },
+          id: "columnName-6",
+          style:{
+            "justify-content": "center",
+          }
+        }
+      ];
+
+      return <DataTable 
+      columns={columns} 
+      data={stateAllBooking} 
+      pagination 
+      fixedHeader
+      highlightOnHover
+      actions={<Button variant="success">Export Report</Button>} 
+      subHeader
+      subHeaderComponent={
+        <>
+          <Form.Label>                    
+          <span className="material-icons-sharp">search</span>
+          </Form.Label>
+          <Form.Control type="text" placeholder="Search"/>
+        </>
+
+      }
+      />
+    }
 
     //Links component----------------------------------------------------------------------------
     const linkDashboard = () => {
@@ -487,7 +631,7 @@ export default function Manager({reservation}) {
 
           {/* -------------------Booking Table--------------------------------- */}
           <div className={cssBooking['booking-table']}>
-
+            {bookingTable()}
           </div>
         </main>
       );
