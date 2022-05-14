@@ -5,13 +5,13 @@ import cssBooking from '../../styles/Pages/booking.module.css';
 import Head from 'next/head';
 import {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-// import { database } from '../../firebase/firebaseConfig';
-// import { ref, child, get } from 'firebase/database';
+import { database } from '../../firebase/firebaseConfig';
+import { ref, child, get, onValue } from 'firebase/database';
 import QRCode from 'qrcode.react';
-import { getReservation } from '../../redux/reduxSlice/hotelSlice';
+import { getReservation, updateReferenceStatus } from '../../redux/reduxSlice/hotelSlice';
 import { Form, Button, Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
-
+import { CSVLink } from "react-csv";
 
 export async function getServerSideProps({req, res}){
   const mycookie = cookie.parse((req && req.headers.cookie) || "");
@@ -62,18 +62,6 @@ export async function getServerSideProps({req, res}){
 }
 
 export default function Manager({reservation}) {
-  // <td> 
-  // <QRCode value="N1TITemRbE7VgkqFdro" 
-  // size="40"
-  // imageSettings={{
-  //   src: "/logo/logo.png",
-  //     x: null,
-  //     y: null,
-  //     height: 12,
-  //     width: 12,
-  //     excavate: true,
-  // }}/>
-  // </td>
     //import variables-------------------------------------------------------------------------
     const dispatch = useDispatch();
     const router = useRouter();
@@ -92,17 +80,20 @@ export default function Manager({reservation}) {
     const [stateAllBooking, setStateAllBooking] = useState([]);
     const [statePending, setStatePending] = useState(0);
     const [stateCustomerServed, setStateCustomerServed] = useState(0);
-    const [stateTotalIncome, setStateTotalIncome] = useState(0);
+    const [stateTotalIncome, setStateTotalIncome] = useState(0); 
     const [stateBookIncome, setStateBookIncome] = useState(0);
     const [stateBookApproved, setStateBookApproved] = useState(0);
     const [stateBookCheckOut, setStateBookCheckOut] = useState(0);
     const [stateBookPending, setStateBookPending] = useState(0);
     const [stateRefFilterDate, setStateRefFilterDate] = useState("");
     const [stateRefFilterMonth, setStateRefFilterMonth] = useState("");
+    const [stateRefBookSearch, setStateRefBookSearch] = useState("");
+    const [stateBookReference, setStateBookReference] = useState({});
     
     //useRef Hooks variables----------------------------------------------------------------------
     const bookFilterDate = useRef();
     const bookFilterMonth = useRef();
+    const bookSearch = useRef();
 
   //function Resrvation Get and Update Data-----------------------------------------------------
   const ReservationData = () => {
@@ -125,6 +116,9 @@ export default function Manager({reservation}) {
           let status = value['REFERENCE STATUS'];
           let dateReserved = value['USER-DATE OF RESERVATION'].substring(0,10);
           let totalAmount = value['PACKAGE-RAW-AMOUNT TOTAL'];
+          let reference = value['REFERENCE NUMBER'];
+          let packageID = value['PACKAGE-ID'];
+          let userID = value['USER-USER ID'];
 
           switch(status){
             case "PENDING":
@@ -148,7 +142,10 @@ export default function Manager({reservation}) {
             dateCheckIn: dateCheckIn,
             dateCheckOut: dateCheckOut,
             packageName: packageName,
-            status: status
+            status: status,
+            reference: reference,
+            packageID: packageID,
+            userID: userID
           });
 
           if(dateReserved == getDateToday() && status == "PENDING"){
@@ -217,6 +214,7 @@ export default function Manager({reservation}) {
 
     //function booking filter by date-----------------------------------------------------------
     const BookFilter = (filter) => {
+      let search = bookSearch.current.value;
       let date = bookFilterDate.current.value;
       let month = parseInt(bookFilterMonth.current.value) + 1; 
       month = month < 10 ? `0${month}` : month.toString();
@@ -226,8 +224,9 @@ export default function Manager({reservation}) {
       let approved = 0;
       let checkOut = 0;
       let totalIncome = 0;
+      let allBooking = [];
       
-      const changeData = (totalAmount, status) => {
+      const changeData = (totalAmount, status, customerName, dateCheckIn, dateCheckOut, packageName, reference, packageID, userID) => {
         switch(status){
           case "PENDING":
             pending++;
@@ -240,40 +239,60 @@ export default function Manager({reservation}) {
             totalIncome = totalIncome + totalAmount;
           break;
         }
-      }
 
-      const clearData = () => {
-        pending = 0;
-        approved = 0;
-        checkOut = 0;
-        totalIncome = 0;
+        allBooking.push({
+          customerName: customerName,
+          dateCheckIn: dateCheckIn,
+          dateCheckOut: dateCheckOut,
+          packageName: packageName,
+          status: status,
+          reference: reference,
+          packageID: packageID,
+          userID: userID
+        });
       }
-
       Object.values(stateReservation).forEach(valPackage => {
         Object.values(valPackage).forEach(valReference => {
           Object.values(valReference).forEach(value => {
               let dataDate = value['USER-DATE OF RESERVATION'].substring(0,10);
               let totalAmount = value['PACKAGE-RAW-AMOUNT TOTAL'];
               let status = value['REFERENCE STATUS'];
-              
+              let customerName = value['USER-FULL NAME'];
+              let dateCheckIn = value['DATE-CHECK IN'];
+              let dateCheckOut = value['DATE-CHECK OUT'];
+              let packageName = value['PACKAGE-NAME'];
+              let reference = value['REFERENCE NUMBER'];
+              let packageID = value['PACKAGE-ID'];
+              let userID = value['USER-USER ID'];
+
               switch(filter){
                 case "date":
                   setStateRefFilterDate(bookFilterDate.current.value);
                   setStateRefFilterMonth("");
-                  dataDate == date ? changeData(totalAmount,status) : clearData();
-
+                  setStateRefBookSearch("");
+                  dataDate == date ? changeData(totalAmount,status, customerName, dateCheckIn, dateCheckOut, packageName, reference, packageID, userID) : null;
                 break;
 
                 case "month":
                   setStateRefFilterMonth(bookFilterMonth.current.value);
                   setStateRefFilterDate("");
-                  dataDate.substring(0,2) == month ? changeData(totalAmount,status) : clearData();
+                  setStateRefBookSearch("");
+                  dataDate.substring(0,2) == month ? changeData(totalAmount,status, customerName, dateCheckIn, dateCheckOut, packageName, reference, packageID, userID) : null;
                 break;
 
                 case "clear":
                   setStateRefFilterDate("");
                   setStateRefFilterMonth("");
-                  changeData(totalAmount,status);
+                  setStateRefBookSearch("");
+                  changeData(totalAmount,status, customerName, dateCheckIn, dateCheckOut, packageName, reference, packageID, userID);
+                break;
+
+                case "search":
+                  setStateRefFilterDate("");
+                  setStateRefFilterMonth("");
+                  setStateRefBookSearch(search);
+                  customerName.toLowerCase().search(search.toLowerCase()) != -1 || dateCheckIn.toLowerCase().search(search.toLowerCase()) != -1 || dateCheckOut.toLowerCase().search(search.toLowerCase()) != -1 || packageName.toLowerCase().search(search.toLowerCase()) != -1 || status.toLowerCase().search(search.toLowerCase()) != -1 ?
+                  changeData(totalAmount,status, customerName, dateCheckIn, dateCheckOut, packageName, reference, packageID, userID) : search == "" ? changeData(totalAmount,status, customerName, dateCheckIn, dateCheckOut, packageName, reference, packageID, userID) : null;
                 break;
               }
           });
@@ -284,6 +303,7 @@ export default function Manager({reservation}) {
       setStateBookApproved(approved);
       setStateBookCheckOut(checkOut);
       setStateBookIncome(totalIncome);
+      setStateAllBooking(allBooking);
     } 
 
     //function change Tab---------------------------------------------------------------
@@ -291,6 +311,8 @@ export default function Manager({reservation}) {
       ReservationData();
       setStateRefFilterDate("");
       setStateRefFilterMonth("");
+      setStateRefBookSearch("");
+      setStateBookReference({});
       switch(tab){
         case "dashboard":
           setLinkActive("dashboard");
@@ -323,9 +345,26 @@ export default function Manager({reservation}) {
       }
 
     };
-
+    //function check update in reference status------------------------------------------------------
+    const referenceStatusUpdate = (packageID, userID, reference) => {
+      const referenceStatus = ref(database, `PACKAGE-RESERVATION/${adminID}/${packageID}/${userID}/${reference}/REFERENCE STATUS`);
+      onValue(referenceStatus, (snapshot) => {
+        const data = snapshot.val();
+        if(data == "APPROVED"){
+          setStateBookReference({...stateBookReference,approved: false, checkIn: true});
+          dispatch(updateReferenceStatus([packageID,userID,reference,"REFERENCE STATUS"]));
+        } 
+      });
+    }
     //function component-----------------------------------------------------------------------
     const bookingTable = () => {
+      let headers = [
+        {label: "Customer Name", key:"customerName"},
+        {label: "Date Check In", key:"dateCheckIn"},
+        {label: "Date Check Out", key:"dateCheckOut"},
+        {label: "Package", key:"packageName"},
+        {label: "Status", key:"status"}
+      ];
       const columns = [
         {
           name: "Customer Name",
@@ -403,28 +442,29 @@ export default function Manager({reservation}) {
         {
           name: "Action",
           cell: (row) => {
+
             switch(row.status){
               case "PENDING":
                return <div className={cssBooking['control-header']}>
-                        <Button variant="info">Approved</Button>
+                        <Button variant="info" onClick={() => {setStateBookReference({ref: row.reference, packageID: row.packageID, userID: row.userID, approved: true, checkIn: false, checkOut: false, viewInfo: false});referenceStatusUpdate(row.packageID, row.userID, row.reference);}}>Approved</Button>
                       </div>;
               break;
 
               case "APPROVED":
                 return <div className={cssBooking['control-header']}>
-                          <Button variant="info">Check In</Button>
+                          <Button variant="info" onClick={() => {setStateBookReference({ref: row.reference, packageID: row.packageID, userID: row.userID, approved: false, checkIn: true, checkOut: false, viewInfo: false});}}>Check In</Button>
                         </div>;
               break;
 
               case "CHECKED-IN":
                 return <div className={cssBooking['control-header']}>
-                          <Button variant="info">Check Out</Button>
+                          <Button variant="info" onClick={() => {setStateBookReference({ref: row.reference, packageID: row.packageID, userID: row.userID, approved: false, checkIn: false, checkOut: true, viewInfo: false});}}>Check Out</Button>
                         </div>;
               break;
              
               case "CHECKED-OUT":
                 return <div className={cssBooking['control-header']}>
-                          <Button variant="info">View Info</Button>
+                          <Button variant="info" onClick={() => {setStateBookReference({ref: row.reference, packageID: row.packageID, userID: row.userID, approved: false, checkIn: false, checkOut: false, viewInfo: true});}}>View Info</Button>
                         </div>;
               break;
             }
@@ -442,18 +482,75 @@ export default function Manager({reservation}) {
       pagination 
       fixedHeader
       highlightOnHover
-      actions={<Button variant="success">Export Report</Button>} 
+      actions={
+        <Button variant="success"> 
+          <CSVLink data={stateAllBooking} headers={headers} filename={"BookingReport.csv"} className={cssBooking['booking-report-download']}>
+            Export Report
+          </CSVLink>
+        </Button>
+      } 
       subHeader
       subHeaderComponent={
         <>
           <Form.Label>                    
           <span className="material-icons-sharp">search</span>
           </Form.Label>
-          <Form.Control type="text" placeholder="Search"/>
+          <Form.Control type="text" placeholder="Search" ref={bookSearch} onChange={() => {BookFilter("search")}} value={stateRefBookSearch}/>
         </>
 
       }
       />
+    }
+
+    const bookApproved = () => {
+      return <Modal 
+      show={stateBookReference.approved}
+      animation={true}  
+      centered
+      onHide={() =>setStateBookReference({...stateBookReference, approved: false})}>
+        <Modal.Header closeButton className={cssBooking.modalHeader}>
+          <div>
+            <p>Customer Reservation</p>
+            <p>Reservation Qrcode Reference</p>
+            </div>
+        </Modal.Header>
+
+        <Modal.Body>
+          <div className={cssBooking.qrcode}>
+            <QRCode value={stateBookReference.ref} size="128" imageSettings={{src: "/logo/logo.png",x: null,y: null,height: 30,width: 30,excavate: true,}}/>
+          </div>
+        </Modal.Body>
+      </Modal>
+    }
+
+    const bookCheckIn = () => {
+      return <Modal 
+      show={stateBookReference.checkIn}
+      animation={true}  
+      centered
+      onHide={() =>{setStateBookReference({...stateBookReference, checkIn: false}); ReservationData();}}>
+        CHECk IN
+      </Modal>
+    }
+
+    const bookCheckOut = () => {
+      return <Modal 
+      show={stateBookReference.checkOut}
+      animation={true}  
+      centered
+      onHide={() =>setStateBookReference({...stateBookReference, checkOut: false})}>
+        CHECK OUT
+      </Modal>
+    }
+
+    const bookViewInfo = () => {
+      return <Modal 
+      show={stateBookReference.viewInfo}
+      animation={true}  
+      centered
+      onHide={() =>setStateBookReference({...stateBookReference, viewInfo: false})}>
+        VIEW INFO
+      </Modal>
     }
 
     //Links component----------------------------------------------------------------------------
@@ -709,6 +806,10 @@ export default function Manager({reservation}) {
             }
         </div>
       </div>
+      {bookApproved()}
+      {bookCheckIn()}
+      {bookCheckOut()}
+      {bookViewInfo()}
       </>
     );
-} 
+}

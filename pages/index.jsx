@@ -10,8 +10,8 @@ import Carouselhotel from '../components/home/Carouselhotel';
 import cookie from 'cookie';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-// import { database } from '../firebase/firebaseConfig';
-// import { ref, child, get } from 'firebase/database';
+import { database } from '../firebase/firebaseConfig';
+import { ref, child, get } from 'firebase/database';
 import {getHotel} from '../redux/reduxSlice/hotelSlice';
 import { getUser, getHotelManager } from '../redux/reduxSlice/userSlice';
 

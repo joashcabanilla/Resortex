@@ -134,3 +134,31 @@
 .booking-table p.checked-out{
     color: #00bb7d;
 }
+.booking-report-download{
+    font-family: poppins, sans-serif;
+    font-size: 1rem;
+    color: #fff !important;
+}
+.modalHeader{
+    border-bottom: 0;
+}
+.modalHeader p{
+    font-family: "Open Sans", sans-serif;
+    font-weight: 800;
+    margin: 0;
+    padding: 0;
+}
+.modalHeader div{
+    display: flex;
+    flex-direction: column;
+}
+.modalHeader p:nth-child(2) {
+    font-size: 0.7rem;
+    color: #00000080;
+}
+.qrcode{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}

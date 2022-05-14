@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import data from '../../data.json';
+import data1 from '../../data1.json';
 
 const initialState = {
     userList: {},
-    hotelManagerAcct: { ...data['ADMIN']['HOTEL-MANAGER'] },
+    hotelManagerAcct: { ...data1['ADMIN']['HOTEL-MANAGER'] },
 }
 
 export const usersSlice = createSlice({

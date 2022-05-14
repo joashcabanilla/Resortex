@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import data from '../../data.json';
+import data1 from '../../data1.json';
 
 //INITIAL STATE------------------------------------------------------------------
 const initialState = {
-    hotelList: { ...data['HOTEL-RESERVATION-SYSTEM']['HOTELS'] },
+    hotelList: { ...data1['HOTEL-RESERVATION-SYSTEM']['HOTELS'] },
     hotelManagerAccount: false,
-    reservation: { ...data['PACKAGE-RESERVATION']['2022-01-0001'] }
+    reservation: { ...data1['PACKAGE-RESERVATION']['2022-01-0002'] }
 }
 
 //REDUX REDUCERS AND ACTIONS--------------------------------------------------------
@@ -28,8 +29,11 @@ export const hotelSlice = createSlice({
                 ...payload,
             }
         },
+        updateReferenceStatus: (state, { payload }) => {
+            state.reservation[`${payload[0]}`][`${payload[1]}`][`${payload[2]}`][`${payload[3]}`] = "APPROVED";
+        },
     },
 });
 
-export const { getHotel, showModalHotelManager, getReservation } = hotelSlice.actions;
+export const { getHotel, showModalHotelManager, getReservation, updateReferenceStatus } = hotelSlice.actions;
 export default hotelSlice.reducer;
