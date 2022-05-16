@@ -30,7 +30,7 @@ export const hotelSlice = createSlice({
             }
         },
         updateReferenceStatus: (state, { payload }) => {
-            state.reservation[`${payload[0]}`][`${payload[1]}`][`${payload[2]}`][`${payload[3]}`] = "APPROVED";
+            state.reservation[`${payload[0]}`][`${payload[1]}`][`${payload[2]}`][`${payload[3]}`] = payload[4];
         },
     },
 });

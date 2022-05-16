@@ -6,12 +6,14 @@ import Head from 'next/head';
 import {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { database } from '../../firebase/firebaseConfig';
-import { ref, child, get, onValue } from 'firebase/database';
+import { ref, child, get, onValue, set } from 'firebase/database';
 import QRCode from 'qrcode.react';
 import { getReservation, updateReferenceStatus } from '../../redux/reduxSlice/hotelSlice';
 import { Form, Button, Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { CSVLink } from "react-csv";
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 export async function getServerSideProps({req, res}){
   const mycookie = cookie.parse((req && req.headers.cookie) || "");
@@ -66,6 +68,7 @@ export default function Manager({reservation}) {
     const dispatch = useDispatch();
     const router = useRouter();
     const {adminID} = router.query;
+    const mySwal = withReactContent(Swal);
 
     //redux state------------------------------------------------------------------------------
     const stateManager = useSelector(state => state.storeUsers.hotelManagerAcct);
@@ -88,6 +91,7 @@ export default function Manager({reservation}) {
     const [stateRefFilterDate, setStateRefFilterDate] = useState("");
     const [stateRefFilterMonth, setStateRefFilterMonth] = useState("");
     const [stateRefBookSearch, setStateRefBookSearch] = useState("");
+    const [stateBookData, setStateBookData] = useState({});
     const [stateBookReference, setStateBookReference] = useState({});
     
     //useRef Hooks variables----------------------------------------------------------------------
@@ -178,6 +182,10 @@ export default function Manager({reservation}) {
     await dispatch(getReservation({...reservation}));
     ReservationData();
   },[]);
+
+  useEffect(() => {
+    ReservationData();
+  },[stateReservation]);
 
     //function for logout-----------------------------------------------------------------------
     const LogOut = () => {
@@ -345,6 +353,7 @@ export default function Manager({reservation}) {
       }
 
     };
+
     //function check update in reference status------------------------------------------------------
     const referenceStatusUpdate = (packageID, userID, reference) => {
       const referenceStatus = ref(database, `PACKAGE-RESERVATION/${adminID}/${packageID}/${userID}/${reference}/REFERENCE STATUS`);
@@ -352,10 +361,73 @@ export default function Manager({reservation}) {
         const data = snapshot.val();
         if(data == "APPROVED"){
           setStateBookReference({...stateBookReference,approved: false, checkIn: true});
-          dispatch(updateReferenceStatus([packageID,userID,reference,"REFERENCE STATUS"]));
+          dispatch(updateReferenceStatus([packageID,userID,reference,"REFERENCE STATUS","APPROVED"]));
+          bookData(reference);
         } 
       });
     }
+
+    //function get customer booking data---------------------------------------------------------------
+    const bookData = (reference) => {
+      Object.values(stateReservation).forEach(valPackage => {
+        Object.values(valPackage).forEach(valReference => {
+          Object.values(valReference).forEach(value => {
+            let valReference = value['REFERENCE NUMBER'];
+            if(valReference == reference){
+              setStateBookData({
+                reservationDateTime: value['USER-DATE OF RESERVATION'],
+                customerID: value['USER-USER ID'],
+                customerName: value['USER-FULL NAME'],
+                packageName: value['PACKAGE-NAME'],
+                customerRequest: value['PACKAGE-USER REQUEST'],
+                daysAccommodated: value['DATE-DAYS ACCOMMODATED'],
+                dayTime: value['DATE-DAY TIME'],
+                checkIn: value['DATE-CHECK IN'],
+                checkOut: value['DATE-CHECK OUT'],
+                packageAmount: value['PACKAGE-AMOUNT'],
+                totalAmount: value['PACKAGE-AMOUNT TOTAL'],
+                reference: value['REFERENCE NUMBER'],
+                packageID: value['PACKAGE-ID'],
+              });
+            }
+          });
+        });
+      });
+    }
+
+    //function sweet alert-----------------------------------------------------------------------------
+    const sweetAlert = (msg) => {
+      mySwal.fire({
+        icon: 'success',
+        title: <p className={cssBooking.swalText}>{`Customer Reservation Successfully ${msg}`}</p>,
+        customClass:{
+          confirmButton: `${cssBooking.swalButton}`,
+        }
+      });
+    }
+
+    //function update reference status----------------------------------------------------------------
+    const databaseUpdateReferenceStatus = (packageID, userID, reference, status) => {
+      const referenceStatus = ref(database, `PACKAGE-RESERVATION/${adminID}/${packageID}/${userID}/${reference}/REFERENCE STATUS`);
+      set(referenceStatus,`${status}`)
+      .then(() => { 
+        if(status == "CHECKED-IN")
+        {
+          dispatch(updateReferenceStatus([packageID,userID,reference,"REFERENCE STATUS","CHECKED-IN"]));
+          setStateBookReference({...stateBookReference, checkIn: false});
+          sweetAlert("Check In");
+        }
+        else{
+          dispatch(updateReferenceStatus([packageID,userID,reference,"REFERENCE STATUS","CHECKED-OUT"]));
+          setStateBookReference({...stateBookReference, checkOut: false});
+          sweetAlert("Check Out");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    }
+
     //function component-----------------------------------------------------------------------
     const bookingTable = () => {
       let headers = [
@@ -452,7 +524,7 @@ export default function Manager({reservation}) {
 
               case "APPROVED":
                 return <div className={cssBooking['control-header']}>
-                          <Button variant="info" onClick={() => {setStateBookReference({ref: row.reference, packageID: row.packageID, userID: row.userID, approved: false, checkIn: true, checkOut: false, viewInfo: false});}}>Check In</Button>
+                          <Button variant="info" onClick={() => {setStateBookReference({ref: row.reference, packageID: row.packageID, userID: row.userID, approved: false, checkIn: true, checkOut: false, viewInfo: false}); bookData(row.reference)}}>Check In</Button>
                         </div>;
               break;
 
@@ -507,7 +579,7 @@ export default function Manager({reservation}) {
       show={stateBookReference.approved}
       animation={true}  
       centered
-      onHide={() =>setStateBookReference({...stateBookReference, approved: false})}>
+      onHide={() =>{setStateBookReference({...stateBookReference, approved: false});}}>
         <Modal.Header closeButton className={cssBooking.modalHeader}>
           <div>
             <p>Customer Reservation</p>
@@ -528,8 +600,56 @@ export default function Manager({reservation}) {
       show={stateBookReference.checkIn}
       animation={true}  
       centered
-      onHide={() =>{setStateBookReference({...stateBookReference, checkIn: false}); ReservationData();}}>
-        CHECk IN
+      onHide={() =>{setStateBookReference({...stateBookReference, checkIn: false});}}>
+        <Modal.Header closeButton className={cssBooking.modalHeader}>
+          <div>
+            <p>Customer Reservation</p>
+            <p>Reservation Check In</p>
+            </div>
+        </Modal.Header>
+
+        <Modal.Body className={cssBooking['modal-body']}>
+          <div>
+            <h1>Reservation Check In</h1>
+          </div>
+          <div className={cssBooking['modal-check-in']}>
+            <Form.Label>Reservation Date and Time</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.reservationDateTime} />
+
+            <Form.Label>Customer ID</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.customerID}/>
+
+            <Form.Label>Customer Name</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.customerName}/>
+
+            <Form.Label>Customer Request</Form.Label>
+            <Form.Control  as="textarea" disabled value={stateBookData.customerRequest}/>
+
+            <Form.Label>Package</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.packageName}/>
+            
+            <Form.Label>Days Accommodated</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.daysAccommodated}/>
+
+            <Form.Label>Day and Time</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.dayTime}/>
+
+            <Form.Label>Check In Date</Form.Label>
+            <Form.Control  type="text" disabled  value={stateBookData.checkIn}/>
+
+            <Form.Label>Check Out Date</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.checkOut}/>
+
+            <Form.Label>Package Amount</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.packageAmount}/>
+
+            <Form.Label>Total Payment</Form.Label>
+            <Form.Control  type="text" disabled  value={stateBookData.totalAmount}/>
+          </div>
+          <div className={cssBooking['modal-div-button']}>
+          <Button onClick={() => {databaseUpdateReferenceStatus(stateBookData.packageID, stateBookData.customerID, stateBookData.reference, "CHECKED-IN")}}>CHECK IN</Button>
+          </div>
+        </Modal.Body>
       </Modal>
     }
 
@@ -538,8 +658,56 @@ export default function Manager({reservation}) {
       show={stateBookReference.checkOut}
       animation={true}  
       centered
-      onHide={() =>setStateBookReference({...stateBookReference, checkOut: false})}>
-        CHECK OUT
+      onHide={() =>{setStateBookReference({...stateBookReference, checkOut: false});}}>
+        <Modal.Header closeButton className={cssBooking.modalHeader}>
+          <div>
+            <p>Customer Reservation</p>
+            <p>Reservation Check Out</p>
+            </div>
+        </Modal.Header>
+
+        <Modal.Body className={cssBooking['modal-body']}>
+          <div>
+            <h1>Reservation Check Out</h1>
+          </div>
+          <div className={cssBooking['modal-check-in']}>
+            <Form.Label>Reservation Date and Time</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.reservationDateTime} />
+
+            <Form.Label>Customer ID</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.customerID}/>
+
+            <Form.Label>Customer Name</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.customerName}/>
+
+            <Form.Label>Customer Request</Form.Label>
+            <Form.Control  as="textarea" disabled value={stateBookData.customerRequest}/>
+
+            <Form.Label>Package</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.packageName}/>
+            
+            <Form.Label>Days Accommodated</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.daysAccommodated}/>
+
+            <Form.Label>Day and Time</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.dayTime}/>
+
+            <Form.Label>Check In Date</Form.Label>
+            <Form.Control  type="text" disabled  value={stateBookData.checkIn}/>
+
+            <Form.Label>Check Out Date</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.checkOut}/>
+
+            <Form.Label>Package Amount</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.packageAmount}/>
+
+            <Form.Label>Total Payment</Form.Label>
+            <Form.Control  type="text" disabled  value={stateBookData.totalAmount}/>
+          </div>
+          <div className={cssBooking['modal-div-button']}>
+          <Button onClick={() => {databaseUpdateReferenceStatus(stateBookData.packageID, stateBookData.customerID, stateBookData.reference, "CHECKED-OUT")}}>CHECK OUT</Button>
+          </div>
+        </Modal.Body>
       </Modal>
     }
 
@@ -548,8 +716,56 @@ export default function Manager({reservation}) {
       show={stateBookReference.viewInfo}
       animation={true}  
       centered
-      onHide={() =>setStateBookReference({...stateBookReference, viewInfo: false})}>
-        VIEW INFO
+      onHide={() =>{setStateBookReference({...stateBookReference, viewInfo: false});}}>
+        <Modal.Header closeButton className={cssBooking.modalHeader}>
+          <div>
+            <p>Customer Reservation</p>
+            <p>Reservation Information</p>
+            </div>
+        </Modal.Header>
+
+        <Modal.Body className={cssBooking['modal-body']}>
+          <div>
+            <h1>Reservation Information</h1>
+          </div>
+          <div className={cssBooking['modal-check-in']}>
+            <Form.Label>Reservation Date and Time</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.reservationDateTime} />
+
+            <Form.Label>Customer ID</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.customerID}/>
+
+            <Form.Label>Customer Name</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.customerName}/>
+
+            <Form.Label>Customer Request</Form.Label>
+            <Form.Control  as="textarea" disabled value={stateBookData.customerRequest}/>
+
+            <Form.Label>Package</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.packageName}/>
+            
+            <Form.Label>Days Accommodated</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.daysAccommodated}/>
+
+            <Form.Label>Day and Time</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.dayTime}/>
+
+            <Form.Label>Check In Date</Form.Label>
+            <Form.Control  type="text" disabled  value={stateBookData.checkIn}/>
+
+            <Form.Label>Check Out Date</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.checkOut}/>
+
+            <Form.Label>Package Amount</Form.Label>
+            <Form.Control  type="text" disabled value={stateBookData.packageAmount}/>
+
+            <Form.Label>Total Payment</Form.Label>
+            <Form.Control  type="text" disabled  value={stateBookData.totalAmount}/>
+          </div>
+          <div className={cssBooking['modal-div-button']}>
+            <Button onClick={() => {setStateBookReference({...stateBookReference, viewInfo: false});}}>OK</Button>
+          </div>
+        </Modal.Body>
       </Modal>
     }
 

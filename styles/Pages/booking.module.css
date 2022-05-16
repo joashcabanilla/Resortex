@@ -162,3 +162,51 @@
     align-items: center;
     padding: 2rem;
 }
+.modal-body h1{
+    font-family: "Open Sans", sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+.modal-check-in input, 
+.modal-check-in label,
+.modal-check-in textarea{
+    font-family: "Open Sans", sans-serif;
+    font-size: 0.9rem;
+}
+.modal-check-in input,
+.modal-check-in textarea{
+    margin-bottom: 0.5rem;
+}
+.modal-check-in{
+    padding-left: 1rem;
+    padding-right: 1rem;
+} 
+
+.modal-check-in label,
+.modal-check-in input{
+    font-weight: 500;
+}
+.modal-div-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 1rem;
+}
+.modal-div-button button{
+    width: 50%;
+}
+.swalText {
+    font-family: "Open Sans", sans-serif;
+    color: #000000;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+.swalButton {
+    font-family: "Open Sans", sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    width: 10rem !important;
+    background: #198754 !important;
+}
