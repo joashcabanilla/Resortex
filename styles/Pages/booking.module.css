@@ -210,3 +210,15 @@
     width: 10rem !important;
     background: #198754 !important;
 }
+.nav-settings{
+    background: var(--color-white) !important;
+    border-radius: var(--card-border-radius);
+    margin-top: 1.5rem;
+    transition: all 300ms ease;
+    box-shadow: 0 0.5rem 1rem var(--color-light);
+    width: 100%;
+    padding: 2rem;
+}
+.nav-settings:hover{
+    box-shadow: none;
+}

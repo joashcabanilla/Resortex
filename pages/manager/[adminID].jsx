@@ -73,9 +73,7 @@ export default function Manager({ reservation }) {
   const stateManager = useSelector((state) => state.storeUsers.hotelManagerAcct);
   const stateHotel = useSelector((state) => state.storeHotel.hotelList);
   const stateReservation = useSelector((state) => state.storeHotel.reservation);
-  const managerName = `${stateManager[`${adminID}`].FIRSTNAME} ${
-    stateManager[`${adminID}`].LASTNAME
-  }`;
+  const managerName = `${stateManager[`${adminID}`].FIRSTNAME} ${stateManager[`${adminID}`].LASTNAME}`;
   const hotelName = stateHotel[`${adminID}`]["HOTEL-NAME"];
 
   //state UI----------------------------------------------------------------------------------
@@ -114,7 +112,35 @@ export default function Manager({ reservation }) {
       error: "",
     },
   });
+  const [stateSettingsError, setStateSettingsError] = useState({
+    name:{
+      isInvalid: false,
+      isValid: false,
+      error: ""
+    },
+    location:{
+      isInvalid: false,
+      isValid: false,
+      error: ""
+    },
+    description:{
+      isInvalid: false,
+      isValid: false,
+      error: ""
+    },
+    rooms:{
+      isInvalid: false,
+      isValid: false,
+      error: ""
+    },
+    cover:{
+      isInvalid: false,
+      isValid: false,
+      error: ""
+    },
+  });
   const [statePackageData, setStatePackageData] = useState({});
+  const [stateSettingsData, setStateSettingsData] = useState({});
 
   //useRef Hooks variables----------------------------------------------------------------------
   const bookFilterDate = useRef();
@@ -124,6 +150,13 @@ export default function Manager({ reservation }) {
   const packageName = useRef();
   const packageDescription = useRef();
   const packageAmount = useRef();
+  const packageID = useRef();
+  const resortID = useRef();
+  const resortName = useRef();
+  const resortLocation = useRef();
+  const resortDescription = useRef();
+  const resortRooms = useRef();
+  const resortCover = useRef();
 
   //function Resrvation Get and Update Data-----------------------------------------------------
   const ReservationData = () => {
@@ -205,6 +238,7 @@ export default function Manager({ reservation }) {
         name: value["PACKAGE NAME"],
         description: value["DESCRIPTION"],
         amount: formatter.format(value["AMOUNT"]),
+        amountData: value["AMOUNT"]
       });
     });
 
@@ -655,10 +689,10 @@ export default function Manager({ reservation }) {
     setStateAllPackage(allPackage);
   };
 
-  const addPackage = () => {
+  const addPackage = (btn, id, name, description, amount) => {
     setStatePackageModal({ ...statePackageModal, add: true });
-    let id = `PACKAGE-${stateAllPackage.length + 1}`;
-    setStatePackageData({ ...statePackageData, id: id });
+    let packageID = `PACKAGE-${stateAllPackage.length + 1}`;
+    btn == "add" ? setStatePackageData({id:packageID}) : setStatePackageData({id: id, name: name, description: description, amount: amount});
   };
 
   const updateErrorPackage = (error, invalid, valid, input) => {
@@ -673,6 +707,7 @@ export default function Manager({ reservation }) {
   };
 
   const onChangePackage = (input) => {
+    setStatePackageData({});
     switch (input) {
       case "name":
         let name = packageName.current.value;
@@ -696,7 +731,7 @@ export default function Manager({ reservation }) {
   };
 
   const createPackage = () => {
-    let id = statePackageData.id;
+    let id = packageID.current.value;
     let name = packageName.current.value;
     let description = packageDescription.current.value;
     let amount = packageAmount.current.value;
@@ -749,6 +784,45 @@ export default function Manager({ reservation }) {
     }
   }
 
+  const updateErrorSettings = (error, invalid, valid, input) => {
+    setStateSettingsError((stateSettingsError) => ({
+      ...stateSettingsError,
+      [input]: {
+        isValid: valid,
+        isInvalid: invalid,
+        error: error,
+      },
+    }));
+  };
+  const onChangeSettings = (input) => {
+    switch (input) {
+      case "name":
+        let name = resortName.current.value;
+        name == "" ? updateErrorSettings("", false, false, "name") : updateErrorSettings("", false, true, "name");
+      break;
+
+      case "location":
+        let location = resortLocation.current.value;
+        location == "" ? updateErrorSettings("", false, false, "location") : updateErrorSettings("", false, true, "location");
+        break;
+
+        case "description":
+          let description = resortDescription.current.value;
+          description == "" ? updateErrorSettings("", false, false, "description") : updateErrorSettings("", false, true, "description");
+          break;
+
+        case "rooms":
+          let rooms = resortRooms.current.value;
+          rooms == "" ? updateErrorSettings("", false, false, "rooms") : updateErrorSettings("", false, true, "rooms");
+        break;
+
+        case "cover":
+          let resortCover = resortCover.current.value;
+          resortCover != "" ? setHotelCover(URL.createObjectURL(resortCover.current.files[0])) : setHotelCover("");
+          resortCover != "" ? updateFormError("",false,true,"cover") : updateFormError("",false,false,"cover");
+      break;
+    }
+  }
   //function component-----------------------------------------------------------------------
   const bookingTable = () => {
     let headers = [
@@ -1376,19 +1450,11 @@ export default function Manager({ reservation }) {
           </div>
           <div className={cssBooking["modal-check-in"]}>
             <Form.Label>Package ID</Form.Label>
-            <Form.Control type="text" disabled value={statePackageData.id} />
+            <Form.Control type="text" ref={packageID} disabled value={statePackageData.id} />
 
             <Form.Group className={css.customerInput}>
               <Form.Label>Package Name</Form.Label>
-              <Form.Control
-                type="text"
-                ref={packageName}
-                isInvalid={statePackageError.name.isInvalid}
-                isValid={statePackageError.name.isValid}
-                onChange={() => {
-                  onChangePackage("name");
-                }}
-              />
+              <Form.Control type="text" ref={packageName} isInvalid={statePackageError.name.isInvalid} isValid={statePackageError.name.isValid} onChange={() => {onChangePackage("name");}} value={statePackageData.name}/>
               <Form.Control.Feedback className={css.error} type="invalid" tooltip>
                 {statePackageError.name.error}
               </Form.Control.Feedback>
@@ -1404,6 +1470,7 @@ export default function Manager({ reservation }) {
                 onChange={() => {
                   onChangePackage("description");
                 }}
+                value={statePackageData.description}
               />
               <Form.Control.Feedback className={css.error} type="invalid" tooltip>
                 {statePackageError.description.error}
@@ -1421,6 +1488,7 @@ export default function Manager({ reservation }) {
                 onChange={() => {
                   onChangePackage("amount");
                 }}
+                value={statePackageData.amount}
               />
               <Form.Control.Feedback className={css.error} type="invalid" tooltip>
                 {statePackageError.amount.error}
@@ -1428,7 +1496,7 @@ export default function Manager({ reservation }) {
             </Form.Group>
           </div>
           <div className={cssBooking["modal-div-button"]}>
-            <Button onClick={() => {createPackage()}}>Create</Button>
+            <Button onClick={() => {createPackage()}}>Save</Button>
           </div>
         </Modal.Body>
       </Modal>
@@ -1486,9 +1554,7 @@ export default function Manager({ reservation }) {
         name: "Action",
         cell: (row) => (
           <div className={cssBooking["control-header"]}>
-            <Button variant="info" onClick={() => {}}>
-              View
-            </Button>
+            <Button variant="info" onClick={() => {addPackage("edit", row.id, row.name, row.description, row.amountData)}}>Edit</Button>
           </div>
         ),
         id: "columnName-6",
@@ -1505,17 +1571,7 @@ export default function Manager({ reservation }) {
         pagination
         fixedHeader
         highlightOnHover
-        actions={
-          <Button
-            variant="success"
-            onClick={() => {
-              addPackage();
-            }}
-          >
-            {" "}
-            Add Package{" "}
-          </Button>
-        }
+        actions={<Button variant="success" onClick={() => {addPackage("add");}}> Add Package </Button>}
         subHeader
         subHeaderComponent={
           <>
@@ -1537,6 +1593,18 @@ export default function Manager({ reservation }) {
     );
   };
 
+  //Set Hotel Cover Image Component------------------------------------------------
+  const ResortCoverComponent = () => {
+    return stateResortCover != "" ? (
+         <div className={`${cssBooking.conHotelCoverImage} ${cssBooking.profileIcon}`}>
+             <img src={hotelCover} alt="Resort Cover Picture" />
+         </div>
+     ) : (
+    <div className={`${cssBooking.conHotelCover} ${cssBooking.profileIcon}`}>
+         <img src='/image/image_icon.png' alt="Resort Cover Picture" />
+     </div>
+    ); 
+ }
   //Links component----------------------------------------------------------------------------
   const linkDashboard = () => {
     let formatter = new Intl.NumberFormat("en-US", {
@@ -1754,7 +1822,80 @@ export default function Manager({ reservation }) {
   };
 
   const linkSettings = () => {
-    return <div>settings</div>;
+    return (
+      <main className={`${css.main} ${cssBooking.main}`}>
+        <div className={css["dashboard-header"]}>
+          <div className={css["dashboard-title"]}>
+            <h1>Settings</h1>
+          </div>
+          <div className={css["dashboard-profile"]}>
+            <div className={css["dashboard-admin"]}>
+              <h3>{managerName}</h3>
+              <small className={css["text-muted"]}>Resort Manager</small>
+            </div>
+            <span className="material-icons-sharp">account_circle_full</span>
+          </div>
+        </div>
+        <div className={css["resort-name"]}>
+          <h2>{hotelName}</h2>
+        </div>
+
+        {/* -------------------Booking Table--------------------------------- */}
+        <div className={cssBooking["nav-settings"]}>
+          <h2>Resort Information</h2>
+          <div className={cssBooking["modal-check-in"]}>
+            <Form.Label>Resort Reference ID</Form.Label>
+            <Form.Control type="text" ref={resortID} disabled value={stateSettingsData.id} />
+
+            <Form.Group className={css.customerInput}>
+              <Form.Label>Resort Name</Form.Label>
+              <Form.Control type="text" ref={resortName} isInvalid={stateSettingsError.name.isInvalid} isValid={stateSettingsError.name.isValid} onChange={() => {onChangeSettings("name");}} value={stateSettingsData.name}/>
+              <Form.Control.Feedback className={css.error} type="invalid" tooltip>
+                {stateSettingsError.name.error}
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group className={css.customerInput}>
+              <Form.Label>Resort Location</Form.Label>
+              <Form.Control type="text" ref={resortLocation} isInvalid={stateSettingsError.location.isInvalid} isValid={stateSettingsError.location.isValid} onChange={() => {onChangeSettings("location");}} value={stateSettingsData.location}/>
+              <Form.Control.Feedback className={css.error} type="invalid" tooltip>
+                {stateSettingsError.location.error}
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group className={css.customerInput}>
+              <Form.Label>Resort Description</Form.Label>
+              <Form.Control as="textarea" ref={resortDescription} isInvalid={stateSettingsError.description.isInvalid} isValid={stateSettingsError.description.isValid} onChange={() => {onChangeSettings("description");}} value={stateSettingsData.description}/>
+              <Form.Control.Feedback className={css.error} type="invalid" tooltip>
+                {stateSettingsError.description.error}
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group className={css.customerInput}>
+              <Form.Label>Number of Resort Rooms</Form.Label>
+              <Form.Control type="number" pattern="[0-9]*" ref={resortRooms} isInvalid={stateSettingsError.rooms.isInvalid} isValid={stateSettingsError.rooms.isValid} onChange={() => {onChangeSettings("rooms");}} value={stateSettingsData.rooms}/>
+              <Form.Control.Feedback className={css.error} type="invalid" tooltip>
+                {stateSettingsError.rooms.error}
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group className={`${css.customerInput} ${css.conProfileCustomer}`}>
+              <Form.Label>Resort Cover Photo:</Form.Label>
+              <div>
+                <Form.Control type="file" ref={resortCover} onChange={()=>{onChangeSettings("cover")}} isInvalid={stateSettingsError.cover.isInvalid} isValid={stateSettingsError.cover.isValid} />
+                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{stateSettingsError.cover.error}</Form.Control.Feedback>
+              </div>
+            </Form.Group>
+            <div className={cssBooking.HotelCover}>
+              {ResortCoverComponent()}
+            </div>
+          </div>
+          <div className={cssBooking["modal-div-button"]}>
+            <Button onClick={() => {}}>Save</Button>
+          </div>
+        </div>
+      </main>
+    );
   };
   const linkAccount = () => {
     return <div>account</div>;

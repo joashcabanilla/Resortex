@@ -200,11 +200,11 @@ export default function Hotelmanager({accountId}){
     const hotelCoverComponent = () => {
         return hotelCover != "" ? (
              <div className={`${cssSignUp.conHotelCoverImage} ${css.profileIcon}`}>
-                 <img src={hotelCover} alt="Hotel Cover Picture" />
+                 <img src={hotelCover} alt="Resort Cover Picture" />
              </div>
          ) : (
         <div className={`${cssSignUp.conHotelCover} ${css.profileIcon}`}>
-             <img src='/image/image_icon.png' alt="Hotel Cover Picture" />
+             <img src='/image/image_icon.png' alt="Resort Cover Picture" />
          </div>
         ); 
      }
@@ -282,23 +282,23 @@ export default function Hotelmanager({accountId}){
             refConfirmpassword.current.focus();
         }
         else if(hotelcover == ""){
-            updateFormError("Upload Hotel Cover",true,false,"hotelcover");
+            updateFormError("Upload Resort Cover",true,false,"hotelcover");
             refHotelcover.current.focus();
         }
         else if(hotelName == ""){
-            updateFormError("Enter Hotel Name",true,false,"hotelName");
+            updateFormError("Enter Resort Name",true,false,"hotelName");
             refHotelName.current.focus();
         }
         else if(hotelDescription == ""){
-            updateFormError("Enter Hotel Description",true,false,"hotelDescription");
+            updateFormError("Enter Resort Description",true,false,"hotelDescription");
             refHotelDescription.current.focus();
         }
         else if(hotelLocation == ""){
-            updateFormError("Enter Hotel Location",true,false,"hotelLocation");
+            updateFormError("Enter Resort Location",true,false,"hotelLocation");
             refHotelLocation.current.focus();
         }
         else if(hotelRoom == ""){
-            updateFormError("Enter Number of Hotel Rooms",true,false,"hotelRoom");
+            updateFormError("Enter Number of Resort Rooms",true,false,"hotelRoom");
             refHotelRoom.current.focus();
         }
         else{
@@ -492,19 +492,19 @@ export default function Hotelmanager({accountId}){
 
                         <Form.Group className={css.customerInput}>
                             <Form.Label>Resort Description</Form.Label>
-                            <Form.Control className={cssSignUp.hotelDescription} onKeyDown={descriptionKeyDown} ref={refHotelDescription} as="textarea" placeholder='Enter Hotel Description' isInvalid={formError.hotelDescription.isInvalid} isValid={formError.hotelDescription.isValid} onChange={() => {formOnchange("hotelDescription")}} />
+                            <Form.Control className={cssSignUp.hotelDescription} onKeyDown={descriptionKeyDown} ref={refHotelDescription} as="textarea" placeholder='Enter Resort Description' isInvalid={formError.hotelDescription.isInvalid} isValid={formError.hotelDescription.isValid} onChange={() => {formOnchange("hotelDescription")}} />
                             <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelDescription.error}</Form.Control.Feedback>
                         </Form.Group>
 
                         <Form.Group className={css.customerInput}>
                             <Form.Label>Resort Location</Form.Label>
-                            <Form.Control className={cssSignUp.hotelLocation} onKeyDown={locationKeyDown}  ref={refHotelLocation} as="textarea" placeholder='Enter Hotel Location' isInvalid={formError.hotelLocation.isInvalid} isValid={formError.hotelLocation.isValid} onChange={() => {formOnchange("hotelLocation")}} />
+                            <Form.Control className={cssSignUp.hotelLocation} onKeyDown={locationKeyDown}  ref={refHotelLocation} as="textarea" placeholder='Enter Resort Location' isInvalid={formError.hotelLocation.isInvalid} isValid={formError.hotelLocation.isValid} onChange={() => {formOnchange("hotelLocation")}} />
                             <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelLocation.error}</Form.Control.Feedback>
                         </Form.Group>
 
                         <Form.Group className={css.customerInput}>
                             <Form.Label>Number of Resort Rooms</Form.Label>
-                            <Form.Control className={cssSignUp.hotelRoom} ref={refHotelRoom} type="text" pattern="[0-9]*" value={hotelRoom} placeholder='Enter Number of Hotel Rooms' isInvalid={formError.hotelRoom.isInvalid} isValid={formError.hotelRoom.isValid} onChange={() => {formOnchange("hotelRoom")}} />
+                            <Form.Control className={cssSignUp.hotelRoom} ref={refHotelRoom} type="text" pattern="[0-9]*" value={hotelRoom} placeholder='Enter Number of Resort Rooms' isInvalid={formError.hotelRoom.isInvalid} isValid={formError.hotelRoom.isValid} onChange={() => {formOnchange("hotelRoom")}} />
                             <Form.Control.Feedback className={css.error} type="invalid" tooltip>{formError.hotelRoom.error}</Form.Control.Feedback>
                         </Form.Group>
 
