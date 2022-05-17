@@ -32,8 +32,11 @@ export const hotelSlice = createSlice({
         updateReferenceStatus: (state, { payload }) => {
             state.reservation[`${payload[0]}`][`${payload[1]}`][`${payload[2]}`][`${payload[3]}`] = payload[4];
         },
+        updateHotelPackage: (state, {payload}) => {
+            state.hotelList[`${payload[0]}`][`${payload[1]}`][`${payload[2]}`] = payload[3];
+        }
     },
 });
 
-export const { getHotel, showModalHotelManager, getReservation, updateReferenceStatus } = hotelSlice.actions;
+export const { getHotel, showModalHotelManager, getReservation, updateReferenceStatus, updateHotelPackage } = hotelSlice.actions;
 export default hotelSlice.reducer;
