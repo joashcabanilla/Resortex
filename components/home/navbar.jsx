@@ -17,7 +17,7 @@ import cssHome from '../../styles/Pages/Home.module.css';
 import Hotelmanager from './Hotelmanager';
 import { showModalHotelManager } from '../../redux/reduxSlice/hotelSlice';
 
-export default function navbar() {
+export default function ComponentNavbar() {
     //import variables
     const dispatch = useDispatch();
     const router = useRouter();
