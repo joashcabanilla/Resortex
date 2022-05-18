@@ -24,7 +24,7 @@ import { CSVLink } from "react-csv";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
-export async function getStaticProps({ req, res }) {
+export async function getServerSideProps({ req, res }) {
   const mycookie = cookie.parse((req && req.headers.cookie) || "");
   const type = mycookie.type;
   const id = mycookie.id;
@@ -70,12 +70,12 @@ export async function getStaticProps({ req, res }) {
     props: { reservation },
   };
 }
-export async function getStaticPaths({ req, res }) {
- return {
-   paths: [],
-   fallback: false,
- }
-}
+// export async function getStaticPaths({ req, res }) {
+//  return {
+//    paths: [],
+//    fallback: false,
+//  }
+// }
 
 export default function Manager({ reservation }) {
   //import variables-------------------------------------------------------------------------
