@@ -5,7 +5,7 @@ import cssBooking from "../../styles/Pages/booking.module.css";
 import Head from "next/head";
 import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { database } from "../../firebase/firebaseConfig";
+import { database } from "../firebase/firebaseConfig";
 import { ref, child, get, onValue, set } from "firebase/database";
 import QRCode from "qrcode.react";
 import {
@@ -16,8 +16,8 @@ import {
   updateRoom1,
   updateRoom2,
   updateHotelInfo
-} from "../../redux/reduxSlice/hotelSlice";
-import { updateManagerAccount } from "../../redux/reduxSlice/userSlice";
+} from "../redux/reduxSlice/hotelSlice";
+import { updateManagerAccount } from "../redux/reduxSlice/userSlice";
 import { Form, Button, Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { CSVLink } from "react-csv";

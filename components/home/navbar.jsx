@@ -347,7 +347,7 @@ export default function ComponentNavbar() {
                 },
                 body: JSON.stringify({type: type, id: id}),
             });
-            router.replace(`${type}/${id}`);
+            router.replace(`${id}`);
         }
          
         if(validatedUsername && validatedPassword){
