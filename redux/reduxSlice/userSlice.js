@@ -4,7 +4,7 @@ import data1 from '../../data1.json';
 
 const initialState = {
     userList: {},
-    hotelManagerAcct: { ...data1['ADMIN']['HOTEL-MANAGER'] },
+    hotelManagerAcct: {},
 }
 
 export const usersSlice = createSlice({
@@ -36,9 +36,20 @@ export const usersSlice = createSlice({
                 ...state.hotelManagerAcct,
                 ...payload,
             }
+        },
+
+        updateManagerAccount: (state, {payload}) => {
+            state.hotelManagerAcct[`${payload[0]}`] = {
+                "ID": payload[0],
+                "FIRSTNAME": payload[1],
+                "MIDDLENAME": payload[2],
+                "LASTNAME": payload[3],
+                "USERNAME": payload[4],
+                "PASSWORD": payload[5]
+            }
         }
     },
 });
 
-export const { getUser, addUser, getHotelManager, addHotelManager } = usersSlice.actions;
+export const { getUser, addUser, getHotelManager, addHotelManager, updateManagerAccount } = usersSlice.actions;
 export default usersSlice.reducer; 

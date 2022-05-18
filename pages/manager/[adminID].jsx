@@ -8,7 +8,16 @@ import { useSelector, useDispatch } from "react-redux";
 import { database } from "../../firebase/firebaseConfig";
 import { ref, child, get, onValue, set } from "firebase/database";
 import QRCode from "qrcode.react";
-import { getReservation, updateReferenceStatus, updateHotelPackage } from "../../redux/reduxSlice/hotelSlice";
+import {
+  getReservation,
+  updateReferenceStatus,
+  updateHotelPackage,
+  updateCover,
+  updateRoom1,
+  updateRoom2,
+  updateHotelInfo
+} from "../../redux/reduxSlice/hotelSlice";
+import { updateManagerAccount } from "../../redux/reduxSlice/userSlice";
 import { Form, Button, Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { CSVLink } from "react-csv";
@@ -19,8 +28,8 @@ export async function getServerSideProps({ req, res }) {
   const mycookie = cookie.parse((req && req.headers.cookie) || "");
   const type = mycookie.type;
   const id = mycookie.id;
-  // const databaseRef = ref(database);
-  // const reservationPath = `PACKAGE-RESERVATION/${id}`;
+  const databaseRef = ref(database);
+  const reservationPath = `PACKAGE-RESERVATION/${id}`;
   let reservation = {};
 
   if (type != undefined && type != "manager") {
@@ -49,13 +58,13 @@ export async function getServerSideProps({ req, res }) {
     };
   }
 
-  // await get(child(databaseRef, reservationPath))
-  // .then((snapshot) => {
-  //     snapshot.exists() ? reservation = { ...snapshot.val() } : null;
-  // })
-  // .catch((err) => {
-  //     console.log(err);
-  // });
+  await get(child(databaseRef, reservationPath))
+  .then((snapshot) => {
+      snapshot.exists() ? reservation = { ...snapshot.val() } : null;
+  })
+  .catch((err) => {
+      console.log(err);
+  });
 
   return {
     props: { reservation },
@@ -70,10 +79,14 @@ export default function Manager({ reservation }) {
   const mySwal = withReactContent(Swal);
 
   //redux state------------------------------------------------------------------------------
-  const stateManager = useSelector((state) => state.storeUsers.hotelManagerAcct);
+  const stateManager = useSelector(
+    (state) => state.storeUsers.hotelManagerAcct
+  );
   const stateHotel = useSelector((state) => state.storeHotel.hotelList);
   const stateReservation = useSelector((state) => state.storeHotel.reservation);
-  const managerName = `${stateManager[`${adminID}`].FIRSTNAME} ${stateManager[`${adminID}`].LASTNAME}`;
+  const managerName = `${stateManager[`${adminID}`].FIRSTNAME} ${
+    stateManager[`${adminID}`].LASTNAME
+  }`;
   const hotelName = stateHotel[`${adminID}`]["HOTEL-NAME"];
 
   //state UI----------------------------------------------------------------------------------
@@ -113,44 +126,72 @@ export default function Manager({ reservation }) {
     },
   });
   const [stateSettingsError, setStateSettingsError] = useState({
-    name:{
+    name: {
       isInvalid: false,
       isValid: false,
-      error: ""
+      error: "",
     },
-    location:{
+    location: {
       isInvalid: false,
       isValid: false,
-      error: ""
+      error: "",
     },
-    description:{
+    description: {
       isInvalid: false,
       isValid: false,
-      error: ""
+      error: "",
     },
-    rooms:{
+    rooms: {
       isInvalid: false,
       isValid: false,
-      error: ""
+      error: "",
     },
-    cover:{
+    cover: {
       isInvalid: false,
       isValid: false,
-      error: ""
+      error: "",
     },
-    room1:{
+    room1: {
       isInvalid: false,
       isValid: false,
-      error: ""
+      error: "",
     },
-    room2:{
+    room2: {
       isInvalid: false,
       isValid: false,
-      error: ""
+      error: "",
+    },
+  });
+  const [stateAccountError, setStateAccountError] = useState({
+    firstname:{
+      isInvalid: false,
+      isValid: false,
+      error: "",
+    },
+    middlename:{
+      isInvalid: false,
+      isValid: false,
+      error: "",
+    },
+    lastname:{
+      isInvalid: false,
+      isValid: false,
+      error: "",
+    },
+    username:{
+      isInvalid: false,
+      isValid: false,
+      error: "",
+    },
+    password:{
+      isInvalid: false,
+      isValid: false,
+      error: "",
     }
   });
   const [statePackageData, setStatePackageData] = useState({});
   const [stateSettingsData, setStateSettingsData] = useState({});
+  const [stateAccountData, setStateAccountData] = useState({});
   const [stateResortCover, setStateResortCover] = useState("");
   const [stateResortGallery1, setStateResortGallery1] = useState("");
   const [stateResortGallery2, setStateResortGallery2] = useState("");
@@ -172,6 +213,12 @@ export default function Manager({ reservation }) {
   const resortCover = useRef();
   const resortRoomGallery1 = useRef();
   const resortRoomGallery2 = useRef();
+  const accountID = useRef();
+  const accountFirstname = useRef();
+  const accountMiddlename = useRef();
+  const accountLastname = useRef();
+  const accountUsername = useRef();
+  const accountPassword = useRef();
 
   //function Resrvation Get and Update Data-----------------------------------------------------
   const ReservationData = () => {
@@ -183,7 +230,6 @@ export default function Manager({ reservation }) {
     let totalCustomerServed = 0;
     let totalApproved = 0;
     let allPackage = [];
-    let allSettings = {};
     let formatter = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "PHP",
@@ -248,29 +294,51 @@ export default function Manager({ reservation }) {
       });
     });
 
-    Object.values(stateHotel[adminID]["VIEW-PACKAGE"]).forEach((value) => {
-      allPackage.push({
-        id: value["ID"],
-        name: value["PACKAGE NAME"],
-        description: value["DESCRIPTION"],
-        amount: formatter.format(value["AMOUNT"]),
-        amountData: value["AMOUNT"]
-      });
-    });
+    stateHotel[adminID]["VIEW-PACKAGE"] != undefined
+      ? Object.values(stateHotel[adminID]["VIEW-PACKAGE"]).forEach((value) => {
+          allPackage.push({
+            id: value["ID"],
+            name: value["PACKAGE NAME"],
+            description: value["DESCRIPTION"],
+            amount: formatter.format(value["AMOUNT"]),
+            amountData: value["AMOUNT"],
+          });
+        })
+      : null;
 
     Object.values(stateHotel).forEach((value) => {
-      if(adminID == value['HOTEL-REFERENCE NUMBER']){
+      if (adminID == value["HOTEL-REFERENCE NUMBER"]) {
         setStateSettingsData({
-          id: value['HOTEL-REFERENCE NUMBER'],
-          name: value['HOTEL-NAME'],
-          location: value['HOTEL-LOCATION'],
-          description: value['HOTEL-DESCRIPTION'],
-          rooms: value['ROOMS'],
+          id: value["HOTEL-REFERENCE NUMBER"],
+          name: value["HOTEL-NAME"],
+          location: value["HOTEL-LOCATION"],
+          description: value["HOTEL-DESCRIPTION"],
+          rooms: value["ROOMS"],
         });
-        setStateResortCover(`data:image/jpeg;base64,${value['HOTEL-COVER']}`);
-        setStateResortGallery1(`data:image/jpeg;base64,${value['VIEW-ROOM GALLERY']['ROOM-01']}`);
-        setStateResortGallery2(`data:image/jpeg;base64,${value['VIEW-ROOM GALLERY']['ROOM-02']}`);
-      } 
+        setStateResortCover(`data:image/jpeg;base64,${value["HOTEL-COVER"]}`);
+        value["VIEW-ROOM GALLERY"]["ROOM-01"] != "N/A"
+          ? setStateResortGallery1(
+              `data:image/jpeg;base64,${value["VIEW-ROOM GALLERY"]["ROOM-01"]}`
+            )
+          : setStateResortGallery1("");
+        value["VIEW-ROOM GALLERY"]["ROOM-02"] != "N/A"
+          ? setStateResortGallery2(
+              `data:image/jpeg;base64,${value["VIEW-ROOM GALLERY"]["ROOM-02"]}`
+            )
+          : setStateResortGallery2("");
+      }
+    });
+    
+    Object.values(stateManager).forEach((value) => {
+      value['ID'] == adminID ? 
+      setStateAccountData({
+        id: value['ID'],
+        firstname: value['FIRSTNAME'],
+        middlename: value['MIDDLENAME'],
+        lastname: value['LASTNAME'],
+        username: value['USERNAME'],
+        password: value['PASSWORD']
+      }) : null;
     });
 
     setStatePending(totalPending);
@@ -293,7 +361,7 @@ export default function Manager({ reservation }) {
 
   useEffect(() => {
     ReservationData();
-  }, [stateReservation,stateHotel]);
+  }, [stateReservation, stateHotel]);
 
   //function for logout-----------------------------------------------------------------------
   const LogOut = () => {
@@ -554,40 +622,67 @@ export default function Manager({ reservation }) {
     });
     setStatePackageData({});
     setStateSettingsError({
-      name:{
+      name: {
         isInvalid: false,
         isValid: false,
-        error: ""
+        error: "",
       },
-      location:{
+      location: {
         isInvalid: false,
         isValid: false,
-        error: ""
+        error: "",
       },
-      description:{
+      description: {
         isInvalid: false,
         isValid: false,
-        error: ""
+        error: "",
       },
-      rooms:{
+      rooms: {
         isInvalid: false,
         isValid: false,
-        error: ""
+        error: "",
       },
-      cover:{
+      cover: {
         isInvalid: false,
         isValid: false,
-        error: ""
+        error: "",
       },
-      room1:{
+      room1: {
         isInvalid: false,
         isValid: false,
-        error: ""
+        error: "",
       },
-      room2:{
+      room2: {
         isInvalid: false,
         isValid: false,
-        error: ""
+        error: "",
+      },
+    });
+    setStateAccountError({
+      firstname:{
+        isInvalid: false,
+        isValid: false,
+        error: "",
+      },
+      middlename:{
+        isInvalid: false,
+        isValid: false,
+        error: "",
+      },
+      lastname:{
+        isInvalid: false,
+        isValid: false,
+        error: "",
+      },
+      username:{
+        isInvalid: false,
+        isValid: false,
+        error: "",
+      },
+      password:{
+        isInvalid: false,
+        isValid: false,
+        error: "",
       }
     });
     switch (tab) {
@@ -681,9 +776,7 @@ export default function Manager({ reservation }) {
   const sweetAlert = (msg) => {
     mySwal.fire({
       icon: "success",
-      title: (
-        <p className={cssBooking.swalText}>{msg}</p>
-      ),
+      title: <p className={cssBooking.swalText}>{msg}</p>,
       customClass: {
         confirmButton: `${cssBooking.swalButton}`,
       },
@@ -691,8 +784,16 @@ export default function Manager({ reservation }) {
   };
 
   //function update reference status----------------------------------------------------------------
-  const databaseUpdateReferenceStatus = (packageID,userID,reference,status) => {
-    const referenceStatus = ref(database,`PACKAGE-RESERVATION/${adminID}/${packageID}/${userID}/${reference}/REFERENCE STATUS`);
+  const databaseUpdateReferenceStatus = (
+    packageID,
+    userID,
+    reference,
+    status
+  ) => {
+    const referenceStatus = ref(
+      database,
+      `PACKAGE-RESERVATION/${adminID}/${packageID}/${userID}/${reference}/REFERENCE STATUS`
+    );
     set(referenceStatus, `${status}`)
       .then(() => {
         if (status == "CHECKED-IN") {
@@ -760,7 +861,14 @@ export default function Manager({ reservation }) {
   const addPackage = (btn, id, name, description, amount) => {
     setStatePackageModal({ ...statePackageModal, add: true });
     let packageID = `PACKAGE-${stateAllPackage.length + 1}`;
-    btn == "add" ? setStatePackageData({id:packageID}) : setStatePackageData({id: id, name: name, description: description, amount: amount});
+    btn == "add"
+      ? setStatePackageData({ id: packageID })
+      : setStatePackageData({
+          id: id,
+          name: name,
+          description: description,
+          amount: amount,
+        });
   };
 
   const updateErrorPackage = (error, invalid, valid, input) => {
@@ -793,7 +901,9 @@ export default function Manager({ reservation }) {
 
       case "amount":
         let amount = packageAmount.current.value;
-        amount == "" ? updateErrorPackage("", false, false, "amount") : updateErrorPackage("", false, true, "amount");
+        amount == ""
+          ? updateErrorPackage("", false, false, "amount")
+          : updateErrorPackage("", false, true, "amount");
         break;
     }
   };
@@ -804,53 +914,70 @@ export default function Manager({ reservation }) {
     let description = packageDescription.current.value;
     let amount = packageAmount.current.value;
 
-    if(name == ""){
+    if (name == "") {
       updateErrorPackage("Enter Package Name", true, false, "name");
-      packageName.current.focus();  
-    }
-    else if(description == ""){
-      updateErrorPackage("Enter Package Description", true, false, "description");
-      packageDescription.current.focus();  
-    }
-    else if(amount == ""){
+      packageName.current.focus();
+    } else if (description == "") {
+      updateErrorPackage(
+        "Enter Package Description",
+        true,
+        false,
+        "description"
+      );
+      packageDescription.current.focus();
+    } else if (amount == "") {
       updateErrorPackage("Enter Package Amount", true, false, "amount");
-      packageAmount.current.focus();  
-    }
-    else{
-      const databaseRef = ref(database,`HOTEL-RESERVATION-SYSTEM/HOTELS/${adminID}/VIEW-PACKAGE/${id}`);
-      set(databaseRef,{
-        "AMOUNT": parseFloat(amount),
-        "DESCRIPTION": description,
-        "ID": id,
-        "PACKAGE NAME": name
+      packageAmount.current.focus();
+    } else {
+      const databaseRef = ref(
+        database,
+        `HOTEL-RESERVATION-SYSTEM/HOTELS/${adminID}/VIEW-PACKAGE/${id}`
+      );
+      set(databaseRef, {
+        AMOUNT: parseFloat(amount),
+        DESCRIPTION: description,
+        ID: id,
+        "PACKAGE NAME": name,
       })
-      .then(() => {
-        dispatch(updateHotelPackage([adminID,"VIEW-PACKAGE",id,{"AMOUNT": parseFloat(amount), "DESCRIPTION": description, "ID": id, "PACKAGE NAME": name}]));
-        setStatePackageModal({...statePackageModal, add: false});
-        sweetAlert("Resort Package Successfully Saved");
-        setStatePackageError({
-          name: {
-            isInvalid: false,
-            isValid: false,
-            error: "",
-          },
-          description: {
-            isInvalid: false,
-            isValid: false,
-            error: "",
-          },
-          amount: {
-            isInvalid: false,
-            isValid: false,
-            error: "",
-          },
+        .then(() => {
+          dispatch(
+            updateHotelPackage([
+              adminID,
+              "VIEW-PACKAGE",
+              id,
+              {
+                AMOUNT: parseFloat(amount),
+                DESCRIPTION: description,
+                ID: id,
+                "PACKAGE NAME": name,
+              },
+            ])
+          );
+          setStatePackageModal({ ...statePackageModal, add: false });
+          sweetAlert("Resort Package Successfully Saved");
+          setStatePackageError({
+            name: {
+              isInvalid: false,
+              isValid: false,
+              error: "",
+            },
+            description: {
+              isInvalid: false,
+              isValid: false,
+              error: "",
+            },
+            amount: {
+              isInvalid: false,
+              isValid: false,
+              error: "",
+            },
+          });
+        })
+        .catch((error) => {
+          console.log(error);
         });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
     }
-  }
+  };
 
   const updateErrorSettings = (error, invalid, valid, input) => {
     setStateSettingsError((stateSettingsError) => ({
@@ -868,41 +995,367 @@ export default function Manager({ reservation }) {
     switch (input) {
       case "name":
         let name = resortName.current.value;
-        name == "" ? updateErrorSettings("", false, false, "name") : updateErrorSettings("", false, true, "name");
-      break;
+        name == ""
+          ? updateErrorSettings("", false, false, "name")
+          : updateErrorSettings("", false, true, "name");
+        break;
 
       case "location":
         let location = resortLocation.current.value;
-        location == "" ? updateErrorSettings("", false, false, "location") : updateErrorSettings("", false, true, "location");
-      break;
+        location == ""
+          ? updateErrorSettings("", false, false, "location")
+          : updateErrorSettings("", false, true, "location");
+        break;
 
       case "description":
         let description = resortDescription.current.value;
-        description == "" ? updateErrorSettings("", false, false, "description") : updateErrorSettings("", false, true, "description");
-      break;
+        description == ""
+          ? updateErrorSettings("", false, false, "description")
+          : updateErrorSettings("", false, true, "description");
+        break;
 
       case "rooms":
         let rooms = resortRooms.current.value;
-        rooms == "" ? updateErrorSettings("", false, false, "rooms") : updateErrorSettings("", false, true, "rooms");
-      break;
+        rooms == ""
+          ? updateErrorSettings("", false, false, "rooms")
+          : updateErrorSettings("", false, true, "rooms");
+        break;
 
       case "cover":
         let Cover = resortCover.current.value;
-        Cover != "" ? setStateResortCover(URL.createObjectURL(resortCover.current.files[0])) : setStateResortCover("");
-        Cover != "" ? updateErrorSettings("",false,true,"cover") : updateErrorSettings("",false,false,"cover");
-      break;
+        Cover != ""
+          ? setStateResortCover(
+              URL.createObjectURL(resortCover.current.files[0])
+            )
+          : setStateResortCover("");
+        Cover != ""
+          ? updateErrorSettings("", false, true, "cover")
+          : updateErrorSettings("", false, false, "cover");
+        break;
 
       case "room1":
         let roomGallery1 = resortRoomGallery1.current.value;
-        roomGallery1 != "" ? setStateResortGallery1(URL.createObjectURL(resortRoomGallery1.current.files[0])) : setStateResortGallery1("");
-        roomGallery1 != "" ? updateErrorSettings("",false,true,"room1") : updateErrorSettings("",false,false,"room1");
-      break;
+        roomGallery1 != ""
+          ? setStateResortGallery1(
+              URL.createObjectURL(resortRoomGallery1.current.files[0])
+            )
+          : setStateResortGallery1("");
+        roomGallery1 != ""
+          ? updateErrorSettings("", false, true, "room1")
+          : updateErrorSettings("", false, false, "room1");
+        break;
 
       case "room2":
         let roomGallery2 = resortRoomGallery2.current.value;
-        roomGallery2 != "" ? setStateResortGallery2(URL.createObjectURL(resortRoomGallery2.current.files[0])) : setStateResortGallery2("");
-        roomGallery2 != "" ? updateErrorSettings("",false,true,"room2") : updateErrorSettings("",false,false,"room2");
+        roomGallery2 != ""
+          ? setStateResortGallery2(
+              URL.createObjectURL(resortRoomGallery2.current.files[0])
+            )
+          : setStateResortGallery2("");
+        roomGallery2 != ""
+          ? updateErrorSettings("", false, true, "room2")
+          : updateErrorSettings("", false, false, "room2");
+        break;
+    }
+  };
+
+  const updateErrorAccount = (error, invalid, valid, input) => {
+    setStateSettingsError((stateSettingsError) => ({
+      ...stateSettingsError,
+      [input]: {
+        isValid: valid,
+        isInvalid: invalid,
+        error: error,
+      },
+    }));
+  };
+  
+  const updateSettings = (e) => {
+    e.preventDefault();
+    let name = resortName.current.value;
+    let location = resortLocation.current.value;
+    let description = resortDescription.current.value;
+    let rooms = resortRooms.current.value;
+    let cover = resortCover.current.value;
+    let room1 = resortRoomGallery1.current.value;
+    let room2 = resortRoomGallery2.current.value;
+
+    if (name == "") {
+      updateErrorSettings("Enter Resort Name", true, false, "name");
+      resortID.current.focus();
+    } else if (location == "") {
+      updateErrorSettings("Enter Resort Location", true, false, "location");
+      resortLocation.current.focus();
+    } else if (description == "") {
+      updateErrorSettings("Enter Resort Location", true, false, "description");
+      resortDescription.current.focus();
+    } else if (rooms == "") {
+      updateErrorSettings("Enter Number of Resort Rooms", true, false, "rooms");
+      resortRooms.current.focus();
+    } else {
+      const coverRef = ref(
+        database,
+        `HOTEL-RESERVATION-SYSTEM/HOTELS/${adminID}/HOTEL-COVER`
+      );
+      const room1Ref = ref(
+        database,
+        `HOTEL-RESERVATION-SYSTEM/HOTELS/${adminID}/VIEW-ROOM GALLERY/ROOM-01`
+      );
+      const room2Ref = ref(
+        database,
+        `HOTEL-RESERVATION-SYSTEM/HOTELS/${adminID}/VIEW-ROOM GALLERY/ROOM-02`
+      );
+
+      if (cover != "") {
+        try {
+          let file = resortCover.current.files[0];
+          let imageFiletype = `data:${file.type};base64,`;
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => {
+            set(coverRef, reader.result.substring(imageFiletype.length))
+              .then(() => {
+                dispatch(
+                  updateCover([
+                    `${adminID}`,
+                    reader.result.substring(imageFiletype.length),
+                  ])
+                );
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          };
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      if (room1 != "") {
+        try {
+          let file1 = resortRoomGallery1.current.files[0];
+          let imageFiletype1 = `data:${file1.type};base64,`;
+          const reader1 = new FileReader();
+          reader1.readAsDataURL(file1);
+          reader1.onload = () => {
+            set(room1Ref, reader1.result.substring(imageFiletype1.length))
+              .then(() => {
+                dispatch(
+                  updateRoom1([
+                    `${adminID}`,
+                    reader1.result.substring(imageFiletype1.length),
+                  ])
+                );
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          };
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      if (room2 != "") {
+        try {
+          let file2 = resortRoomGallery2.current.files[0];
+          let imageFiletype2 = `data:${file2.type};base64,`;
+          const reader2 = new FileReader();
+          reader2.readAsDataURL(file2);
+          reader2.onload = () => {
+            set(room2Ref, reader2.result.substring(imageFiletype2.length))
+              .then(() => {
+                dispatch(
+                  updateRoom2([
+                    `${adminID}`,
+                    reader2.result.substring(imageFiletype2.length),
+                  ])
+                );
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          };
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      set(
+        ref(
+          database,
+          `HOTEL-RESERVATION-SYSTEM/HOTELS/${adminID}/HOTEL-DESCRIPTION`
+        ),
+        description
+      );
+      set(
+        ref(
+          database,
+          `HOTEL-RESERVATION-SYSTEM/HOTELS/${adminID}/HOTEL-LOCATION`
+        ),
+        location
+      );
+      set(
+        ref(database, `HOTEL-RESERVATION-SYSTEM/HOTELS/${adminID}/HOTEL-NAME`),
+        name
+      );
+      set(
+        ref(database, `HOTEL-RESERVATION-SYSTEM/HOTELS/${adminID}/ROOMS`),
+        rooms
+      )
+        .then(() => {
+            dispatch(updateHotelInfo([`${adminID}`, description, location, name, rooms]));
+            sweetAlert("Resort Information Successfully Updated");
+            setStateSettingsError({
+              name: {
+                isInvalid: false,
+                isValid: false,
+                error: "",
+              },
+              location: {
+                isInvalid: false,
+                isValid: false,
+                error: "",
+              },
+              description: {
+                isInvalid: false,
+                isValid: false,
+                error: "",
+              },
+              rooms: {
+                isInvalid: false,
+                isValid: false,
+                error: "",
+              },
+              cover: {
+                isInvalid: false,
+                isValid: false,
+                error: "",
+              },
+              room1: {
+                isInvalid: false,
+                isValid: false,
+                error: "",
+              },
+              room2: {
+                isInvalid: false,
+                isValid: false,
+                error: "",
+              }
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
+
+  const onChangeAccount = (input) => {
+    setStateAccountData({});
+    switch(input){
+      case "firstname": 
+      let firstname = accountFirstname.current.value;
+      firstname == ""
+        ? updateErrorAccount("", false, false, "firstname")
+        : updateErrorAccount("", false, true, "firstname");
       break;
+
+      case "middlename": 
+      let middlename = accountMiddlename.current.value;
+      middlename == ""
+        ? updateErrorAccount("", false, false, "middlename")
+        : updateErrorAccount("", false, true, "middlename");
+      break;
+
+      case "lastname": 
+      let lastname = accountLastname.current.value;
+      lastname == ""
+        ? updateErrorAccount("", false, false, "lastname")
+        : updateErrorAccount("", false, true, "lastname");
+      break;
+
+      case "username": 
+      let username = accountUsername.current.value;
+      username == ""
+        ? updateErrorAccount("", false, false, "username")
+        : updateErrorAccount("", false, true, "username");
+      break;
+
+      case "password": 
+      let password = accountPassword.current.value;
+      password == ""
+        ? updateErrorAccount("", false, false, "password")
+        : updateErrorAccount("", false, true, "password");
+      break;
+    }
+  }
+
+  const updateAccount = (e) => {
+    e.preventDefault();
+    let firstname = accountFirstname.current.value;
+    let middlename = accountMiddlename.current.value;
+    let lastname = accountLastname.current.value;
+    let username = accountUsername.current.value;
+    let password = accountPassword.current.value;
+
+    if (firstname == "") {
+      updateErrorAccount("Enter First Name", true, false, "firstname");
+      accountID.current.focus();
+    }
+    else if(lastname == ""){
+      updateErrorAccount("Enter Last Name", true, false, "lastname");
+      accountLastname.current.focus();
+    }
+    else if(username == ""){
+      updateErrorAccount("Enter Username", true, false, "username");
+      accountUsername.current.focus();
+    }
+    else if(password == ""){
+      updateErrorAccount("Enter Password", true, false, "password");
+      accountPassword.current.focus();
+    }
+    else{
+      const databaseRef = ref(database,`ADMIN/HOTEL-MANAGER/${adminID}`);
+      set(databaseRef,{
+        "FIRSTNAME": firstname,
+        "MIDDLENAME": middlename,
+        "LASTNAME": lastname,
+        "USERNAME": username,
+        "PASSWORD": password,
+        "ID": adminID
+      })
+      .then(() => {
+        dispatch(updateManagerAccount([`${adminID}`, firstname, middlename, lastname, username, password]));
+        sweetAlert("Manager Account Successfully Updated");
+        setStateAccountError({
+          firstname:{
+            isInvalid: false,
+            isValid: false,
+            error: "",
+          },
+          middlename:{
+            isInvalid: false,
+            isValid: false,
+            error: "",
+          },
+          lastname:{
+            isInvalid: false,
+            isValid: false,
+            error: "",
+          },
+          username:{
+            isInvalid: false,
+            isValid: false,
+            error: "",
+          },
+          password:{
+            isInvalid: false,
+            isValid: false,
+            error: "",
+          }
+        });
+      })
+      .catch((error) => {console.log(error);});
     }
   }
 
@@ -1533,16 +1986,34 @@ export default function Manager({ reservation }) {
           </div>
           <div className={cssBooking["modal-check-in"]}>
             <Form.Label>Package ID</Form.Label>
-            <Form.Control type="text" ref={packageID} disabled value={statePackageData.id} />
+            <Form.Control
+              type="text"
+              ref={packageID}
+              disabled
+              value={statePackageData.id}
+            />
 
             <Form.Group className={css.customerInput}>
               <Form.Label>Package Name</Form.Label>
-              <Form.Control type="text" ref={packageName} isInvalid={statePackageError.name.isInvalid} isValid={statePackageError.name.isValid} onChange={() => {onChangePackage("name");}} value={statePackageData.name}/>
-              <Form.Control.Feedback className={css.error} type="invalid" tooltip>
+              <Form.Control
+                type="text"
+                ref={packageName}
+                isInvalid={statePackageError.name.isInvalid}
+                isValid={statePackageError.name.isValid}
+                onChange={() => {
+                  onChangePackage("name");
+                }}
+                value={statePackageData.name}
+              />
+              <Form.Control.Feedback
+                className={css.error}
+                type="invalid"
+                tooltip
+              >
                 {statePackageError.name.error}
               </Form.Control.Feedback>
             </Form.Group>
-           
+
             <Form.Group className={css.customerInput}>
               <Form.Label>Package Description</Form.Label>
               <Form.Control
@@ -1555,11 +2026,15 @@ export default function Manager({ reservation }) {
                 }}
                 value={statePackageData.description}
               />
-              <Form.Control.Feedback className={css.error} type="invalid" tooltip>
+              <Form.Control.Feedback
+                className={css.error}
+                type="invalid"
+                tooltip
+              >
                 {statePackageError.description.error}
               </Form.Control.Feedback>
             </Form.Group>
-            
+
             <Form.Group className={css.customerInput}>
               <Form.Label>Package Amount</Form.Label>
               <Form.Control
@@ -1573,13 +2048,23 @@ export default function Manager({ reservation }) {
                 }}
                 value={statePackageData.amount}
               />
-              <Form.Control.Feedback className={css.error} type="invalid" tooltip>
+              <Form.Control.Feedback
+                className={css.error}
+                type="invalid"
+                tooltip
+              >
                 {statePackageError.amount.error}
               </Form.Control.Feedback>
             </Form.Group>
           </div>
           <div className={cssBooking["modal-div-button"]}>
-            <Button onClick={() => {createPackage()}}>Save</Button>
+            <Button
+              onClick={() => {
+                createPackage();
+              }}
+            >
+              Save
+            </Button>
           </div>
         </Modal.Body>
       </Modal>
@@ -1637,7 +2122,20 @@ export default function Manager({ reservation }) {
         name: "Action",
         cell: (row) => (
           <div className={cssBooking["control-header"]}>
-            <Button variant="info" onClick={() => {addPackage("edit", row.id, row.name, row.description, row.amountData)}}>Edit</Button>
+            <Button
+              variant="info"
+              onClick={() => {
+                addPackage(
+                  "edit",
+                  row.id,
+                  row.name,
+                  row.description,
+                  row.amountData
+                );
+              }}
+            >
+              Edit
+            </Button>
           </div>
         ),
         id: "columnName-6",
@@ -1654,7 +2152,17 @@ export default function Manager({ reservation }) {
         pagination
         fixedHeader
         highlightOnHover
-        actions={<Button variant="success" onClick={() => {addPackage("add");}}> Add Package </Button>}
+        actions={
+          <Button
+            variant="success"
+            onClick={() => {
+              addPackage("add");
+            }}
+          >
+            {" "}
+            Add Package{" "}
+          </Button>
+        }
         subHeader
         subHeaderComponent={
           <>
@@ -1679,42 +2187,48 @@ export default function Manager({ reservation }) {
   //Set Hotel Cover Image Component------------------------------------------------
   const ResortCoverComponent = () => {
     return stateResortCover != "" ? (
-         <div className={`${cssBooking.conHotelCoverImage} ${cssBooking.profileIcon}`}>
-             <img src={stateResortCover} alt="Resort Cover Picture" />
-         </div>
-     ) : (
-    <div className={`${cssBooking.conHotelCover} ${cssBooking.profileIcon}`}>
-         <img src='/image/image_icon.png' alt="Resort Cover Picture" />
-     </div>
-    ); 
-  }
+      <div
+        className={`${cssBooking.conHotelCoverImage} ${cssBooking.profileIcon}`}
+      >
+        <img src={stateResortCover} alt="Resort Cover Picture" />
+      </div>
+    ) : (
+      <div className={`${cssBooking.conHotelCover} ${cssBooking.profileIcon}`}>
+        <img src="/image/image_icon.png" alt="Resort Cover Picture" />
+      </div>
+    );
+  };
 
-   //Set Room Gallery 1 Component----------------------------------------------------
-   const ResortRoomGallery1 = () => {
+  //Set Room Gallery 1 Component----------------------------------------------------
+  const ResortRoomGallery1 = () => {
     return stateResortGallery1 != "" ? (
-         <div className={`${cssBooking.conHotelCoverImage} ${cssBooking.profileIcon}`}>
-             <img src={stateResortGallery1} alt="Resort Cover Picture" />
-         </div>
-     ) : (
-    <div className={`${cssBooking.conHotelCover} ${cssBooking.profileIcon}`}>
-         <img src='/image/image_icon.png' alt="Resort Cover Picture" />
-     </div>
-    ); 
-  }
+      <div
+        className={`${cssBooking.conHotelCoverImage} ${cssBooking.profileIcon}`}
+      >
+        <img src={stateResortGallery1} alt="Resort Cover Picture" />
+      </div>
+    ) : (
+      <div className={`${cssBooking.conHotelCover} ${cssBooking.profileIcon}`}>
+        <img src="/image/image_icon.png" alt="Resort Cover Picture" />
+      </div>
+    );
+  };
 
   //Set Room Gallery 2 Component----------------------------------------------------
   const ResortRoomGallery2 = () => {
-      return stateResortGallery2 != "" ? (
-           <div className={`${cssBooking.conHotelCoverImage} ${cssBooking.profileIcon}`}>
-               <img src={stateResortGallery2} alt="Resort Cover Picture" />
-           </div>
-       ) : (
+    return stateResortGallery2 != "" ? (
+      <div
+        className={`${cssBooking.conHotelCoverImage} ${cssBooking.profileIcon}`}
+      >
+        <img src={stateResortGallery2} alt="Resort Cover Picture" />
+      </div>
+    ) : (
       <div className={`${cssBooking.conHotelCover} ${cssBooking.profileIcon}`}>
-           <img src='/image/image_icon.png' alt="Resort Cover Picture" />
-       </div>
-      ); 
-  }
-  
+        <img src="/image/image_icon.png" alt="Resort Cover Picture" />
+      </div>
+    );
+  };
+
   //Links component----------------------------------------------------------------------------
   const linkDashboard = () => {
     let formatter = new Intl.NumberFormat("en-US", {
@@ -1954,90 +2468,336 @@ export default function Manager({ reservation }) {
         <div className={cssBooking["nav-settings"]}>
           <h2>Resort Information</h2>
           <div className={cssBooking["modal-check-in"]}>
-            <Form.Label>Resort Reference ID</Form.Label>
-            <Form.Control type="text" ref={resortID} disabled value={stateSettingsData.id} />
+            <Form onSubmit={updateSettings}>
+              <Form.Label>Resort Reference ID</Form.Label>
+              <Form.Control
+                type="text"
+                ref={resortID}
+                disabled
+                value={stateSettingsData.id}
+              />
 
-            <Form.Group className={css.customerInput}>
-              <Form.Label>Resort Name</Form.Label>
-              <Form.Control type="text" ref={resortName} isInvalid={stateSettingsError.name.isInvalid} isValid={stateSettingsError.name.isValid} onChange={() => {onChangeSettings("name");}} value={stateSettingsData.name}/>
-              <Form.Control.Feedback className={css.error} type="invalid" tooltip>
-                {stateSettingsError.name.error}
-              </Form.Control.Feedback>
-            </Form.Group>
+              <Form.Group className={css.customerInput}>
+                <Form.Label>Resort Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  ref={resortName}
+                  isInvalid={stateSettingsError.name.isInvalid}
+                  isValid={stateSettingsError.name.isValid}
+                  onChange={() => {
+                    onChangeSettings("name");
+                  }}
+                  value={stateSettingsData.name}
+                />
+                <Form.Control.Feedback
+                  className={css.error}
+                  type="invalid"
+                  tooltip
+                >
+                  {stateSettingsError.name.error}
+                </Form.Control.Feedback>
+              </Form.Group>
 
-            <Form.Group className={css.customerInput}>
-              <Form.Label>Resort Location</Form.Label>
-              <Form.Control type="text" ref={resortLocation} isInvalid={stateSettingsError.location.isInvalid} isValid={stateSettingsError.location.isValid} onChange={() => {onChangeSettings("location");}} value={stateSettingsData.location}/>
-              <Form.Control.Feedback className={css.error} type="invalid" tooltip>
-                {stateSettingsError.location.error}
-              </Form.Control.Feedback>
-            </Form.Group>
+              <Form.Group className={css.customerInput}>
+                <Form.Label>Resort Location</Form.Label>
+                <Form.Control
+                  type="text"
+                  ref={resortLocation}
+                  isInvalid={stateSettingsError.location.isInvalid}
+                  isValid={stateSettingsError.location.isValid}
+                  onChange={() => {
+                    onChangeSettings("location");
+                  }}
+                  value={stateSettingsData.location}
+                />
+                <Form.Control.Feedback
+                  className={css.error}
+                  type="invalid"
+                  tooltip
+                >
+                  {stateSettingsError.location.error}
+                </Form.Control.Feedback>
+              </Form.Group>
 
-            <Form.Group className={css.customerInput}>
-              <Form.Label>Resort Description</Form.Label>
-              <Form.Control as="textarea" ref={resortDescription} isInvalid={stateSettingsError.description.isInvalid} isValid={stateSettingsError.description.isValid} onChange={() => {onChangeSettings("description");}} value={stateSettingsData.description}/>
-              <Form.Control.Feedback className={css.error} type="invalid" tooltip>
-                {stateSettingsError.description.error}
-              </Form.Control.Feedback>
-            </Form.Group>
+              <Form.Group className={css.customerInput}>
+                <Form.Label>Resort Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  ref={resortDescription}
+                  isInvalid={stateSettingsError.description.isInvalid}
+                  isValid={stateSettingsError.description.isValid}
+                  onChange={() => {
+                    onChangeSettings("description");
+                  }}
+                  value={stateSettingsData.description}
+                />
+                <Form.Control.Feedback
+                  className={css.error}
+                  type="invalid"
+                  tooltip
+                >
+                  {stateSettingsError.description.error}
+                </Form.Control.Feedback>
+              </Form.Group>
 
-            <Form.Group className={css.customerInput}>
-              <Form.Label>Number of Resort Rooms</Form.Label>
-              <Form.Control type="number" pattern="[0-9]*" ref={resortRooms} isInvalid={stateSettingsError.rooms.isInvalid} isValid={stateSettingsError.rooms.isValid} onChange={() => {onChangeSettings("rooms");}} value={stateSettingsData.rooms}/>
-              <Form.Control.Feedback className={css.error} type="invalid" tooltip>
-                {stateSettingsError.rooms.error}
-              </Form.Control.Feedback>
-            </Form.Group>
-            
-            <div className={cssBooking.settingsCover}>
-              <div>
+              <Form.Group className={css.customerInput}>
+                <Form.Label>Number of Resort Rooms</Form.Label>
+                <Form.Control
+                  type="number"
+                  pattern="[0-9]*"
+                  ref={resortRooms}
+                  isInvalid={stateSettingsError.rooms.isInvalid}
+                  isValid={stateSettingsError.rooms.isValid}
+                  onChange={() => {
+                    onChangeSettings("rooms");
+                  }}
+                  value={stateSettingsData.rooms}
+                />
+                <Form.Control.Feedback
+                  className={css.error}
+                  type="invalid"
+                  tooltip
+                >
+                  {stateSettingsError.rooms.error}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <div className={cssBooking.settingsCover}>
+                <div>
                   <Form.Group className={`${css.customerInput}`}>
-                  <Form.Label>Resort Cover Photo</Form.Label>
-                  <div>
-                    <Form.Control type="file" ref={resortCover} onChange={()=>{onChangeSettings("cover")}} isInvalid={stateSettingsError.cover.isInvalid} isValid={stateSettingsError.cover.isValid} />
-                    <Form.Control.Feedback className={css.error} type="invalid" tooltip>{stateSettingsError.cover.error}</Form.Control.Feedback>
+                    <Form.Label>Resort Cover Photo</Form.Label>
+                    <div>
+                      <Form.Control
+                        type="file"
+                        ref={resortCover}
+                        onChange={() => {
+                          onChangeSettings("cover");
+                        }}
+                        isInvalid={stateSettingsError.cover.isInvalid}
+                        isValid={stateSettingsError.cover.isValid}
+                      />
+                      <Form.Control.Feedback
+                        className={css.error}
+                        type="invalid"
+                        tooltip
+                      >
+                        {stateSettingsError.cover.error}
+                      </Form.Control.Feedback>
+                    </div>
+                  </Form.Group>
+                  <div className={cssBooking.HotelCover}>
+                    {ResortCoverComponent()}
                   </div>
-                </Form.Group>
-                <div className={cssBooking.HotelCover}>
-                  {ResortCoverComponent()}
+                </div>
+                <div>
+                  <Form.Group className={`${css.customerInput}`}>
+                    <Form.Label>Resort Room Gallery 1</Form.Label>
+                    <div>
+                      <Form.Control
+                        type="file"
+                        ref={resortRoomGallery1}
+                        onChange={() => {
+                          onChangeSettings("room1");
+                        }}
+                        isInvalid={stateSettingsError.room1.isInvalid}
+                        isValid={stateSettingsError.room1.isValid}
+                      />
+                      <Form.Control.Feedback
+                        className={css.error}
+                        type="invalid"
+                        tooltip
+                      >
+                        {stateSettingsError.room1.error}
+                      </Form.Control.Feedback>
+                    </div>
+                  </Form.Group>
+                  <div className={cssBooking.HotelCover}>
+                    {ResortRoomGallery1()}
+                  </div>
+                </div>
+                <div>
+                  <Form.Group className={`${css.customerInput}`}>
+                    <Form.Label>Resort Room Gallery 2</Form.Label>
+                    <div>
+                      <Form.Control
+                        type="file"
+                        ref={resortRoomGallery2}
+                        onChange={() => {
+                          onChangeSettings("room2");
+                        }}
+                        isInvalid={stateSettingsError.room2.isInvalid}
+                        isValid={stateSettingsError.room2.isValid}
+                      />
+                      <Form.Control.Feedback
+                        className={css.error}
+                        type="invalid"
+                        tooltip
+                      >
+                        {stateSettingsError.room2.error}
+                      </Form.Control.Feedback>
+                    </div>
+                  </Form.Group>
+                  <div className={cssBooking.HotelCover}>
+                    {ResortRoomGallery2()}
+                  </div>
                 </div>
               </div>
-              <div>
-                  <Form.Group className={`${css.customerInput}`}>
-                  <Form.Label>Resort Room Gallery 1</Form.Label>
-                  <div>
-                    <Form.Control type="file" ref={resortRoomGallery1} onChange={()=>{onChangeSettings("room1")}} isInvalid={stateSettingsError.room1.isInvalid} isValid={stateSettingsError.room1.isValid} />
-                    <Form.Control.Feedback className={css.error} type="invalid" tooltip>{stateSettingsError.room1.error}</Form.Control.Feedback>
-                  </div>
-                </Form.Group>
-                <div className={cssBooking.HotelCover}>
-                  {ResortRoomGallery1()}
-                </div>
-              </div>
-              <div>
-                  <Form.Group className={`${css.customerInput}`}>
-                  <Form.Label>Resort Room Gallery 2</Form.Label>
-                  <div>
-                    <Form.Control type="file" ref={resortRoomGallery2} onChange={()=>{onChangeSettings("room2")}} isInvalid={stateSettingsError.room2.isInvalid} isValid={stateSettingsError.room2.isValid} />
-                    <Form.Control.Feedback className={css.error} type="invalid" tooltip>{stateSettingsError.room2.error}</Form.Control.Feedback>
-                  </div>
-                </Form.Group>
-                <div className={cssBooking.HotelCover}>
-                  {ResortRoomGallery2()}
-                </div>
-              </div>          
-            </div>
 
-          </div>
-          <div className={cssBooking["modal-div-button"]}>
-            <Button onClick={() => {}}>Save</Button>
+              <div className={cssBooking["modal-div-button"]}>
+                <Button type="submit">Save</Button>
+              </div>
+            </Form>
           </div>
         </div>
       </main>
     );
   };
+
   const linkAccount = () => {
-    return <div>account</div>;
+    return (
+      <main className={`${css.main} ${cssBooking.main}`}>
+        <div className={css["dashboard-header"]}>
+          <div className={css["dashboard-title"]}>
+            <h1>Account</h1>
+          </div>
+          <div className={css["dashboard-profile"]}>
+            <div className={css["dashboard-admin"]}>
+              <h3>{managerName}</h3>
+              <small className={css["text-muted"]}>Resort Manager</small>
+            </div>
+            <span className="material-icons-sharp">account_circle_full</span>
+          </div>
+        </div>
+        <div className={css["resort-name"]}>
+          <h2>{hotelName}</h2>
+        </div>
+
+        {/* -------------------Booking Table--------------------------------- */}
+        <div className={cssBooking["nav-settings"]}>
+          <h2>Manager Account</h2>
+          <div className={cssBooking["modal-check-in"]}>
+            <Form onSubmit={updateAccount}>
+            <Form.Label>Manager Account ID</Form.Label>
+                <Form.Control
+                  type="text"
+                  ref={accountID}
+                  disabled
+                  value={stateAccountData.id}
+                />
+
+                <Form.Group className={css.customerInput}>
+                  <Form.Label>First Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    ref={accountFirstname}
+                    isInvalid={stateAccountError.firstname.isInvalid}
+                    isValid={stateAccountError.firstname.isValid}
+                    onChange={() => {
+                      onChangeAccount("firstname");
+                    }}
+                    value={stateAccountData.firstname}
+                  />
+                  <Form.Control.Feedback
+                    className={css.error}
+                    type="invalid"
+                    tooltip
+                  >
+                    {stateAccountError.firstname.error}
+                  </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group className={css.customerInput}>
+                  <Form.Label>Middle Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    ref={accountMiddlename}
+                    isInvalid={stateAccountError.middlename.isInvalid}
+                    isValid={stateAccountError.middlename.isValid}
+                    onChange={() => {
+                      onChangeAccount("middlename");
+                    }}
+                    value={stateAccountData.middlename}
+                  />
+                  <Form.Control.Feedback
+                    className={css.error}
+                    type="invalid"
+                    tooltip
+                  >
+                    {stateAccountError.middlename.error}
+                  </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group className={css.customerInput}>
+                  <Form.Label>Last Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    ref={accountLastname}
+                    isInvalid={stateAccountError.lastname.isInvalid}
+                    isValid={stateAccountError.lastname.isValid}
+                    onChange={() => {
+                      onChangeAccount("lastname");
+                    }}
+                    value={stateAccountData.lastname}
+                  />
+                  <Form.Control.Feedback
+                    className={css.error}
+                    type="invalid"
+                    tooltip
+                  >
+                    {stateAccountError.lastname.error}
+                  </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group className={css.customerInput}>
+                  <Form.Label>Username</Form.Label>
+                  <Form.Control
+                    type="text"
+                    ref={accountUsername}
+                    isInvalid={stateAccountError.username.isInvalid}
+                    isValid={stateAccountError.username.isValid}
+                    onChange={() => {
+                      onChangeAccount("username");
+                    }}
+                    value={stateAccountData.username}
+                  />
+                  <Form.Control.Feedback
+                    className={css.error}
+                    type="invalid"
+                    tooltip
+                  >
+                    {stateAccountError.username.error}
+                  </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group className={css.customerInput}>
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    ref={accountPassword}
+                    isInvalid={stateAccountError.isInvalid}
+                    isValid={stateAccountError.password.isValid}
+                    onChange={() => {
+                      onChangeAccount("password");
+                    }}
+                    value={stateAccountData.password}
+                  />
+                  <Form.Control.Feedback
+                    className={css.error}
+                    type="invalid"
+                    tooltip
+                  >
+                    {stateAccountError.password.error}
+                  </Form.Control.Feedback>
+              </Form.Group>
+
+              <div className={cssBooking["modal-div-button"]}>
+                <Button type="submit">Save</Button>
+              </div>
+            </Form>
+          </div>
+        </div>
+      </main>
+    );
   };
 
   return (

@@ -4,9 +4,9 @@ import data1 from '../../data1.json';
 
 //INITIAL STATE------------------------------------------------------------------
 const initialState = {
-    hotelList: { ...data1['HOTEL-RESERVATION-SYSTEM']['HOTELS'] },
+    hotelList: {},
     hotelManagerAccount: false,
-    reservation: { ...data1['PACKAGE-RESERVATION']['2022-01-0002'] }
+    reservation: {}
 }
 
 //REDUX REDUCERS AND ACTIONS--------------------------------------------------------
@@ -34,9 +34,24 @@ export const hotelSlice = createSlice({
         },
         updateHotelPackage: (state, {payload}) => {
             state.hotelList[`${payload[0]}`][`${payload[1]}`][`${payload[2]}`] = payload[3];
-        }
+        },
+        updateCover: (state, { payload }) => {
+            state.hotelList[`${payload[0]}`]['HOTEL-COVER'] = payload[1];
+        },
+        updateRoom1: (state, { payload }) => {
+            state.hotelList[`${payload[0]}`]['VIEW-ROOM GALLERY']['ROOM-01'] = payload[1];
+        },
+        updateRoom2: (state, { payload }) => {
+            state.hotelList[`${payload[0]}`]['VIEW-ROOM GALLERY']['ROOM-02'] = payload[1];
+        },
+        updateHotelInfo: (state, { payload }) => {
+            state.hotelList[`${payload[0]}`]['HOTEL-DESCRIPTION'] = payload[1];
+            state.hotelList[`${payload[0]}`]['HOTEL-LOCATION'] = payload[2];
+            state.hotelList[`${payload[0]}`]['HOTEL-NAME'] = payload[3];
+            state.hotelList[`${payload[0]}`]['ROOMS'] = payload[4];  
+        },
     },
 });
 
-export const { getHotel, showModalHotelManager, getReservation, updateReferenceStatus, updateHotelPackage } = hotelSlice.actions;
+export const { getHotel, showModalHotelManager, getReservation, updateReferenceStatus, updateHotelPackage, updateCover, updateRoom1, updateRoom2, updateHotelInfo } = hotelSlice.actions;
 export default hotelSlice.reducer;

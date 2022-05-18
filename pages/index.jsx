@@ -19,10 +19,10 @@ export async function getServerSideProps({req, res}){
   const mycookie = cookie.parse((req && req.headers.cookie) || "");
   const type = mycookie.type;
   const id = mycookie.id;
-  // const databaseRef = ref(database);
-  // const hotelPath = 'HOTEL-RESERVATION-SYSTEM/HOTELS';
-  // const userPath = 'HOTEL-RESERVATION-SYSTEM/USERS';
-  // const hotelmanagerPath = 'ADMIN/HOTEL-MANAGER';
+  const databaseRef = ref(database);
+  const hotelPath = 'HOTEL-RESERVATION-SYSTEM/HOTELS';
+  const userPath = 'HOTEL-RESERVATION-SYSTEM/USERS';
+  const hotelmanagerPath = 'ADMIN/HOTEL-MANAGER';
   let hotel = {};
   let user =  {};
   let hotelManager = {};
@@ -46,29 +46,29 @@ export async function getServerSideProps({req, res}){
     }
   }
 
-  // await get(child(databaseRef, hotelPath))
-  // .then((snapshot) => {
-  //     snapshot.exists() ? hotel = { ...snapshot.val() } : null;
-  // })
-  // .catch((err) => {
-  //     console.log(err);
-  // });
+  await get(child(databaseRef, hotelPath))
+  .then((snapshot) => {
+      snapshot.exists() ? hotel = { ...snapshot.val() } : null;
+  })
+  .catch((err) => {
+      console.log(err);
+  });
 
-  // await get(child(databaseRef, userPath))
-  // .then((snapshot) => {
-  //     snapshot.exists() ? user = { ...snapshot.val() } : null;
-  // })
-  // .catch((err) => {
-  //     console.log(err);
-  // });
+  await get(child(databaseRef, userPath))
+  .then((snapshot) => {
+      snapshot.exists() ? user = { ...snapshot.val() } : null;
+  })
+  .catch((err) => {
+      console.log(err);
+  });
 
-  // await get(child(databaseRef, hotelmanagerPath))
-  // .then((snapshot) => {
-  //     snapshot.exists() ? hotelManager = { ...snapshot.val() } : null;
-  // })
-  // .catch((err) => {
-  //     console.log(err);
-  // });
+  await get(child(databaseRef, hotelmanagerPath))
+  .then((snapshot) => {
+      snapshot.exists() ? hotelManager = { ...snapshot.val() } : null;
+  })
+  .catch((err) => {
+      console.log(err);
+  });
 
   return {
     props: {hotel,user,hotelManager}
