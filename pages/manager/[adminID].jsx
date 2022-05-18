@@ -71,50 +71,10 @@ export async function getStaticProps({ req, res }) {
   };
 }
 export async function getStaticPaths({ req, res }) {
-  const mycookie = cookie.parse((req && req.headers.cookie) || "");
-  const type = mycookie.type;
-  const id = mycookie.id;
-  const databaseRef = ref(database);
-  const reservationPath = `PACKAGE-RESERVATION/${id}`;
-  let reservation = {};
-
-  if (type != undefined && type != "manager") {
-    if (type == "user") {
-      return {
-        redirect: {
-          destination: `/${type}`,
-          permanent: false,
-        },
-      };
-    } else {
-      return {
-        redirect: {
-          destination: `${type}/${id}`,
-          permanent: false,
-        },
-      };
-    }
-  }
-  if (type == undefined) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-
-  await get(child(databaseRef, reservationPath))
-  .then((snapshot) => {
-      snapshot.exists() ? reservation = { ...snapshot.val() } : null;
-  })
-  .catch((err) => {
-      console.log(err);
-  });
-
-  return {
-    props: { reservation },
-  };
+ return {
+   paths: [],
+   fallback: false,
+ }
 }
 
 export default function Manager({ reservation }) {
