@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import cookie from "cookie";
-import css from "../../styles/Pages/manager.module.css";
-import cssBooking from "../../styles/Pages/booking.module.css";
+import css from "../styles/Pages/manager.module.css";
+import cssBooking from "../styles/Pages/booking.module.css";
 import Head from "next/head";
 import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -70,12 +70,6 @@ export async function getServerSideProps({ req, res }) {
     props: { reservation },
   };
 }
-// export async function getStaticPaths({ req, res }) {
-//  return {
-//    paths: [],
-//    fallback: false,
-//  }
-// }
 
 export default function Manager({ reservation }) {
   //import variables-------------------------------------------------------------------------
