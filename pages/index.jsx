@@ -15,7 +15,7 @@ import { ref, child, get } from 'firebase/database';
 import {getHotel} from '../redux/reduxSlice/hotelSlice';
 import { getUser, getHotelManager } from '../redux/reduxSlice/userSlice';
 
-export async function getServerSideProps({req, res}){
+export async function getStaticProps({req, res}){
   const mycookie = cookie.parse((req && req.headers.cookie) || "");
   const type = mycookie.type;
   const id = mycookie.id;
