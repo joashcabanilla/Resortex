@@ -138,9 +138,22 @@ export default function Manager({ reservation }) {
       isValid: false,
       error: ""
     },
+    room1:{
+      isInvalid: false,
+      isValid: false,
+      error: ""
+    },
+    room2:{
+      isInvalid: false,
+      isValid: false,
+      error: ""
+    }
   });
   const [statePackageData, setStatePackageData] = useState({});
   const [stateSettingsData, setStateSettingsData] = useState({});
+  const [stateResortCover, setStateResortCover] = useState("");
+  const [stateResortGallery1, setStateResortGallery1] = useState("");
+  const [stateResortGallery2, setStateResortGallery2] = useState("");
 
   //useRef Hooks variables----------------------------------------------------------------------
   const bookFilterDate = useRef();
@@ -157,6 +170,8 @@ export default function Manager({ reservation }) {
   const resortDescription = useRef();
   const resortRooms = useRef();
   const resortCover = useRef();
+  const resortRoomGallery1 = useRef();
+  const resortRoomGallery2 = useRef();
 
   //function Resrvation Get and Update Data-----------------------------------------------------
   const ReservationData = () => {
@@ -168,6 +183,7 @@ export default function Manager({ reservation }) {
     let totalCustomerServed = 0;
     let totalApproved = 0;
     let allPackage = [];
+    let allSettings = {};
     let formatter = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "PHP",
@@ -240,6 +256,21 @@ export default function Manager({ reservation }) {
         amount: formatter.format(value["AMOUNT"]),
         amountData: value["AMOUNT"]
       });
+    });
+
+    Object.values(stateHotel).forEach((value) => {
+      if(adminID == value['HOTEL-REFERENCE NUMBER']){
+        setStateSettingsData({
+          id: value['HOTEL-REFERENCE NUMBER'],
+          name: value['HOTEL-NAME'],
+          location: value['HOTEL-LOCATION'],
+          description: value['HOTEL-DESCRIPTION'],
+          rooms: value['ROOMS'],
+        });
+        setStateResortCover(`data:image/jpeg;base64,${value['HOTEL-COVER']}`);
+        setStateResortGallery1(`data:image/jpeg;base64,${value['VIEW-ROOM GALLERY']['ROOM-01']}`);
+        setStateResortGallery2(`data:image/jpeg;base64,${value['VIEW-ROOM GALLERY']['ROOM-02']}`);
+      } 
     });
 
     setStatePending(totalPending);
@@ -522,6 +553,43 @@ export default function Manager({ reservation }) {
       },
     });
     setStatePackageData({});
+    setStateSettingsError({
+      name:{
+        isInvalid: false,
+        isValid: false,
+        error: ""
+      },
+      location:{
+        isInvalid: false,
+        isValid: false,
+        error: ""
+      },
+      description:{
+        isInvalid: false,
+        isValid: false,
+        error: ""
+      },
+      rooms:{
+        isInvalid: false,
+        isValid: false,
+        error: ""
+      },
+      cover:{
+        isInvalid: false,
+        isValid: false,
+        error: ""
+      },
+      room1:{
+        isInvalid: false,
+        isValid: false,
+        error: ""
+      },
+      room2:{
+        isInvalid: false,
+        isValid: false,
+        error: ""
+      }
+    });
     switch (tab) {
       case "dashboard":
         setLinkActive("dashboard");
@@ -794,7 +862,9 @@ export default function Manager({ reservation }) {
       },
     }));
   };
+
   const onChangeSettings = (input) => {
+    setStateSettingsData({});
     switch (input) {
       case "name":
         let name = resortName.current.value;
@@ -804,25 +874,38 @@ export default function Manager({ reservation }) {
       case "location":
         let location = resortLocation.current.value;
         location == "" ? updateErrorSettings("", false, false, "location") : updateErrorSettings("", false, true, "location");
-        break;
+      break;
 
-        case "description":
-          let description = resortDescription.current.value;
-          description == "" ? updateErrorSettings("", false, false, "description") : updateErrorSettings("", false, true, "description");
-          break;
+      case "description":
+        let description = resortDescription.current.value;
+        description == "" ? updateErrorSettings("", false, false, "description") : updateErrorSettings("", false, true, "description");
+      break;
 
-        case "rooms":
-          let rooms = resortRooms.current.value;
-          rooms == "" ? updateErrorSettings("", false, false, "rooms") : updateErrorSettings("", false, true, "rooms");
-        break;
+      case "rooms":
+        let rooms = resortRooms.current.value;
+        rooms == "" ? updateErrorSettings("", false, false, "rooms") : updateErrorSettings("", false, true, "rooms");
+      break;
 
-        case "cover":
-          let resortCover = resortCover.current.value;
-          resortCover != "" ? setHotelCover(URL.createObjectURL(resortCover.current.files[0])) : setHotelCover("");
-          resortCover != "" ? updateFormError("",false,true,"cover") : updateFormError("",false,false,"cover");
+      case "cover":
+        let Cover = resortCover.current.value;
+        Cover != "" ? setStateResortCover(URL.createObjectURL(resortCover.current.files[0])) : setStateResortCover("");
+        Cover != "" ? updateErrorSettings("",false,true,"cover") : updateErrorSettings("",false,false,"cover");
+      break;
+
+      case "room1":
+        let roomGallery1 = resortRoomGallery1.current.value;
+        roomGallery1 != "" ? setStateResortGallery1(URL.createObjectURL(resortRoomGallery1.current.files[0])) : setStateResortGallery1("");
+        roomGallery1 != "" ? updateErrorSettings("",false,true,"room1") : updateErrorSettings("",false,false,"room1");
+      break;
+
+      case "room2":
+        let roomGallery2 = resortRoomGallery2.current.value;
+        roomGallery2 != "" ? setStateResortGallery2(URL.createObjectURL(resortRoomGallery2.current.files[0])) : setStateResortGallery2("");
+        roomGallery2 != "" ? updateErrorSettings("",false,true,"room2") : updateErrorSettings("",false,false,"room2");
       break;
     }
   }
+
   //function component-----------------------------------------------------------------------
   const bookingTable = () => {
     let headers = [
@@ -1597,14 +1680,41 @@ export default function Manager({ reservation }) {
   const ResortCoverComponent = () => {
     return stateResortCover != "" ? (
          <div className={`${cssBooking.conHotelCoverImage} ${cssBooking.profileIcon}`}>
-             <img src={hotelCover} alt="Resort Cover Picture" />
+             <img src={stateResortCover} alt="Resort Cover Picture" />
          </div>
      ) : (
     <div className={`${cssBooking.conHotelCover} ${cssBooking.profileIcon}`}>
          <img src='/image/image_icon.png' alt="Resort Cover Picture" />
      </div>
     ); 
- }
+  }
+
+   //Set Room Gallery 1 Component----------------------------------------------------
+   const ResortRoomGallery1 = () => {
+    return stateResortGallery1 != "" ? (
+         <div className={`${cssBooking.conHotelCoverImage} ${cssBooking.profileIcon}`}>
+             <img src={stateResortGallery1} alt="Resort Cover Picture" />
+         </div>
+     ) : (
+    <div className={`${cssBooking.conHotelCover} ${cssBooking.profileIcon}`}>
+         <img src='/image/image_icon.png' alt="Resort Cover Picture" />
+     </div>
+    ); 
+  }
+
+  //Set Room Gallery 2 Component----------------------------------------------------
+  const ResortRoomGallery2 = () => {
+      return stateResortGallery2 != "" ? (
+           <div className={`${cssBooking.conHotelCoverImage} ${cssBooking.profileIcon}`}>
+               <img src={stateResortGallery2} alt="Resort Cover Picture" />
+           </div>
+       ) : (
+      <div className={`${cssBooking.conHotelCover} ${cssBooking.profileIcon}`}>
+           <img src='/image/image_icon.png' alt="Resort Cover Picture" />
+       </div>
+      ); 
+  }
+  
   //Links component----------------------------------------------------------------------------
   const linkDashboard = () => {
     let formatter = new Intl.NumberFormat("en-US", {
@@ -1878,17 +1988,46 @@ export default function Manager({ reservation }) {
                 {stateSettingsError.rooms.error}
               </Form.Control.Feedback>
             </Form.Group>
-
-            <Form.Group className={`${css.customerInput} ${css.conProfileCustomer}`}>
-              <Form.Label>Resort Cover Photo:</Form.Label>
+            
+            <div className={cssBooking.settingsCover}>
               <div>
-                <Form.Control type="file" ref={resortCover} onChange={()=>{onChangeSettings("cover")}} isInvalid={stateSettingsError.cover.isInvalid} isValid={stateSettingsError.cover.isValid} />
-                <Form.Control.Feedback className={css.error} type="invalid" tooltip>{stateSettingsError.cover.error}</Form.Control.Feedback>
+                  <Form.Group className={`${css.customerInput}`}>
+                  <Form.Label>Resort Cover Photo</Form.Label>
+                  <div>
+                    <Form.Control type="file" ref={resortCover} onChange={()=>{onChangeSettings("cover")}} isInvalid={stateSettingsError.cover.isInvalid} isValid={stateSettingsError.cover.isValid} />
+                    <Form.Control.Feedback className={css.error} type="invalid" tooltip>{stateSettingsError.cover.error}</Form.Control.Feedback>
+                  </div>
+                </Form.Group>
+                <div className={cssBooking.HotelCover}>
+                  {ResortCoverComponent()}
+                </div>
               </div>
-            </Form.Group>
-            <div className={cssBooking.HotelCover}>
-              {ResortCoverComponent()}
+              <div>
+                  <Form.Group className={`${css.customerInput}`}>
+                  <Form.Label>Resort Room Gallery 1</Form.Label>
+                  <div>
+                    <Form.Control type="file" ref={resortRoomGallery1} onChange={()=>{onChangeSettings("room1")}} isInvalid={stateSettingsError.room1.isInvalid} isValid={stateSettingsError.room1.isValid} />
+                    <Form.Control.Feedback className={css.error} type="invalid" tooltip>{stateSettingsError.room1.error}</Form.Control.Feedback>
+                  </div>
+                </Form.Group>
+                <div className={cssBooking.HotelCover}>
+                  {ResortRoomGallery1()}
+                </div>
+              </div>
+              <div>
+                  <Form.Group className={`${css.customerInput}`}>
+                  <Form.Label>Resort Room Gallery 2</Form.Label>
+                  <div>
+                    <Form.Control type="file" ref={resortRoomGallery2} onChange={()=>{onChangeSettings("room2")}} isInvalid={stateSettingsError.room2.isInvalid} isValid={stateSettingsError.room2.isValid} />
+                    <Form.Control.Feedback className={css.error} type="invalid" tooltip>{stateSettingsError.room2.error}</Form.Control.Feedback>
+                  </div>
+                </Form.Group>
+                <div className={cssBooking.HotelCover}>
+                  {ResortRoomGallery2()}
+                </div>
+              </div>          
             </div>
+
           </div>
           <div className={cssBooking["modal-div-button"]}>
             <Button onClick={() => {}}>Save</Button>
